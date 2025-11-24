@@ -28,4 +28,5 @@ Homestead.json
 .env.production
 .phpactor.json
 auth.json
-/theme
+/mrbs-mock-up
+
