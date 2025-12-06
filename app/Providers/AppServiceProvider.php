@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -19,6 +20,30 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+        $this->registerGates();
+    }
+
+    /**
+     * Register authorization Gates for the application.
+     */
+    protected function registerGates(): void
+    {
+        // Booking management (Admin, Director)
+        Gate::define('manage-bookings', fn($user) => $user->canManageBookings());
+
+        // Room management (Admin, Director)
+        Gate::define('manage-rooms', fn($user) => $user->canManageRooms());
+
+        // User management (Director, SysAdmin)
+        Gate::define('manage-users', fn($user) => $user->canManageUsers());
+
+        // Audit access (Director, SysAdmin)
+        Gate::define('access-audit', fn($user) => $user->canAccessAudit());
+
+        // Reports access (Admin, Director, SysAdmin)
+        Gate::define('access-reports', fn($user) => $user->canAccessReports());
+
+        // System config (SysAdmin only)
+        Gate::define('configure-system', fn($user) => $user->canConfigureSystem());
     }
 }
