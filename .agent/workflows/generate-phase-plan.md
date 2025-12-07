@@ -76,7 +76,7 @@ docs/workflow/phase{X}/
 
 Follow the format from `docs/workflow/phase1/README.md`:
 - Phase objective
-- Step files table with descriptions and priorities
+- Step files table with descriptions, priorities and current status(TODO, IN-PROGRESS, COMPLETED)
 - Dependency graph showing execution order
 - Mockup files to convert
 - Database tables created in this phase
