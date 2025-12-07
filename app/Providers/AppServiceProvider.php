@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -21,6 +22,23 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         $this->registerGates();
+        $this->registerViewComposers();
+    }
+
+    /**
+     * Register view composers for shared data.
+     */
+    protected function registerViewComposers(): void
+    {
+        // Share pending approvals count for sidebar badge
+        View::composer('layouts.partials.sidebar', function ($view) {
+            $pendingCount = 0;
+            if (auth()->check() && auth()->user()->canManageBookings()) {
+                // Will be implemented in Phase 3 when Booking model exists
+                // $pendingCount = \App\Models\Booking::where('status', 'pending')->count();
+            }
+            $view->with('pendingCount', $pendingCount);
+        });
     }
 
     /**

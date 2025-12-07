@@ -240,13 +240,13 @@ public function boot(): void
 ---
 
 ## Acceptance Criteria
-- [ ] App layout extends mockup design
-- [ ] Sidebar shows role-appropriate menu items
-- [ ] Active menu item is highlighted
-- [ ] Navbar shows user info and dropdown
-- [ ] Logout form works via POST
-- [ ] Toast notifications display for session messages
-- [ ] Layout is responsive (sidebar collapses on mobile)
+- [x] App layout extends mockup design
+- [x] Sidebar shows role-appropriate menu items
+- [x] Active menu item is highlighted
+- [x] Navbar shows user info and dropdown
+- [x] Logout form works via POST
+- [x] Toast notifications display for session messages
+- [x] Layout is responsive (sidebar collapses on mobile)
 
 ---
 

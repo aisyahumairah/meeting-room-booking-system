@@ -1,27 +1,105 @@
-@extends('layouts.auth')
+@extends('layouts.app')
 
 @section('title', 'Dashboard')
 
 @section('content')
-    <div class="container-xxl">
-        <div class="authentication-wrapper authentication-basic container-p-y">
-            <div class="authentication-inner py-6">
-                <div class="card px-sm-6 px-0">
-                    <div class="card-body text-center">
-                        <h4 class="mb-4">Welcome, {{ auth()->user()->name }}! 👋</h4>
-                        <p class="mb-4">Role: <strong>{{ ucfirst(str_replace('_', ' ', auth()->user()->role)) }}</strong>
-                        </p>
+    {{-- Welcome Message --}}
+    <div class="row">
+        <div class="col-12 mb-6">
+            <div class="card">
+                <div class="card-body">
+                    <div class="d-flex align-items-center flex-wrap gap-2">
+                        <div class="avatar avatar-lg me-3">
+                            <span class="avatar-initial rounded-circle bg-primary">
+                                {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
+                            </span>
+                        </div>
+                        <div>
+                            <h4 class="mb-1">Welcome back, {{ auth()->user()->name }}! 👋</h4>
+                            <p class="mb-0 text-muted">Role: <span
+                                    class="badge bg-label-primary">{{ auth()->user()->role_display }}</span></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
-                        @if (session('success'))
-                            <div class="alert alert-success">{{ session('success') }}</div>
-                        @endif
+    {{-- Dashboard Content Placeholder --}}
+    <div class="row">
+        <div class="col-lg-8 col-md-12 mb-6">
+            <div class="card h-100">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="card-title mb-0">My Upcoming Bookings</h5>
+                    <small class="text-muted">Coming in Phase 2</small>
+                </div>
+                <div class="card-body">
+                    <div class="d-flex justify-content-center align-items-center" style="min-height: 200px;">
+                        <div class="text-center text-muted">
+                            <i class="bx bx-calendar bx-lg mb-2"></i>
+                            <p>No upcoming bookings</p>
+                            <a href="#" class="btn btn-primary">
+                                <i class="bx bx-plus me-1"></i> Book a Room
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-                        <p class="text-muted mb-4">User Dashboard - Coming in Step 1.6</p>
+        <div class="col-lg-4 col-md-12 mb-6">
+            <div class="card h-100">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Quick Actions</h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-grid gap-2">
+                        <a href="#" class="btn btn-primary">
+                            <i class="bx bx-plus me-1"></i> New Booking
+                        </a>
+                        <a href="#" class="btn btn-outline-primary">
+                            <i class="bx bx-calendar me-1"></i> View Calendar
+                        </a>
+                        <a href="#" class="btn btn-outline-primary">
+                            <i class="bx bx-building me-1"></i> Browse Rooms
+                        </a>
+                        <a href="{{ route('password.change') }}" class="btn btn-outline-secondary">
+                            <i class="bx bx-lock me-1"></i> Change Password
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
-                        <form action="{{ route('logout') }}" method="POST">
-                            @csrf
-                            <button type="submit" class="btn btn-outline-danger">Logout</button>
-                        </form>
+    {{-- Recent Activity Placeholder --}}
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="card-title mb-0">Recent Booking History</h5>
+                    <small class="text-muted">Last 5 bookings</small>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Room</th>
+                                    <th>Date</th>
+                                    <th>Time</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td colspan="5" class="text-center text-muted py-4">
+                                        No booking history yet
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
                     </div>
                 </div>
             </div>
