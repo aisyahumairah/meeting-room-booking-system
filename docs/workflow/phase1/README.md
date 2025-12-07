@@ -33,7 +33,7 @@ Establish the foundational elements of the MRBS including:
 | 1.3 | [step-1.3-authorization.md](./step-1.3-authorization.md) | Middleware, Gates, permissions | CRITICAL | COMPLETED |
 | 1.4 | [step-1.4-global-layout.md](./step-1.4-global-layout.md) | Blade layouts, sidebar, navbar | HIGH | COMPLETED |
 | 1.5 | [step-1.5-user-profile.md](./step-1.5-user-profile.md) | Profile view, edit, password change | MEDIUM | COMPLETED |
-| 1.6 | [step-1.6-dashboards.md](./step-1.6-dashboards.md) | User and Admin dashboards | HIGH | TODO |
+| 1.6 | [step-1.6-dashboards.md](./step-1.6-dashboards.md) | User and Admin dashboards | HIGH | COMPLETED |
 | 1.7 | [step-1.7-audit-trail.md](./step-1.7-audit-trail.md) | Audit log table and service | HIGH | TODO |
 
 ---

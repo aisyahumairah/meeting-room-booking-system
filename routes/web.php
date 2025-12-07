@@ -4,6 +4,7 @@ use App\Http\Controllers\Auth\ChangePasswordController;
 use App\Http\Controllers\Auth\ForgotPasswordController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\ResetPasswordController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 
@@ -13,10 +14,8 @@ use Illuminate\Support\Facades\Route;
 |--------------------------------------------------------------------------
 */
 
-// Redirect root to login
-Route::get('/', function () {
-    return redirect()->route('login');
-});
+// Redirect root to dashboard (will redirect to login if not authenticated)
+Route::get('/', [DashboardController::class, 'index'])->middleware('auth')->name('home');
 
 // Guest routes (unauthenticated users only)
 Route::middleware('guest')->group(function () {
@@ -38,13 +37,11 @@ Route::middleware(['auth', 'active', 'must.change.password'])->group(function ()
     Route::post('password/change', [ChangePasswordController::class, 'change']);
 
     // Dashboard routes
-    Route::get('/dashboard/user', function () {
-        return view('dashboard.user');
-    })->name('dashboard.user');
-
-    Route::get('/dashboard/admin', function () {
-        return view('dashboard.admin');
-    })->name('dashboard.admin');
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+    Route::get('/dashboard/user', [DashboardController::class, 'userDashboard'])->name('dashboard.user');
+    Route::get('/dashboard/admin', [DashboardController::class, 'adminDashboard'])
+        ->middleware('role:administrator,director')
+        ->name('dashboard.admin');
 
     // User profile routes
     Route::get('profile', [ProfileController::class, 'show'])->name('profile.show');

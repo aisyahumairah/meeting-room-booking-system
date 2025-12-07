@@ -290,13 +290,13 @@ php artisan test --filter=DashboardTest
 ---
 
 ## Acceptance Criteria
-- [ ] User dashboard displays for regular users and system admins
-- [ ] Admin dashboard displays for administrators and directors
-- [ ] All widgets render without errors (with placeholder data)
-- [ ] Quick Book button links to booking create
-- [ ] Quick actions panel shows role-appropriate buttons
-- [ ] Charts render (with placeholder data)
-- [ ] All tests pass
+- [x] User dashboard displays for regular users and system admins
+- [x] Admin dashboard displays for administrators and directors
+- [x] All widgets render without errors (with placeholder data)
+- [x] Quick Book button links to booking create
+- [x] Quick actions panel shows role-appropriate buttons
+- [x] Charts render (with placeholder data)
+- [x] All tests pass
 
 ---
 
