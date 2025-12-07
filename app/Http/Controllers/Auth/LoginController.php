@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Services\AuditService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -33,6 +34,7 @@ class LoginController extends Controller
         $user = User::where('email', $credentials['email'])->first();
 
         if ($user && $user->status === 'inactive') {
+            AuditService::logLogin(false, $credentials['email']);
             return back()
                 ->withInput($request->only('email'))
                 ->withErrors([
@@ -48,6 +50,9 @@ class LoginController extends Controller
                 'last_login_at' => now(),
             ]);
 
+            // Log successful login
+            AuditService::logLogin(true);
+
             // Check if user must change password
             if (Auth::user()->must_change_password) {
                 return redirect()->route('password.change');
@@ -56,6 +61,9 @@ class LoginController extends Controller
             // Redirect based on role
             return $this->redirectByRole(Auth::user());
         }
+
+        // Log failed login attempt
+        AuditService::logLogin(false, $credentials['email']);
 
         return back()
             ->withInput($request->only('email'))
@@ -69,6 +77,9 @@ class LoginController extends Controller
      */
     public function logout(Request $request): RedirectResponse
     {
+        // Log logout before clearing session
+        AuditService::logLogout();
+
         Auth::logout();
 
         $request->session()->invalidate();

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Services\AuditService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -38,7 +39,10 @@ class ProfileController extends Controller
 
         Auth::user()->update($validated);
 
-        // TODO: Log profile update to audit trail (Step 1.7)
+        // Log profile update to audit trail
+        AuditService::logProfileUpdated([
+            'changed_fields' => array_keys($validated)
+        ]);
 
         return redirect()->route('profile.show')
             ->with('success', 'Profile updated successfully.');
@@ -71,7 +75,8 @@ class ProfileController extends Controller
             'must_change_password' => false,
         ]);
 
-        // TODO: Log password change to audit trail (Step 1.7)
+        // Log password change to audit trail
+        AuditService::logPasswordChanged();
 
         return redirect()->route('profile.show')
             ->with('success', 'Password changed successfully.');

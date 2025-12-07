@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Services\AuditService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -103,6 +104,9 @@ class ResetPasswordController extends Controller
 
         // Delete the reset token
         DB::table('password_reset_tokens')->where('email', $request->email)->delete();
+
+        // Log password reset completion
+        AuditService::logPasswordResetCompleted($user->id);
 
         return redirect()->route('login')
             ->with('status', 'Your password has been reset successfully. Please login with your new password.');

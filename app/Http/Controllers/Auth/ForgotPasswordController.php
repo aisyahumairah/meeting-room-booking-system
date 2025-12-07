@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Services\AuditService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -69,6 +70,9 @@ class ForgotPasswordController extends Controller
             // Log the error but still show success message to prevent enumeration
             logger()->error('Failed to send password reset email: ' . $e->getMessage());
         }
+
+        // Log password reset request
+        AuditService::logPasswordResetRequested($request->email);
 
         return back()->with('status', 'If your email exists in our system, you will receive a password reset link shortly.');
     }

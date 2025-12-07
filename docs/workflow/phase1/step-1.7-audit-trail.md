@@ -317,14 +317,14 @@ php artisan test --filter=AuditLogTest
 ---
 
 ## Acceptance Criteria
-- [ ] `audit_logs` table created with migration
-- [ ] AuditLog model is immutable (cannot update/delete)
-- [ ] AuditService provides logging methods
-- [ ] Login success/failure logged
-- [ ] Logout logged
-- [ ] Password reset request/completion logged
-- [ ] Profile updates logged
-- [ ] All tests pass
+- [x] `audit_logs` table created with migration
+- [x] AuditLog model is immutable (cannot update/delete)
+- [x] AuditService provides logging methods
+- [x] Login success/failure logged
+- [x] Logout logged
+- [x] Password reset request/completion logged
+- [x] Profile updates logged
+- [x] All tests pass
 
 ---
 
