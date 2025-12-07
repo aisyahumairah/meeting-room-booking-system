@@ -49,12 +49,12 @@
                         <div class="dropdown-divider my-1"></div>
                     </li>
                     <li>
-                        <a class="dropdown-item" href="#">
+                        <a class="dropdown-item" href="{{ route('profile.show') }}">
                             <i class="icon-base bx bx-user icon-md me-3"></i><span>My Profile</span>
                         </a>
                     </li>
                     <li>
-                        <a class="dropdown-item" href="{{ route('password.change') }}">
+                        <a class="dropdown-item" href="{{ route('profile.password') }}">
                             <i class="icon-base bx bx-lock icon-md me-3"></i><span>Change Password</span>
                         </a>
                     </li>

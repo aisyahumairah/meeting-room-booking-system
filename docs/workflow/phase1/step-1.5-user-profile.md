@@ -257,13 +257,13 @@ php artisan test --filter=ProfileTest
 ---
 
 ## Acceptance Criteria
-- [ ] Profile show page displays all user info
-- [ ] Edit profile allows updating name, department, phone only
-- [ ] Staff number, email, role are read-only
-- [ ] Change password requires current password verification
-- [ ] New password must be 8+ chars with letters, numbers, symbols
-- [ ] Success messages display after updates
-- [ ] All tests pass
+- [x] Profile show page displays all user info
+- [x] Edit profile allows updating name, department, phone only
+- [x] Staff number, email, role are read-only
+- [x] Change password requires current password verification
+- [x] New password must be 8+ chars with letters, numbers, symbols
+- [x] Success messages display after updates
+- [x] All tests pass
 
 ---
 

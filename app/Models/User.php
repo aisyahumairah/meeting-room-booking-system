@@ -175,4 +175,48 @@ class User extends Authenticatable
     {
         return $query->where('department', $department);
     }
+
+    // =========================================================================
+    // ACCESSORS
+    // =========================================================================
+
+    /**
+     * Get the human-readable role display name.
+     */
+    public function getRoleDisplayAttribute(): string
+    {
+        return match ($this->role) {
+            'system_admin' => 'System Admin',
+            'director' => 'Director',
+            'administrator' => 'Administrator',
+            'regular_user' => 'Regular User',
+            default => ucfirst(str_replace('_', ' ', $this->role)),
+        };
+    }
+
+    /**
+     * Get the Bootstrap badge class for the role.
+     */
+    public function getRoleBadgeAttribute(): string
+    {
+        return match ($this->role) {
+            'system_admin' => 'warning',
+            'director' => 'primary',
+            'administrator' => 'success',
+            'regular_user' => 'secondary',
+            default => 'secondary',
+        };
+    }
+
+    /**
+     * Get the Bootstrap badge class for the status.
+     */
+    public function getStatusBadgeAttribute(): string
+    {
+        return match ($this->status) {
+            'active' => 'success',
+            'inactive' => 'danger',
+            default => 'secondary',
+        };
+    }
 }

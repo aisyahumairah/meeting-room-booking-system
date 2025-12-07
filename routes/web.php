@@ -4,6 +4,7 @@ use App\Http\Controllers\Auth\ChangePasswordController;
 use App\Http\Controllers\Auth\ForgotPasswordController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\ResetPasswordController;
+use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -45,9 +46,12 @@ Route::middleware(['auth', 'active', 'must.change.password'])->group(function ()
         return view('dashboard.admin');
     })->name('dashboard.admin');
 
-    // User profile routes (to be implemented in Step 1.5)
-    // Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-    // Route::put('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    // User profile routes
+    Route::get('profile', [ProfileController::class, 'show'])->name('profile.show');
+    Route::get('profile/edit', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::put('profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::get('profile/password', [ProfileController::class, 'showChangePasswordForm'])->name('profile.password');
+    Route::put('profile/password', [ProfileController::class, 'changePassword'])->name('profile.password.update');
 
     // User's own bookings (to be implemented in Phase 2)
     // Route::get('/my-bookings', [BookingController::class, 'myBookings'])->name('bookings.my');
