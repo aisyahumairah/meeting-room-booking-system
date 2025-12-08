@@ -48,7 +48,7 @@ The Meeting Room Booking System is a centralized web-based platform designed for
 The system provides:
 
 - **Real-time room availability** across all floors and rooms  
-- **Approval workflows** with notifications  
+- **Auto-approval on first-come-first-served basis** with instant confirmation  
 - **Centralized booking management** accessible from anywhere  
 - **Comprehensive reporting** for data-driven decision making  
 - **Complete audit trail** for transparency and accountability  
@@ -172,13 +172,13 @@ The MRBS addresses these challenges through a centralized web-based platform wit
 
    
 
-3. **Manual Approval Workflow**  
+3. **Auto-Approval (First-Come-First-Served)**  
      
-   - Route booking requests to administrators/directors for review  
-   - Administrators manually approve or reject requests  
-   - Email notifications sent at every status change  
-   - Track approval timeline and decisions  
-   - Document rejection reasons for transparency
+   - Bookings are automatically confirmed upon submission if the room is available  
+   - First-come-first-served basis ensures fair access to meeting rooms  
+   - Real-time conflict prevention eliminates double-booking  
+   - Email confirmation sent immediately upon successful booking  
+   - No manual approval queue required - instant booking experience
 
    
 
@@ -241,14 +241,14 @@ The Meeting Room Booking System supports **four distinct user roles**, each with
 - **View personal bookings** \- see their own booking history and upcoming reservations  
 - **Edit own bookings** \- modify date, time, room, or purpose (ONLY for Pending/draft status)  
 - **Cancel own bookings** \- cancel with a reason (for Pending or Confirmed bookings)  
-- **Receive notifications** \- email alerts for booking confirmations, approvals, rejections, and reminders  
+- **Receive notifications** \- email alerts for booking confirmations, cancellations, and reminders  
 - **Update profile** \- manage personal information and change password
 
 **What They CANNOT Do:**
 
-- Cannot approve or reject any bookings (including their own)  
 - Cannot view other users' bookings  
-- Cannot edit bookings that are Confirmed, Rejected, Cancelled, or past  
+- Cannot edit bookings that are Confirmed, Cancelled, or past  
+- Cannot cancel other users' bookings  
 - Cannot manage rooms, users, or system settings  
 - Cannot access reports or audit logs  
 - Cannot create bookings on behalf of others
@@ -273,7 +273,6 @@ Staff members who need to book meeting rooms for their own meetings and manage t
 **Booking Management:**
 
 - **View all bookings** \- see bookings from all users across the system  
-- **Approve/reject booking requests** \- primary responsibility for processing pending bookings  
 - **Edit any booking** \- modify any user's booking details  
 - **Cancel any booking** \- cancel bookings on behalf of users or due to conflicts  
 - **Create bookings on behalf of others** \- book rooms for staff who request assistance
@@ -302,7 +301,7 @@ Staff members who need to book meeting rooms for their own meetings and manage t
 - Cannot configure system-wide settings
 
 **Primary Use Case:**  
-Process booking approvals daily, manage room inventory, generate usage reports, and assist users with booking issues.
+Manage room inventory, generate usage reports, assist users with booking issues, and oversee all bookings in the system.
 
 ---
 
@@ -334,10 +333,10 @@ Process booking approvals daily, manage room inventory, generate usage reports, 
 - **Export audit logs** \- download for compliance or forensic analysis  
 - **View user activity history** \- detailed view of individual user actions
 
-**Approval Authority:**
+**Oversight Authority:**
 
-- Can approve/reject bookings (passive role \- Administrators handle day-to-day approvals)  
-- Focus on oversight rather than routine operations
+- Monitor and manage all bookings across the system  
+- Focus on oversight and governance rather than routine operations
 
 **What They CANNOT Do:**
 
@@ -417,7 +416,6 @@ The following table provides a comprehensive comparison of permissions across al
 | Cancel own bookings | ✅ Yes | ✅ Yes | ✅ Yes | ✅ Yes |
 | **BOOKING MANAGEMENT** |  |  |  |  |
 | View all bookings | ❌ No | ✅ Yes | ✅ Yes | ❌ No |
-| Approve/reject bookings | ❌ No | ✅ Yes (Primary) | ✅ Yes (Passive) | ❌ No |
 | Edit any user's booking | ❌ No | ✅ Yes | ✅ Yes | ❌ No |
 | Cancel any booking | ❌ No | ✅ Yes | ✅ Yes | ❌ No |
 | Create booking for others | ❌ No | ✅ Yes | ✅ Yes | ❌ No |
@@ -683,7 +681,7 @@ Users can maintain their own information, reducing administrative workload and e
 #### 4.3.1 Administrative Dashboard
 
 **Purpose:**  
-Provide administrators and directors with an at-a-glance overview of system status, pending tasks, and key metrics to facilitate daily operations.
+Provide administrators and directors with an at-a-glance overview of system status and key metrics to facilitate daily operations.
 
 **Target Roles:** Administrator, Director
 
@@ -691,19 +689,9 @@ Provide administrators and directors with an at-a-glance overview of system stat
 
 **MUST Display:**
 
-1. **Pending Approvals Widget**  
-     
-   - Count of bookings awaiting approval  
-   - Badge indicator showing number (e.g., "4 Pending")  
-   - "View All" button linking to approval queue  
-   - Highlight if count exceeds threshold (e.g., \>10)
-
-   
-
-2. **Today's Bookings Widget**  
+1. **Today's Bookings Widget**  
      
    - Total number of bookings scheduled for today  
-   - Breakdown by status (Confirmed, Pending)  
    - List of next 5 upcoming bookings with:  
      - Time  
      - Room name  
@@ -712,7 +700,7 @@ Provide administrators and directors with an at-a-glance overview of system stat
 
    
 
-3. **Booking Statistics Widget**  
+2. **Booking Statistics Widget**  
      
    - Total bookings this week  
    - Total bookings this month  
@@ -732,7 +720,6 @@ Provide administrators and directors with an at-a-glance overview of system stat
 
 5. **Quick Actions Panel**  
      
-   - "Approve Bookings" button (links to approval queue)  
    - "View All Bookings" button  
    - "Generate Report" button  
    - "Add New Room" button (Administrator/Director only)
@@ -749,7 +736,7 @@ Provide administrators and directors with an at-a-glance overview of system stat
 - Display system alerts or announcements (if any)
 
 **Business Benefit:**  
-Administrators can quickly assess system status, identify pending tasks, and make informed decisions without navigating through multiple pages.
+Administrators can quickly assess system status and make informed decisions without navigating through multiple pages.
 
 ---
 
@@ -867,8 +854,7 @@ Provide consistent, role-appropriate navigation throughout the application.
 
    - Calendar (All roles)  
    - My Bookings (All roles)  
-   - All Bookings (Admin/Director only)  
-   - Approvals (Admin/Director only) \- with badge showing pending count
+   - All Bookings (Admin/Director only)
 
    
 
@@ -918,7 +904,6 @@ Provide consistent, role-appropriate navigation throughout the application.
 | Calendar | ✅ | ✅ | ✅ | ✅ |
 | My Bookings | ✅ | ✅ | ✅ | ✅ |
 | All Bookings | ❌ | ✅ | ✅ | ❌ |
-| Approvals | ❌ | ✅ | ✅ | ❌ |
 | Reports Hub | ❌ | ✅ | ✅ | ✅ |
 | User Management | ❌ | ❌ | ✅ | ✅ |
 | System Settings | ❌ | ❌ | ❌ | ✅ |
@@ -926,7 +911,6 @@ Provide consistent, role-appropriate navigation throughout the application.
 **SHALL:**
 
 - Highlight active menu item  
-- Show badge on "Approvals" menu item with pending count (Admin/Director only)  
 - Collapse sidebar on mobile devices  
 - Provide menu toggle button for mobile  
 - Maintain menu state (expanded/collapsed) during session
@@ -1471,24 +1455,21 @@ Safe deletion mechanisms protect historical booking data while allowing administ
 
 ## 6\. Phase 3: Booking Management
 
-### 6.1 Phase Overview
-
 **Objective:**  
-Implement the core booking workflow enabling users to reserve meeting rooms, manage their bookings, and allow administrators to approve requests and oversee all reservations.
+Implement the core booking workflow enabling users to reserve meeting rooms with instant confirmation on a first-come-first-served basis, manage their bookings, and allow administrators to oversee all reservations.
 
 **Deliverables:**
 
-- Booking creation interface with validation  
+- Booking creation interface with validation and auto-confirmation  
 - Recurring booking support (daily, weekly, monthly patterns)  
 - Global booking calendar with multiple views (day, week, month)  
 - Personal booking management (view, edit, cancel)  
-- Administrative booking oversight (view all, approve/reject)  
-- Approval queue for pending bookings
+- Administrative booking oversight (view all, manage)
 
 **Business Value:**
 
 - Self-service booking reduces administrative workload  
-- Approval workflow ensures proper oversight and control  
+- Auto-approval with first-come-first-served basis ensures fair and instant access  
 - Recurring bookings save time for regular meetings  
 - Calendar views prevent double-booking and conflicts  
 - Central visibility into all reservations improves resource planning
@@ -1549,16 +1530,14 @@ Allow users to create meeting room reservations with proper validation and confl
 **MUST Process:**
 
 - Check room availability in real-time against:  
-  - Existing Confirmed bookings (prevent conflicts)  
-  - Pending bookings (warn user but allow if Admin decides)  
+  - Existing Confirmed bookings (prevent conflicts - first-come-first-served)  
   - Maintenance schedules (prevent booking)  
 - Generate unique booking reference number (e.g., BK-2025-00001)  
-- Set initial status to "Pending" (awaiting approval)  
+- **Set initial status to "Confirmed" immediately** (auto-approval on first-come-first-served basis)  
 - Record booking timestamp (date and time created)  
 - Associate booking with user (PIC)  
 - Store booking in database  
-- Send email notification to user confirming booking submission  
-- Send email notification to Administrators/Directors about new pending booking  
+- Send email notification to user confirming booking  
 - Log booking creation in audit trail
 
 **SHALL:**
@@ -1623,11 +1602,10 @@ Enable users to create bookings that repeat on a regular schedule for recurring 
 
 - Create individual booking records for each occurrence  
 - Link all occurrences with a **Series ID** (to identify as recurring series)  
-- Mark all occurrences as "Pending" status  
-- **Single approval applies to entire series** \- when Admin approves/rejects, all occurrences change status together  
+- **Set all occurrences to "Confirmed" status immediately** (auto-approval on first-come-first-served basis)  
 - Generate unique booking reference for the series (e.g., BK-SERIES-2025-00001)  
 - Each individual occurrence also has its own booking ID  
-- Send single email notification about recurring booking request (not one per occurrence)  
+- Send single email confirmation about recurring booking (not one per occurrence)  
 - Log series creation in audit trail with recurrence details
 
 **SHALL:**
@@ -1644,7 +1622,7 @@ Enable users to create bookings that repeat on a regular schedule for recurring 
 - **Edit Series**: Editing one occurrence applies changes to **entire series**:  
   - Can change: Time, Room (if available for all dates), Purpose  
   - Cannot change: Recurrence pattern, individual dates  
-  - Requires re-approval (all occurrences revert to "Pending")  
+  - Status remains "Confirmed" after edit (availability re-checked)  
 - **Cancel Series**: Cancelling one occurrence cancels **entire series**  
   - Requires cancellation reason  
   - All occurrences marked as "Cancelled"  
@@ -2033,8 +2011,7 @@ Provide administrators and directors with comprehensive oversight of all booking
 
 - Total count of bookings matching current filters (e.g., "250 bookings found")  
 - Summary statistics:  
-  - Total Pending (requires action)  
-  - Total Confirmed (approved)  
+  - Total Confirmed (active bookings)  
   - Total Cancelled (freed capacity)  
   - Total Completed (historical)  
 - Export functionality: Download filtered list as CSV, Excel, or PDF
@@ -2047,8 +2024,6 @@ Provide administrators and directors with comprehensive oversight of all booking
   - View Details (modal or new page)  
   - Edit Booking (opens edit form pre-filled)  
   - Cancel Booking (with reason prompt)  
-  - Approve/Reject (if Pending status, opens approval interface)  
-- Highlight overdue pending approvals (e.g., submitted \>24 hours ago)  
 - Show recurring series indicator (icon or badge)
 
 **SHOULD:**
@@ -2058,138 +2033,86 @@ Provide administrators and directors with comprehensive oversight of all booking
 - Print-friendly view  
 - Visual analytics: Charts showing bookings by status, by department, by room
 
-**MUST NOT:**
-
-- Support bulk approve/reject (each booking reviewed individually for quality control)
-
 **Business Benefit:**  
 Centralized visibility enables administrators to monitor booking patterns, identify issues (frequent cancellations, overbooked rooms), and make informed decisions about resource allocation.
 
 ---
 
-#### 6.4.2 Booking Approval Workflow
+#### 6.4.2 Auto-Approval (First-Come-First-Served)
 
 **Purpose:**  
-Implement systematic review and approval process for all booking requests to ensure proper authorization and resource management.
+Implement automatic booking confirmation on a first-come-first-served basis, providing instant booking experience while preventing double-bookings through real-time availability checks.
 
-**Target Roles:** Administrator (Primary), Director (Passive/Oversight)
+**How It Works:**
+
+The MRBS uses an **auto-approval system** where bookings are **instantly confirmed** upon submission if the room is available. This eliminates the need for manual approval queues and provides users with immediate confirmation.
+
+**First-Come-First-Served Principle:**
+
+- The **first user to submit a valid booking** for a specific room, date, and time slot gets the room  
+- Real-time availability checking prevents conflicts  
+- No manual intervention required for standard bookings  
+- Fair and transparent allocation based on submission time
 
 **Requirements:**
 
-**Approval Queue Interface:**
+**MUST Implement:**
 
-**MUST Provide:**
+1. **Real-Time Availability Check**  
+     
+   - When user submits booking, system immediately checks for conflicts  
+   - Query existing Confirmed bookings for overlapping time slots  
+   - Check room maintenance schedules  
+   - If available: **Immediately set status to "Confirmed"**  
+   - If conflict detected: Display clear error message with conflict details
 
-- Dedicated "Approval Queue" page showing **only Pending bookings**  
-- Default sort: **Submission date (oldest first)** \- ensures timely processing  
-- Display pending count badge on navigation menu  
-- Two-panel layout:  
-  - Left: List of pending bookings  
-  - Right: Selected booking details for review
+   
 
-**MUST Display per Booking:**
+2. **Instant Confirmation**  
+     
+   - No "Pending" status for standard bookings  
+   - Booking confirmed at moment of submission (if available)  
+   - User receives immediate visual confirmation on screen  
+   - Email confirmation sent automatically  
+   - Booking appears in calendar immediately
 
-- Booking Reference Number  
-- Submission timestamp ("Submitted 2 hours ago")  
-- User name and department (PIC)  
-- Room requested  
-- Date and time  
-- Duration  
-- Purpose/Description (full text)  
-- Recurring series details (if applicable)  
-- User's booking history summary (total bookings, cancellation rate) \- context for approval decision
+   
 
-**Approval/Rejection Actions:**
+3. **Conflict Prevention**  
+     
+   - Database-level locking to prevent race conditions  
+   - If two users try to book same slot simultaneously, first transaction wins  
+   - Second user receives "Room no longer available" message  
+   - Suggest alternative times or rooms to second user
 
-**MUST Require:**
+   
 
-- Administrator/Director MUST **open booking details** to approve or reject (no one-click from list)  
-- Detail view shows all booking information for informed decision  
-- Two action buttons prominently displayed:  
-  - **"Approve Booking"** (green button)  
-  - **"Reject Booking"** (red button)
-
-**Approval Process (Approve):**
-
-**MUST:**
-
-- Change booking status from "Pending" to "Confirmed"  
-- Update approval timestamp  
-- Record approver name (which Admin/Director approved)  
-- **For recurring series**: Approving one occurrence approves **entire series** (all occurrences become Confirmed)  
-- Send email notification to user:  
-  - Subject: "Booking Approved \- \[Room Name\] on \[Date\]"  
-  - Include booking details and confirmation  
-  - Add to calendar attachment (iCal format) \- optional  
-- Log approval action in audit trail  
-- Display success message: "Booking approved successfully"  
-- Move to next pending booking in queue automatically
+4. **Recurring Booking Validation**  
+     
+   - For recurring series: All occurrence dates checked before confirmation  
+   - If ANY occurrence conflicts: Entire series rejected with list of conflicting dates  
+   - If all dates available: Entire series confirmed immediately  
+   - All occurrences set to "Confirmed" status together
 
 **SHALL:**
 
-- Verify room is still available (in case another booking was approved first)  
-- If conflict detected, display error and prevent approval  
-- Require confirmation before finalizing approval
+- Display real-time availability while user selects date/time  
+- Show visual calendar with booked slots clearly marked  
+- Provide instant feedback on availability  
+- Log all booking confirmations in audit trail  
+- Include iCal attachment in confirmation email (optional)
 
-**Rejection Process (Reject):**
+**Administrator Oversight:**
 
-**MUST:**
+While bookings are auto-approved, administrators retain oversight capabilities:
 
-- Prompt for **rejection reason** (text field, **optional but recommended**)  
-- Change booking status from "Pending" to "Rejected"  
-- Update rejection timestamp  
-- Record rejector name (which Admin/Director rejected)  
-- **For recurring series**: Rejecting one occurrence rejects **entire series**  
-- Send email notification to user:  
-  - Subject: "Booking Request Rejected \- \[Room Name\] on \[Date\]"  
-  - Include rejection reason (if provided)  
-  - Suggest alternative action (contact admin, book different room/time)  
-- Log rejection action in audit trail with reason  
-- Display success message: "Booking rejected"  
-- Move to next pending booking in queue automatically
-
-**SHALL:**
-
-- Display confirmation dialog: "Are you sure you want to reject this booking?"  
-- Show rejection reason field (optional, pre-filled suggestions like "Room unavailable", "Insufficient notice", "Policy violation")  
-- Provide "Cancel" option to abort rejection  
-- Highlight rejection reason in booking history for future reference
-
-**Queue Management:**
-
-**MUST:**
-
-- Display count of pending approvals (e.g., "12 Pending Approvals")  
-- Sort by submission date (oldest first) by default to ensure no request is overlooked  
-- Allow filtering by:  
-  - Date range (bookings for specific dates)  
-  - Room  
-  - User/Department  
-  - Recurring vs. One-time  
-- Provide "Refresh" button to reload queue  
-- Auto-refresh queue every 60 seconds to show new submissions
-
-**SHALL:**
-
-- Display estimated processing time or average approval time (informational)  
-- Highlight urgent requests (e.g., booking date is approaching soon)  
-- Show recurring series count separately (1 series \= X occurrences)  
-- Provide timeline view showing when bookings are scheduled
-
-**SHOULD:**
-
-- Send digest email to Administrators daily summarizing pending approvals  
-- Escalation: Notify Directors if bookings pending \>48 hours  
-- Priority flagging: Allow users to mark urgent requests (optional feature)  
-- Delegation: Allow Administrators to assign specific approvals to others
-
-**MUST NOT:**
-
-- Support bulk approve/reject (each booking requires individual review)  
-- Auto-approve any bookings (all must be manually reviewed)
+- **View All Bookings**: See all confirmed bookings across the system  
+- **Edit Any Booking**: Modify booking details if needed (e.g., room change)  
+- **Cancel Any Booking**: Cancel bookings with reason (user notified)  
+- **Generate Reports**: Monitor booking patterns and utilization
 
 **Business Benefit:**  
-Systematic approval ensures responsible resource use, prevents unauthorized bookings, and maintains oversight. Single-series approval for recurring bookings balances efficiency with control.
+Auto-approval provides instant booking experience, reducing wait times and administrative burden. First-come-first-served basis ensures fair access to meeting rooms while real-time conflict prevention eliminates double-bookings.
 
 ---
 
@@ -2243,9 +2166,9 @@ This section documents the absence of advance booking restrictions for completen
 
 1. **Create Booking**  
      
-   - One-time: Fill form → Validate (any future date, 30min-8hr duration, single-day only, no conflicts) → Submit as Pending  
-   - Recurring: Add recurrence pattern (Daily/Weekly/Monthly, max 1 year) → Check all dates → Submit series as Pending  
-   - Notifications sent to user and admins  
+   - One-time: Fill form → Validate (any future date, 30min-8hr duration, single-day only, no conflicts) → **Confirmed immediately** (auto-approval)  
+   - Recurring: Add recurrence pattern (Daily/Weekly/Monthly, max 1 year) → Check all dates → **All occurrences Confirmed immediately**  
+   - Email confirmation sent to user  
    - Audit trail logged
 
    
@@ -2254,29 +2177,20 @@ This section documents the absence of advance booking restrictions for completen
      
    - Browse with filters/sorts  
    - View Details: Display full information  
-   - Edit (Pending only): Modify → Validate → Update (stays Pending)  
-   - Cancel (Pending/Confirmed): Reason → Confirm → Set Cancelled (entire series for recurring)
+   - Edit (Confirmed bookings): Modify → Validate → Update (stays Confirmed if no conflicts)  
+   - Cancel (Confirmed bookings): Reason → Confirm → Set Cancelled (entire series for recurring)
 
 **Administrator Workflows:**
 
-1. **Approval Queue**  
-     
-   - View Pending bookings (oldest first)  
-   - Review booking details and user history  
-   - **Approve**: Final availability check → Confirmed → Notify user (entire series confirmed)  
-   - **Reject**: Optional reason → Confirmed → Rejected → Notify user (entire series rejected)
-
-   
-
-2. **View All Bookings**  
+1. **View All Bookings**  
      
    - Filter by User, Room, Date, Status, Department  
-   - **Edit Any**: Modify → Validate → Update (status unchanged, even if Confirmed)  
-   - **Cancel Any**: Reason → Confirmed → Cancelled → Notify original booker
+   - **Edit Any**: Modify → Validate → Update (status unchanged)  
+   - **Cancel Any**: Reason → Cancelled → Notify original booker
 
    
 
-3. **Calendar View**  
+2. **Calendar View**  
      
    - Day/Week/Month views showing all bookings  
    - Click slot to create, click booking to view/edit  
@@ -2286,14 +2200,14 @@ This section documents the absence of advance booking restrictions for completen
 
 - Booking type (one-time vs. recurring)  
 - Validation (duration, conflicts, operating hours)  
-- Approval decision (approve vs. reject)  
+- First-come-first-served (availability check at submission time)  
 - Edit/cancel permissions (user role and booking status)  
 - Series management (entire series for recurring bookings)
 
 **Status Transitions:**
 
-- Created → **Pending** → (Approved) → **Confirmed** → (Completed after end time) → **Completed**  
-- Created → **Pending** → (Rejected) → **Rejected**  
+- Created → **Confirmed** (auto-approval if available) → (Completed after end time) → **Completed**  
+- Created → **Conflict** (if room not available) → User must select alternative  
 - Any → (Cancelled) → **Cancelled**
 
 ## 7\. Phase 4: Administrative Management
@@ -2690,10 +2604,7 @@ Organized into sections:
   - Each notification type has its own toggle:  
     - ✓ Account Creation (Welcome Email)  
     - ✓ Password Reset  
-    - ✓ Booking Created (to User)  
-    - ✓ Booking Created (to Approvers)  
-    - ✓ Booking Approved  
-    - ✓ Booking Rejected  
+    - ✓ Booking Confirmed (to User)  
     - ✓ Booking Cancelled  
     - ✓ Booking Reminder (24h before)  
     - ✓ Room Status Changed  
@@ -2777,10 +2688,9 @@ Manage the automated communication channel to keep users informed of booking sta
 - Each user can configure their own notification preferences via profile settings  
 - Allow opt-out of **non-critical** notifications:  
   - Booking Reminder (24h before)  
-  - New Pending Approval (for Admins \- digest mode)  
 - **Cannot opt-out** of critical notifications:  
   - Password Reset  
-  - Booking Status Change (Approved/Rejected/Cancelled)  
+  - Booking Confirmed/Cancelled  
   - Account Created/Deactivated  
 - Default: All notifications enabled
 
@@ -2788,10 +2698,7 @@ Manage the automated communication channel to keep users informed of booking sta
 
 - Account Creation (Welcome email with credentials)  
 - Password Reset Link  
-- Booking Created (confirmation to user)  
-- Booking Created (notification to approvers)  
-- Booking Approved (confirmation to user)  
-- Booking Rejected (notification with reason to user)  
+- Booking Confirmed (instant confirmation to user upon successful booking)  
 - Booking Cancelled (confirmation to user)  
 - Booking Cancelled (notification to admin if admin cancelled on behalf)  
 - Booking Reminder (24 hours before start time)  

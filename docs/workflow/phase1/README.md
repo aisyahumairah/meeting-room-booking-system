@@ -2,11 +2,12 @@
 
 **Reference Documents:**
 - [Requirements Document](../../requirement/requirements-document.md) - Section 4
-- [Development Workflow](../../requirement/workflow.md) - Phase 1 (Steps 1.1-1.7)
+- [Development Workflow](../../requirement/workflow.md) - Phase 1 (Steps 1.1-1.8)
 - [Mockup Reference](../../../mrbs-mock-up/docs/feature-dev-v2.md)
 
 **Created:** December 6, 2025  
-**Status:** Planning  
+**Last Updated:** December 8, 2025  
+**Status:** In Progress  
 **Laravel Version:** 12.x  
 **Database:** PostgreSQL (configured, empty)
 
@@ -24,17 +25,38 @@ Establish the foundational elements of the MRBS including:
 
 ---
 
+## ⚠️ Requirement Change Notice (December 8, 2025)
+
+### Auto-Approval First-Come-First-Served
+
+The booking approval workflow has been changed from **manual approval** to **auto-approval**:
+
+| Aspect | Before | After |
+|--------|--------|-------|
+| **Booking Status** | Created as "Pending" | Created as "Confirmed" (instant) |
+| **Approval Process** | Manual review by Admin/Director | None - first-come-first-served |
+| **Approval Queue** | Required | Not needed |
+| **Admin Dashboard** | Shows "Pending Approvals" widget | Widget removed |
+| **Sidebar Menu** | Includes "Approvals" link | Link removed |
+
+**Impact:** Step 1.8 has been added to refactor the existing implementation.
+
+**See:** [Step 1.8 - Auto-Approval Refactor](./step-1.8-auto-approval-refactor.md) for details.
+
+---
+
 ## Step Files
 
 | Step | File | Description | Priority | Status |
 |------|------|-------------|----------|--------|
-| 1.1 | [step-1.1-database-schema.md](./step-1.1-database-schema.md) | Database migrations, User model | CRITICAL | COMPLETED |
-| 1.2 | [step-1.2-authentication.md](./step-1.2-authentication.md) | Login, logout, password reset | CRITICAL | COMPLETED |
-| 1.3 | [step-1.3-authorization.md](./step-1.3-authorization.md) | Middleware, Gates, permissions | CRITICAL | COMPLETED |
-| 1.4 | [step-1.4-global-layout.md](./step-1.4-global-layout.md) | Blade layouts, sidebar, navbar | HIGH | COMPLETED |
-| 1.5 | [step-1.5-user-profile.md](./step-1.5-user-profile.md) | Profile view, edit, password change | MEDIUM | COMPLETED |
-| 1.6 | [step-1.6-dashboards.md](./step-1.6-dashboards.md) | User and Admin dashboards | HIGH | COMPLETED |
-| 1.7 | [step-1.7-audit-trail.md](./step-1.7-audit-trail.md) | Audit log table and service | HIGH | COMPLETED |
+| 1.1 | [step-1.1-database-schema.md](./step-1.1-database-schema.md) | Database migrations, User model | CRITICAL | ✅ COMPLETED |
+| 1.2 | [step-1.2-authentication.md](./step-1.2-authentication.md) | Login, logout, password reset | CRITICAL | ✅ COMPLETED |
+| 1.3 | [step-1.3-authorization.md](./step-1.3-authorization.md) | Middleware, Gates, permissions | CRITICAL | ✅ COMPLETED |
+| 1.4 | [step-1.4-global-layout.md](./step-1.4-global-layout.md) | Blade layouts, sidebar, navbar | HIGH | ✅ COMPLETED |
+| 1.5 | [step-1.5-user-profile.md](./step-1.5-user-profile.md) | Profile view, edit, password change | MEDIUM | ✅ COMPLETED |
+| 1.6 | [step-1.6-dashboards.md](./step-1.6-dashboards.md) | User and Admin dashboards | HIGH | ✅ COMPLETED |
+| 1.7 | [step-1.7-audit-trail.md](./step-1.7-audit-trail.md) | Audit log table and service | HIGH | ✅ COMPLETED |
+| 1.8 | [step-1.8-auto-approval-refactor.md](./step-1.8-auto-approval-refactor.md) | Remove approval UI elements | HIGH | ⬜ TODO |
 
 ---
 
@@ -50,6 +72,8 @@ Step 1.1 (Database Schema)
     └──► Step 1.3 (Authorization)
               │
               └──► Step 1.4 (Global Layout) ──► Step 1.6 (Dashboards)
+                                                      │
+                                                      └──► Step 1.8 (Auto-Approval Refactor)
 ```
 
 **Execution Order:**
@@ -60,6 +84,7 @@ Step 1.1 (Database Schema)
 5. Step 1.5 - User Profile (depends on 1.2, 1.4)
 6. Step 1.6 - Dashboards (depends on 1.4, 1.3)
 7. Step 1.7 - Audit Trail (depends on 1.2)
+8. **Step 1.8 - Auto-Approval Refactor (depends on 1.4, 1.6)** ← NEW
 
 ---
 
@@ -114,3 +139,13 @@ mrbs-mock-up/styles/index.css → public/assets/css/custom.css
 4. Check acceptance criteria before marking a step as complete
 
 **Start Here:** [Step 1.1 - Database Schema](./step-1.1-database-schema.md)
+
+---
+
+## Changelog
+
+| Date | Change |
+|------|--------|
+| Dec 6, 2025 | Initial Phase 1 plan created |
+| Dec 8, 2025 | Added Step 1.8 - Auto-Approval Refactor (requirement change from manual to auto-approval) |
+

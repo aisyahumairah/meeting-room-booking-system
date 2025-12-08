@@ -268,7 +268,6 @@ composer require barryvdh/laravel-dompdf
   └── Quick stats (total, this month, pending, cancelled)
 
 □ Admin Dashboard [§4.3.1] (Administrator, Director)
-  ├── Pending approvals widget with count badge
   ├── Today's bookings widget
   ├── Booking statistics (week/month with comparison)
   ├── Room utilization chart (top 5 rooms)
@@ -515,12 +514,11 @@ composer require barryvdh/laravel-dompdf
   │   ├── Within operating hours (8AM-6PM)
   │   ├── Same day only (no overnight)
   │   ├── Room is Active (not maintenance)
-  │   └── Room available (no Confirmed booking conflicts)
+  │   └── Room available (no Confirmed booking conflicts - first-come-first-served)
   ├── PIC: auto-set to logged-in user (Admin can select other user)
   ├── Generate reference number (BK-2025-XXXXX)
-  ├── Set status = "Pending"
-  ├── Send email to user (booking submitted)
-  └── Send email to Admins/Directors (new pending)
+  ├── Set status = "Confirmed" immediately (auto-approval)
+  └── Send email confirmation to user
 
 □ Real-time availability check [§6.2.1]
   ├── AJAX: GET /api/rooms/{room}/availability?date=&start=&end=
@@ -540,18 +538,18 @@ composer require barryvdh/laravel-dompdf
   └── Max 1 year from start date
 
 □ Recurring booking creation [§6.2.2]:
-  ├── Validate all occurrence dates for availability
+  ├── Validate all occurrence dates for availability (first-come-first-served)
   ├── If ANY conflict: show error with conflicting dates
   ├── Create series record with pattern
   ├── Create individual booking records linked by series_id
-  ├── Single notification for entire series
+  ├── Set all occurrences status = "Confirmed" immediately (auto-approval)
+  ├── Single confirmation email for entire series
   └── Display summary before confirmation (total occurrences)
 
 □ Series management [§6.2.2]:
   ├── View: group occurrences together in My Bookings
   ├── Edit: changes apply to ENTIRE series (re-check availability)
-  ├── Cancel: cancels ENTIRE series (cannot cancel individual)
-  └── Approval: approve/reject applies to ENTIRE series
+  └── Cancel: cancels ENTIRE series (cannot cancel individual)
 ```
 
 ### Step 3.4: My Bookings (User)
@@ -636,7 +634,7 @@ composer require barryvdh/laravel-dompdf
   ├── Filters: user, room, date range, status, department, booking type (one-time/recurring)
   ├── Sort: date, user, room, status, submission date
   ├── Pagination: 50 per page
-  ├── Summary stats: total pending, confirmed, cancelled, completed
+  ├── Summary stats: total confirmed, cancelled, completed
   └── Export filtered list to CSV/Excel/PDF
 
 □ Admin Edit Any Booking [§6.3.2]
@@ -652,46 +650,31 @@ composer require barryvdh/laravel-dompdf
   └── bookings-all.html → resources/views/admin/bookings/index.blade.php
 ```
 
-### Step 3.8: Approval Workflow
+### Step 3.8: Auto-Approval System (First-Come-First-Served)
 **Priority: CRITICAL** | **Ref:** §6.4.2
 
 ```
-□ Approval Queue [§6.4.2]
-  ├── GET /admin/approvals
-  ├── Show ONLY Pending bookings
-  ├── Sort by submission date (oldest first) - ensure timely processing
-  ├── Two-panel: left = list, right = selected booking details
-  ├── Display pending count badge in navigation
-  └── Auto-refresh every 60 seconds
+□ Auto-Approval Logic [§6.4.2]
+  ├── Real-time availability check at booking submission
+  ├── Database-level locking to prevent race conditions
+  ├── First valid submission for a time slot wins
+  ├── Set status = "Confirmed" immediately (no Pending state)
+  ├── If conflict detected: display error with conflict details
+  └── Suggest alternative times/rooms if slot unavailable
 
-□ Booking detail for review [§6.4.2]:
-  ├── Reference, submission timestamp ("Submitted 2 hours ago")
-  ├── User name, department
-  ├── Room, date, time, duration
-  ├── Purpose (full text)
-  ├── Recurring series info (if applicable)
-  └── User booking history summary (total, cancellation rate)
+□ Conflict Prevention [§6.4.2]
+  ├── Query existing Confirmed bookings for overlapping time slots
+  ├── Check room maintenance schedules
+  ├── Atomic transaction for booking creation
+  └── Rollback if conflict detected mid-transaction
 
-□ Approve Booking [§6.4.2]
-  ├── POST /admin/bookings/{booking}/approve
-  ├── MUST view details first (no one-click from list)
-  ├── Final availability check (prevent conflicts)
-  ├── Set status = "Confirmed"
-  ├── Record approved_by, approved_at
-  ├── For series: approve ALL occurrences
-  ├── Send approval email with iCal attachment (optional)
-  └── Auto-move to next pending booking
+□ Admin Oversight [§6.4.2]
+  ├── View All Bookings: see all confirmed bookings
+  ├── Edit Any Booking: modify details if needed
+  ├── Cancel Any Booking: cancel with reason (user notified)
+  └── Generate Reports: monitor patterns and utilization
 
-□ Reject Booking [§6.4.2]
-  ├── POST /admin/bookings/{booking}/reject
-  ├── Prompt for rejection reason (optional but recommended)
-  ├── Set status = "Rejected"
-  ├── Record rejected_by, rejected_at, rejection_reason
-  ├── For series: reject ALL occurrences
-  └── Send rejection email with reason
-
-□ Mockup page:
-  └── bookings-approval.html → resources/views/admin/bookings/approvals.blade.php
+□ Note: No approval queue mockup needed - bookings are auto-confirmed
 ```
 
 ### Step 3.9: Booking Calendar View

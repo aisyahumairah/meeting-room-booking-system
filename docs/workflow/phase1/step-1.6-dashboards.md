@@ -58,11 +58,9 @@ class DashboardController extends Controller
     public function adminDashboard()
     {
         // Placeholder data - will be populated in Phase 3
-        $pendingApprovals = collect();
         $todaysBookings = collect();
         
         $stats = [
-            'pending_count' => 0,
             'today_count' => 0,
             'week_total' => 0,
             'month_total' => 0,
@@ -71,7 +69,7 @@ class DashboardController extends Controller
         
         $topRooms = collect(); // For utilization chart
         
-        return view('dashboard.admin', compact('pendingApprovals', 'todaysBookings', 'stats', 'topRooms'));
+        return view('dashboard.admin', compact('todaysBookings', 'stats', 'topRooms'));
     }
 }
 ```
@@ -188,29 +186,7 @@ Widgets:
 
 Widgets:
 
-**1. Pending Approvals Widget**
-```php
-<div class="card bg-warning text-white">
-    <div class="card-body">
-        <div class="d-flex justify-content-between">
-            <div>
-                <h3 class="mb-0">{{ $stats['pending_count'] }}</h3>
-                <span>Pending Approvals</span>
-            </div>
-            <div class="avatar">
-                <span class="avatar-initial rounded bg-white text-warning">
-                    <i class="bx bx-time-five"></i>
-                </span>
-            </div>
-        </div>
-        <a href="{{ route('admin.approvals') }}" class="text-white stretched-link">
-            <small>View All <i class="bx bx-chevron-right"></i></small>
-        </a>
-    </div>
-</div>
-```
-
-**2. Today's Bookings Widget**
+**1. Today's Bookings Widget**
 ```php
 <div class="card">
     <div class="card-header d-flex justify-content-between">
@@ -246,15 +222,12 @@ Widgets:
 </div>
 ```
 
-**5. Quick Actions Panel**
+**4. Quick Actions Panel**
 ```php
 <div class="card">
     <div class="card-header">Quick Actions</div>
     <div class="card-body">
-        <a href="{{ route('admin.approvals') }}" class="btn btn-primary mb-2 w-100">
-            <i class="bx bx-check-circle me-2"></i> Approve Bookings
-        </a>
-        <a href="{{ route('admin.bookings') }}" class="btn btn-outline-primary mb-2 w-100">
+        <a href="{{ route('admin.bookings') }}" class="btn btn-primary mb-2 w-100">
             <i class="bx bx-list-ul me-2"></i> View All Bookings
         </a>
         <a href="{{ route('admin.reports') }}" class="btn btn-outline-primary mb-2 w-100">

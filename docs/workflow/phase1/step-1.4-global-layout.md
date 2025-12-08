@@ -66,7 +66,6 @@ Menu items with role-based visibility:
 | Calendar | bx-calendar | bookings.calendar | All |
 | --- Separator --- | | | Admin/Director |
 | All Bookings | bx-list-ul | admin.bookings | Admin, Director |
-| Approvals | bx-check-circle | admin.approvals | Admin, Director |
 | Reports | bx-chart | admin.reports | Admin, Director, SysAdmin |
 | --- Separator --- | | | Director/SysAdmin |
 | User Management | bx-user | admin.users | Director, SysAdmin |
@@ -87,12 +86,9 @@ Menu items with role-based visibility:
     <span>Administration</span>
 </li>
 <li class="menu-item">
-    <a href="{{ route('admin.approvals') }}" class="menu-link">
-        <i class="menu-icon bx bx-check-circle"></i>
-        <div>Approvals</div>
-        @if($pendingCount ?? 0 > 0)
-            <span class="badge bg-danger">{{ $pendingCount }}</span>
-        @endif
+    <a href="{{ route('admin.bookings') }}" class="menu-link">
+        <i class="menu-icon bx bx-list-ul"></i>
+        <div>All Bookings</div>
     </a>
 </li>
 @endcan
@@ -216,24 +212,21 @@ Include in app layout: `@include('components.toast')`
 
 ---
 
-## Task 1.4.7: Share Pending Count with Views
+## Task 1.4.7: Register View Composer (Optional)
 
 **File:** `app/Providers/AppServiceProvider.php`
+
+Note: With auto-approval system, no pending count badge is needed. This task can be skipped or used for other sidebar data sharing in the future.
 
 ```php
 use Illuminate\Support\Facades\View;
 
 public function boot(): void
 {
-    // Share pending approvals count for sidebar badge
-    View::composer('layouts.partials.sidebar', function ($view) {
-        $pendingCount = 0;
-        if (auth()->check() && auth()->user()->canManageBookings()) {
-            // Will be implemented in Phase 3
-            // $pendingCount = Booking::where('status', 'pending')->count();
-        }
-        $view->with('pendingCount', $pendingCount);
-    });
+    // Optional: Share data with sidebar if needed in future
+    // View::composer('layouts.partials.sidebar', function ($view) {
+    //     // Add any sidebar-specific data here
+    // });
 }
 ```
 
