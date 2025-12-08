@@ -40,11 +40,9 @@ class DashboardController extends Controller
     public function adminDashboard()
     {
         // Placeholder data - will be populated in Phase 3
-        $pendingApprovals = collect();
         $todaysBookings = collect();
 
         $stats = [
-            'pending_count' => 0,
             'today_count' => 0,
             'week_total' => 0,
             'month_total' => 0,
@@ -53,6 +51,6 @@ class DashboardController extends Controller
 
         $topRooms = collect(); // For utilization chart
 
-        return view('dashboard.admin', compact('pendingApprovals', 'todaysBookings', 'stats', 'topRooms'));
+        return view('dashboard.admin', compact('todaysBookings', 'stats', 'topRooms'));
     }
 }

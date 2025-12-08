@@ -27,18 +27,12 @@ class AppServiceProvider extends ServiceProvider
 
     /**
      * Register view composers for shared data.
+     * Note: Pending approvals view composer removed as part of auto-approval refactor (Step 1.8)
      */
     protected function registerViewComposers(): void
     {
-        // Share pending approvals count for sidebar badge
-        View::composer('layouts.partials.sidebar', function ($view) {
-            $pendingCount = 0;
-            if (auth()->check() && auth()->user()->canManageBookings()) {
-                // Will be implemented in Phase 3 when Booking model exists
-                // $pendingCount = \App\Models\Booking::where('status', 'pending')->count();
-            }
-            $view->with('pendingCount', $pendingCount);
-        });
+        // No view composers needed at this time
+        // Future view composers can be added here as needed
     }
 
     /**

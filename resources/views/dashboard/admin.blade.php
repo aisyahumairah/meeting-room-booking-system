@@ -12,11 +12,11 @@
                         <div class="card-body">
                             <h5 class="card-title text-primary">Welcome back, {{ auth()->user()->name }}! 🎉</h5>
                             <p class="mb-4">
-                                You have <span class="fw-bold">{{ $stats['pending_count'] }} pending
-                                    approval{{ $stats['pending_count'] !== 1 ? 's' : '' }}</span> today. Check your approval
-                                queue.
+                                You have <span class="fw-bold">{{ $stats['today_count'] }}
+                                    booking{{ $stats['today_count'] !== 1 ? 's' : '' }}</span> scheduled for today.
+                                Check the calendar for more details.
                             </p>
-                            <a href="#" class="btn btn-sm btn-outline-primary">View Approvals</a>
+                            <a href="#" class="btn btn-sm btn-outline-primary">View Calendar</a>
                         </div>
                     </div>
                     <div class="col-sm-5 text-center text-sm-left">
@@ -53,13 +53,14 @@
                         <div class="card-body">
                             <div class="card-title d-flex align-items-start justify-content-between">
                                 <div class="avatar flex-shrink-0">
-                                    <span class="avatar-initial rounded bg-label-warning"><i
-                                            class="bx bx-time-five"></i></span>
+                                    <span class="avatar-initial rounded bg-label-info"><i
+                                            class="bx bx-calendar-week"></i></span>
                                 </div>
                             </div>
-                            <span class="fw-semibold d-block mb-1">Pending</span>
-                            <h3 class="card-title mb-2">{{ $stats['pending_count'] }}</h3>
-                            <small class="text-danger fw-semibold"><i class="bx bx-down-arrow-alt"></i> -1</small>
+                            <span class="fw-semibold d-block mb-1">This Week</span>
+                            <h3 class="card-title mb-2">{{ $stats['week_total'] }}</h3>
+                            <small class="text-success fw-semibold"><i class="bx bx-up-arrow-alt"></i>
+                                {{ $stats['week_change'] }}</small>
                         </div>
                     </div>
                 </div>
@@ -158,65 +159,6 @@
         </div>
     </div>
 
-    <!-- Pending Approvals Widget -->
-    <div class="row">
-        <div class="col-lg-4 mb-4">
-            <div class="card bg-warning text-white h-100">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-start">
-                        <div>
-                            <h3 class="mb-0 text-white">{{ $stats['pending_count'] }}</h3>
-                            <span>Pending Approvals</span>
-                        </div>
-                        <div class="avatar">
-                            <span class="avatar-initial rounded bg-white text-warning">
-                                <i class="bx bx-time-five"></i>
-                            </span>
-                        </div>
-                    </div>
-                    <a href="#" class="text-white stretched-link mt-3 d-block">
-                        <small>View All <i class="bx bx-chevron-right"></i></small>
-                    </a>
-                </div>
-            </div>
-        </div>
-
-        <!-- Pending Approvals List -->
-        <div class="col-lg-8 mb-4">
-            <div class="card h-100">
-                <div class="card-header d-flex justify-content-between align-items-center">
-                    <h5 class="card-title mb-0">Approval Queue</h5>
-                    <span class="badge bg-warning">{{ $pendingApprovals->count() }}</span>
-                </div>
-                <div class="card-body">
-                    @forelse($pendingApprovals as $approval)
-                        <div class="d-flex mb-3 pb-1 border-bottom">
-                            <div class="flex-grow-1">
-                                <h6 class="mb-1">{{ $approval->room->name ?? 'Room' }}</h6>
-                                <small class="text-muted">
-                                    {{ $approval->user->name ?? 'User' }} •
-                                    {{ $approval->booking_date->format('M j, Y') }} •
-                                    {{ $approval->start_time }} - {{ $approval->end_time }}
-                                </small>
-                            </div>
-                            <div class="d-flex gap-2">
-                                <button class="btn btn-sm btn-success"><i class="bx bx-check"></i></button>
-                                <button class="btn btn-sm btn-danger"><i class="bx bx-x"></i></button>
-                            </div>
-                        </div>
-                    @empty
-                        <div class="d-flex justify-content-center align-items-center" style="min-height: 100px;">
-                            <div class="text-center text-muted">
-                                <i class="bx bx-check-circle bx-lg mb-2"></i>
-                                <p class="mb-0">No pending approvals</p>
-                            </div>
-                        </div>
-                    @endforelse
-                </div>
-            </div>
-        </div>
-    </div>
-
     <!-- Quick Actions Panel -->
     <div class="row">
         <div class="col-12">
@@ -226,23 +168,18 @@
                 </div>
                 <div class="card-body">
                     <div class="row g-3">
-                        <div class="col-md-3 col-sm-6">
+                        <div class="col-md-4 col-sm-6">
                             <a href="#" class="btn btn-primary w-100">
-                                <i class="bx bx-check-circle me-2"></i> Approve Bookings
-                            </a>
-                        </div>
-                        <div class="col-md-3 col-sm-6">
-                            <a href="#" class="btn btn-outline-primary w-100">
                                 <i class="bx bx-list-ul me-2"></i> View All Bookings
                             </a>
                         </div>
-                        <div class="col-md-3 col-sm-6">
+                        <div class="col-md-4 col-sm-6">
                             <a href="#" class="btn btn-outline-primary w-100">
                                 <i class="bx bx-chart me-2"></i> Generate Report
                             </a>
                         </div>
                         @can('manage-rooms')
-                            <div class="col-md-3 col-sm-6">
+                            <div class="col-md-4 col-sm-6">
                                 <a href="#" class="btn btn-outline-primary w-100">
                                     <i class="bx bx-plus me-2"></i> Add New Room
                                 </a>

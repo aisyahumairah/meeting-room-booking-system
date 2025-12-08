@@ -64,10 +64,8 @@ Route::middleware(['auth', 'active', 'must.change.password', 'role:administrator
             return response()->json(['message' => 'Room management placeholder']);
         })->name('rooms.index');
 
-        // Booking approvals (to be implemented in Phase 2)
-        // Route::get('/bookings/approvals', [BookingApprovalController::class, 'index'])->name('bookings.approvals');
-        // Route::post('/bookings/{booking}/approve', [BookingApprovalController::class, 'approve'])->name('bookings.approve');
-        // Route::post('/bookings/{booking}/reject', [BookingApprovalController::class, 'reject'])->name('bookings.reject');
+        // Booking management placeholder (to be implemented in Phase 2)
+        // Route::get('/bookings', [BookingController::class, 'index'])->name('bookings.index');
 
         // Reports (to be implemented in Phase 4)
         // Route::get('/reports', [ReportController::class, 'index'])->name('reports.index');

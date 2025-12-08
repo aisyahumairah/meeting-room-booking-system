@@ -54,9 +54,9 @@ Find and remove this section:
 
 ### Verification:
 
-- [ ] "Approvals" menu item no longer appears in sidebar
-- [ ] No JavaScript errors in console
-- [ ] Sidebar still renders correctly for all roles
+- [x] "Approvals" menu item no longer appears in sidebar
+- [x] No JavaScript errors in console
+- [x] Sidebar still renders correctly for all roles
 
 ---
 
@@ -162,10 +162,10 @@ Also, update the Quick Actions panel to remove "Approve Bookings" button:
 
 ### Verification:
 
-- [ ] "Pending Approvals" widget no longer appears
-- [ ] "Approve Bookings" button no longer appears in Quick Actions
-- [ ] Dashboard layout remains balanced (adjust grid columns if needed)
-- [ ] No undefined variable errors
+- [x] "Pending Approvals" widget no longer appears
+- [x] "Approve Bookings" button no longer appears in Quick Actions
+- [x] Dashboard layout remains balanced (adjust grid columns if needed)
+- [x] No undefined variable errors
 
 ---
 

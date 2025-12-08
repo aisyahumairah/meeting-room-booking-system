@@ -108,15 +108,6 @@
                     <div class="text-truncate">All Bookings</div>
                 </a>
             </li>
-            <li class="menu-item {{ request()->routeIs('admin.approvals.*') ? 'active' : '' }}">
-                <a href="#" class="menu-link">
-                    <i class="menu-icon tf-icons bx bx-check-shield"></i>
-                    <div class="text-truncate">Approvals</div>
-                    @if (($pendingCount ?? 0) > 0)
-                        <span class="badge rounded-pill bg-danger ms-auto">{{ $pendingCount }}</span>
-                    @endif
-                </a>
-            </li>
         @endcan
 
         {{-- Reports Section --}}

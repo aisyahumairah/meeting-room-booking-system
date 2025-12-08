@@ -185,7 +185,7 @@ class DashboardTest extends TestCase
 
         $response->assertStatus(200);
         $response->assertSee('Welcome back');
-        $response->assertSee('Pending Approvals');
+        $response->assertSee('This Week');
         $response->assertSee('Today');
         $response->assertSee('Quick Actions');
         $response->assertSee('Room Utilization');
