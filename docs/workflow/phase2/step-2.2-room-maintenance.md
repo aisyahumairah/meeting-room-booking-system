@@ -102,11 +102,11 @@ Test cases:
 
 ## Acceptance Criteria
 
-- [ ] `room_maintenance_schedules` table exists
-- [ ] RoomMaintenanceSchedule model has relationships and scopes
-- [ ] UpdateRoomMaintenanceStatus command runs correctly
-- [ ] Scheduled command registered (every 5 minutes)
-- [ ] `php artisan test --filter=RoomMaintenanceTest` passes
+- [x] `room_maintenance_schedules` table exists
+- [x] RoomMaintenanceSchedule model has relationships and scopes
+- [x] UpdateRoomMaintenanceStatus command runs correctly
+- [x] Scheduled command registered (every 5 minutes)
+- [x] `php artisan test --filter=RoomMaintenanceTest` passes
 
 ---
 
