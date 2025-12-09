@@ -83,6 +83,16 @@
             </a>
         </li>
 
+        {{-- Admin Room Management --}}
+        @can('manage-rooms')
+            <li class="menu-item {{ request()->routeIs('admin.rooms.*') ? 'active' : '' }}">
+                <a href="{{ route('admin.rooms.index') }}" class="menu-link">
+                    <i class="menu-icon tf-icons bx bx-cog"></i>
+                    <div class="text-truncate">Manage Rooms</div>
+                </a>
+            </li>
+        @endcan
+
         {{-- Bookings Section --}}
         <li class="menu-header small text-uppercase">
             <span class="menu-header-text">Bookings</span>

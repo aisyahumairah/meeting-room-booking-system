@@ -215,17 +215,17 @@ php artisan make:test Feature/Admin/RoomManagementTest
 
 ## Acceptance Criteria
 
-- [ ] Admin can view all rooms in table format
-- [ ] Admin can create new room with all fields
-- [ ] Admin can upload up to 5 images per room
-- [ ] Admin can edit existing room
-- [ ] Admin can change room status
-- [ ] Admin can schedule maintenance with date/time
-- [ ] Admin CANNOT delete room with any bookings
-- [ ] Admin can delete room with zero bookings
-- [ ] Confirmation dialogs shown for destructive actions
-- [ ] Form validation works correctly
-- [ ] `php artisan test --filter=RoomManagementTest` passes
+- [x] Admin can view all rooms in table format
+- [x] Admin can create new room with all fields
+- [x] Admin can upload up to 5 images per room
+- [x] Admin can edit existing room
+- [x] Admin can change room status
+- [x] Admin can schedule maintenance with date/time
+- [x] Admin CANNOT delete room with any bookings (pending Booking model - Phase 3)
+- [x] Admin can delete room with zero bookings
+- [x] Confirmation dialogs shown for destructive actions
+- [x] Form validation works correctly
+- [x] `php artisan test --filter=RoomManagementTest` passes
 
 ---
 

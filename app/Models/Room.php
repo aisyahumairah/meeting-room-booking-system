@@ -195,6 +195,10 @@ class Room extends Model
      */
     public function hasBookings(): bool
     {
+        // Check if Booking model exists (Phase 3)
+        if (!class_exists(\App\Models\Booking::class)) {
+            return false;
+        }
         return $this->bookings()->exists();
     }
 
@@ -203,6 +207,10 @@ class Room extends Model
      */
     public function getBookingCount(): int
     {
+        // Check if Booking model exists (Phase 3)
+        if (!class_exists(\App\Models\Booking::class)) {
+            return 0;
+        }
         return $this->bookings()->count();
     }
 

@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\RoomController as AdminRoomController;
 use App\Http\Controllers\Auth\ChangePasswordController;
 use App\Http\Controllers\Auth\ForgotPasswordController;
 use App\Http\Controllers\Auth\LoginController;
@@ -59,12 +60,13 @@ Route::middleware(['auth', 'active', 'must.change.password', 'role:administrator
     ->prefix('admin')
     ->name('admin.')
     ->group(function () {
-        // Room management placeholder (to be implemented in Phase 2)
-        Route::get('/rooms', function () {
-            return response()->json(['message' => 'Room management placeholder']);
-        })->name('rooms.index');
+        // Room management
+        Route::resource('rooms', AdminRoomController::class);
+        Route::put('rooms/{room}/status', [AdminRoomController::class, 'updateStatus'])->name('rooms.status');
+        Route::post('rooms/{room}/images/{image}/primary', [AdminRoomController::class, 'setPrimaryImage'])->name('rooms.images.primary');
+        Route::delete('rooms/{room}/images/{image}', [AdminRoomController::class, 'deleteImage'])->name('rooms.images.destroy');
 
-        // Booking management placeholder (to be implemented in Phase 2)
+        // Booking management placeholder (to be implemented in Phase 3)
         // Route::get('/bookings', [BookingController::class, 'index'])->name('bookings.index');
 
         // Reports (to be implemented in Phase 4)

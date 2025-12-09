@@ -41,7 +41,7 @@ Enable users to discover and view meeting rooms, and provide administrators with
 |------|------|-------------|----------|--------|
 | 2.1 | [step-2.1-database-schema.md](./step-2.1-database-schema.md) | Rooms, amenities, images tables | CRITICAL | COMPLETED |
 | 2.2 | [step-2.2-room-maintenance.md](./step-2.2-room-maintenance.md) | Maintenance schedules, auto-status | MEDIUM | COMPLETED |
-| 2.3 | [step-2.3-room-crud.md](./step-2.3-room-crud.md) | Admin room management (add/edit/delete) | CRITICAL | TODO |
+| 2.3 | [step-2.3-room-crud.md](./step-2.3-room-crud.md) | Admin room management (add/edit/delete) | CRITICAL | COMPLETED |
 | 2.4 | [step-2.4-room-browsing.md](./step-2.4-room-browsing.md) | User room grid, detail page, calendar | HIGH | TODO |
 | 2.5 | [step-2.5-room-search-filtering.md](./step-2.5-room-search-filtering.md) | Search, filters, availability check | HIGH | TODO |
 | 2.6 | [step-2.6-audit-logging.md](./step-2.6-audit-logging.md) | Room event logging | MEDIUM | TODO |
