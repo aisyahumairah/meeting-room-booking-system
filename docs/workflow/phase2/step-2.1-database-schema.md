@@ -818,17 +818,17 @@ php artisan test --filter=RoomTest
 
 ## Acceptance Criteria
 
-- [ ] `rooms`, `amenities`, `amenity_room`, `room_images` tables exist
-- [ ] Room model has relationships: amenities(), images(), maintenanceSchedules(), bookings()
-- [ ] Room model has scopes: active(), available(), byCapacity(), byStatus(), withAmenities()
-- [ ] Room model has accessors: primary_image, status_badge, status_display
-- [ ] Room model has methods: isAvailable(), hasBookings(), canBeDeleted()
-- [ ] Amenity model has relationship to rooms
-- [ ] RoomImage model has URL accessor and deleteFile() method
-- [ ] AmenitySeeder creates 8 default amenities with icons
-- [ ] RoomSeeder creates 6 sample rooms with amenities
-- [ ] Room placeholder image exists
-- [ ] `php artisan test --filter=RoomTest` passes
+- [x] `rooms`, `amenities`, `amenity_room`, `room_images` tables exist
+- [x] Room model has relationships: amenities(), images(), maintenanceSchedules(), bookings()
+- [x] Room model has scopes: active(), available(), byCapacity(), byStatus(), withAmenities()
+- [x] Room model has accessors: primary_image, status_badge, status_display
+- [x] Room model has methods: isAvailable(), hasBookings(), canBeDeleted()
+- [x] Amenity model has relationship to rooms
+- [x] RoomImage model has URL accessor and deleteFile() method
+- [x] AmenitySeeder creates 8 default amenities with icons
+- [x] RoomSeeder creates 6 sample rooms with amenities
+- [x] Room placeholder image exists
+- [x] `php artisan test --filter=RoomTest` passes (16 passed, 2 skipped pending Booking model)
 
 ---
 
