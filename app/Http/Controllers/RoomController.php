@@ -2,24 +2,66 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Amenity;
 use App\Models\Room;
 use Illuminate\Http\Request;
 
 class RoomController extends Controller
 {
     /**
-     * Display a grid view of active rooms.
+     * Display a grid view of active rooms with search and filtering.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $rooms = Room::with(['amenities', 'images'])
+        $query = Room::with(['amenities', 'images'])
             ->active()
-            ->orderBy('name')
-            ->paginate(12);
+            ->orderBy('name');
 
-        $totalRooms = Room::active()->count();
+        // Search by name (case-insensitive)
+        if ($request->filled('search')) {
+            $query->where('name', 'ilike', '%' . $request->search . '%');
+        }
 
-        return view('rooms.index', compact('rooms', 'totalRooms'));
+        // Filter by minimum capacity
+        if ($request->filled('capacity')) {
+            $query->byCapacity((int) $request->capacity);
+        }
+
+        // Filter by amenities (AND logic - must have ALL selected)
+        if ($request->filled('amenities')) {
+            $amenityIds = is_array($request->amenities)
+                ? $request->amenities
+                : explode(',', $request->amenities);
+            $query->withAmenities($amenityIds);
+        }
+
+        // Filter by date/time availability
+        if ($request->filled(['date', 'start_time', 'end_time'])) {
+            $date = $request->date;
+            $startTime = $request->start_time;
+            $endTime = $request->end_time;
+
+            // Exclude rooms with conflicting confirmed bookings (if Booking model exists)
+            if (class_exists(\App\Models\Booking::class)) {
+                $query->whereDoesntHave('bookings', function ($q) use ($date, $startTime, $endTime) {
+                    $q->where('booking_date', $date)
+                        ->where('status', 'confirmed')
+                        ->where('start_time', '<', $endTime)
+                        ->where('end_time', '>', $startTime);
+                });
+            }
+
+            // Exclude rooms with conflicting maintenance schedules
+            $query->whereDoesntHave('maintenanceSchedules', function ($q) use ($date, $startTime, $endTime) {
+                $q->where('start_datetime', '<', $date . ' ' . $endTime)
+                    ->where('end_datetime', '>', $date . ' ' . $startTime);
+            });
+        }
+
+        $rooms = $query->paginate(12)->withQueryString();
+        $amenities = Amenity::orderBy('name')->get();
+
+        return view('rooms.index', compact('rooms', 'amenities'));
     }
 
     /**

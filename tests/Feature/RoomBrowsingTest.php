@@ -39,7 +39,8 @@ class RoomBrowsingTest extends TestCase
         $response->assertStatus(200);
         $response->assertViewIs('rooms.index');
         $response->assertViewHas('rooms');
-        $response->assertViewHas('totalRooms', 3);
+        $response->assertViewHas('amenities');
+        $this->assertEquals(3, $response->viewData('rooms')->total());
     }
 
     public function test_user_only_sees_active_rooms(): void
@@ -55,7 +56,7 @@ class RoomBrowsingTest extends TestCase
         // Active rooms show in grid
         $response->assertSee('ActiveTestRoom');
         // Total count only includes active rooms
-        $response->assertViewHas('totalRooms', 1);
+        $this->assertEquals(1, $response->viewData('rooms')->total());
     }
 
     public function test_room_cards_show_required_information(): void

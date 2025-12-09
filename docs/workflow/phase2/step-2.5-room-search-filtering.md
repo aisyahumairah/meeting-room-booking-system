@@ -320,17 +320,17 @@ php artisan make:test Feature/RoomFilteringTest
 
 ## Acceptance Criteria
 
-- [ ] Search by room name works (case-insensitive)
-- [ ] Capacity filter shows rooms >= selected value
-- [ ] Amenity filter uses AND logic (all selected must match)
-- [ ] Date/time filter excludes rooms with conflicting bookings
-- [ ] Date/time filter excludes rooms under maintenance
-- [ ] Applied filters shown as removable badges
-- [ ] Result count updates with filters
-- [ ] "Clear All Filters" resets the page
-- [ ] Empty state shown when no results
-- [ ] Filters preserved on pagination
-- [ ] `php artisan test --filter=RoomFilteringTest` passes
+- [x] Search by room name works (case-insensitive)
+- [x] Capacity filter shows rooms >= selected value
+- [x] Amenity filter uses AND logic (all selected must match)
+- [x] Date/time filter excludes rooms with conflicting bookings
+- [x] Date/time filter excludes rooms under maintenance
+- [x] Applied filters shown as removable badges
+- [x] Result count updates with filters
+- [x] "Clear All Filters" resets the page
+- [x] Empty state shown when no results
+- [x] Filters preserved on pagination
+- [x] `php artisan test --filter=RoomFilteringTest` passes
 
 ---
 
