@@ -1,0 +1,153 @@
+/* Room Card Styles */
+.room-card {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    border: none;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+}
+
+.room-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+.room-card .card-img-top,
+.room-card-image {
+    height: 180px;
+    object-fit: cover;
+}
+
+.room-card .card-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+
+.room-amenities .badge {
+    font-size: 0.9rem;
+    padding: 0.4rem;
+}
+
+.room-amenities i {
+    font-size: 1.1rem;
+}
+
+/* Room Gallery Styles */
+.room-gallery-main img {
+    transition: opacity 0.3s ease;
+}
+
+.room-gallery-main img:hover {
+    opacity: 0.9;
+}
+
+.room-gallery-thumbs {
+    scrollbar-width: thin;
+    scrollbar-color: #697a8d transparent;
+}
+
+.room-gallery-thumbs::-webkit-scrollbar {
+    height: 4px;
+}
+
+.room-gallery-thumbs::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.room-gallery-thumbs::-webkit-scrollbar-thumb {
+    background: #697a8d;
+    border-radius: 4px;
+}
+
+.room-thumb {
+    border: 2px solid transparent;
+    transition: all 0.2s ease;
+    flex-shrink: 0;
+}
+
+.room-thumb:hover {
+    border-color: #696cff;
+}
+
+.room-thumb.active {
+    border-color: #696cff;
+    box-shadow: 0 0 0 2px rgba(105, 108, 255, 0.2);
+}
+
+/* FullCalendar Customizations */
+#availability-calendar {
+    min-height: 400px;
+}
+
+.fc .fc-toolbar-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+
+.fc .fc-button-primary {
+    background-color: #696cff;
+    border-color: #696cff;
+}
+
+.fc .fc-button-primary:hover {
+    background-color: #5f61e6;
+    border-color: #5f61e6;
+}
+
+.fc .fc-button-primary:not(:disabled).fc-button-active,
+.fc .fc-button-primary:not(:disabled):active {
+    background-color: #5f61e6;
+    border-color: #5f61e6;
+}
+
+.fc .fc-timegrid-slot {
+    height: 2.5em;
+}
+
+.fc .fc-event {
+    border-radius: 4px;
+    font-size: 0.8rem;
+}
+
+.fc .fc-today-button {
+    text-transform: capitalize;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .room-card .card-img-top,
+    .room-card-image {
+        height: 150px;
+    }
+
+    .room-gallery-main img {
+        max-height: 250px !important;
+    }
+
+    #availability-calendar {
+        min-height: 300px;
+    }
+
+    .fc .fc-toolbar {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .fc .fc-toolbar-title {
+        font-size: 1rem;
+    }
+}
+
+/* Animation for status badges */
+.room-card .badge {
+    animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: scale(0.9);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}

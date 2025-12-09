@@ -299,17 +299,17 @@ php artisan make:test Feature/RoomBrowsingTest
 
 ## Acceptance Criteria
 
-- [ ] Room grid displays all active rooms
-- [ ] Room cards show image, name, capacity, floor, amenities, status
-- [ ] Room detail page shows full information
-- [ ] Photo gallery with lightbox works
-- [ ] FullCalendar displays room bookings
-- [ ] Calendar shows 8AM-6PM, Mon-Fri
-- [ ] Maintenance periods shown in red background
-- [ ] "Book This Room" button links to booking form
-- [ ] Button disabled if room under maintenance
-- [ ] Responsive layout works on mobile
-- [ ] `php artisan test --filter=RoomBrowsingTest` passes
+- [x] Room grid displays all active rooms
+- [x] Room cards show image, name, capacity, floor, amenities, status
+- [x] Room detail page shows full information
+- [x] Photo gallery with lightbox works
+- [x] FullCalendar displays room bookings
+- [x] Calendar shows 8AM-6PM, Mon-Fri
+- [x] Maintenance periods shown in red background
+- [x] "Book This Room" button links to booking form
+- [x] Button disabled if room under maintenance
+- [x] Responsive layout works on mobile
+- [x] `php artisan test --filter=RoomBrowsingTest` passes
 
 ---
 

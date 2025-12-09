@@ -70,16 +70,11 @@
         <li class="menu-header small text-uppercase">
             <span class="menu-header-text">Meeting Rooms</span>
         </li>
-        <li class="menu-item {{ request()->routeIs('rooms.*') ? 'active' : '' }}">
-            <a href="#" class="menu-link">
+        <li
+            class="menu-item {{ request()->routeIs('rooms.index') || request()->routeIs('rooms.show') ? 'active' : '' }}">
+            <a href="{{ route('rooms.index') }}" class="menu-link">
                 <i class="menu-icon tf-icons bx bx-building"></i>
-                <div class="text-truncate">Room Inventory</div>
-            </a>
-        </li>
-        <li class="menu-item {{ request()->routeIs('rooms.search') ? 'active' : '' }}">
-            <a href="#" class="menu-link">
-                <i class="menu-icon tf-icons bx bx-search"></i>
-                <div class="text-truncate">Search Rooms</div>
+                <div class="text-truncate">Browse Rooms</div>
             </a>
         </li>
 

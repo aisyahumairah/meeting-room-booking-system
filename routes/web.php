@@ -7,6 +7,7 @@ use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\ResetPasswordController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\RoomController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -51,8 +52,18 @@ Route::middleware(['auth', 'active', 'must.change.password'])->group(function ()
     Route::get('profile/password', [ProfileController::class, 'showChangePasswordForm'])->name('profile.password');
     Route::put('profile/password', [ProfileController::class, 'changePassword'])->name('profile.password.update');
 
-    // User's own bookings (to be implemented in Phase 2)
+    // Room Browsing (all authenticated users)
+    Route::get('/rooms', [RoomController::class, 'index'])->name('rooms.index');
+    Route::get('/rooms/{room}', [RoomController::class, 'show'])->name('rooms.show');
+
+    // User's own bookings (to be implemented in Phase 3)
     // Route::get('/my-bookings', [BookingController::class, 'myBookings'])->name('bookings.my');
+});
+
+// API routes (authenticated)
+Route::middleware(['auth'])->prefix('api')->group(function () {
+    Route::get('/rooms/{room}/availability', [RoomController::class, 'availability'])
+        ->name('api.rooms.availability');
 });
 
 // Admin/Director routes - Booking and Room Management
