@@ -8,6 +8,7 @@ use App\Http\Requests\Admin\UpdateRoomRequest;
 use App\Models\Amenity;
 use App\Models\Room;
 use App\Models\RoomMaintenanceSchedule;
+use App\Services\AuditService;
 use App\Services\RoomImageService;
 use Illuminate\Http\Request;
 
@@ -84,6 +85,19 @@ class RoomController extends Controller
             $this->imageService->uploadImages($room, $request->file('images'));
         }
 
+        // Audit log: Room created
+        AuditService::log(
+            AuditService::EVENT_ROOM_CREATED,
+            'room',
+            $room->id,
+            [
+                'room_name' => $room->name,
+                'capacity' => $room->capacity,
+                'floor_location' => $room->floor_location,
+                'amenities' => $room->amenities->pluck('name')->toArray(),
+            ]
+        );
+
         return redirect()
             ->route('admin.rooms.index')
             ->with('success', "Room '{$room->name}' created successfully.");
@@ -108,10 +122,43 @@ class RoomController extends Controller
      */
     public function update(UpdateRoomRequest $request, Room $room)
     {
+        // Capture old values for audit
+        $oldValues = $room->only(['name', 'capacity', 'floor_location', 'description', 'status']);
+        $oldAmenities = $room->amenities->pluck('name')->toArray();
+
         $room->update($request->validated());
 
         // Sync amenities
         $room->amenities()->sync($request->amenities ?? []);
+
+        // Get new values after update
+        $room->refresh();
+        $newValues = $room->only(['name', 'capacity', 'floor_location', 'description', 'status']);
+        $newAmenities = $room->amenities->pluck('name')->toArray();
+
+        // Calculate changes
+        $changes = [];
+        foreach ($oldValues as $key => $oldValue) {
+            if ($oldValue !== $newValues[$key]) {
+                $changes[$key] = ['old' => $oldValue, 'new' => $newValues[$key]];
+            }
+        }
+        if ($oldAmenities !== $newAmenities) {
+            $changes['amenities'] = ['old' => $oldAmenities, 'new' => $newAmenities];
+        }
+
+        // Only log if something changed
+        if (!empty($changes)) {
+            AuditService::log(
+                AuditService::EVENT_ROOM_UPDATED,
+                'room',
+                $room->id,
+                [
+                    'room_name' => $room->name,
+                    'changes' => $changes,
+                ]
+            );
+        }
 
         // Upload new images
         if ($request->hasFile('images')) {
@@ -136,13 +183,23 @@ class RoomController extends Controller
             );
         }
 
+        $roomName = $room->name;
+        $roomId = $room->id;
+
         // Delete images from storage
         foreach ($room->images as $image) {
             $this->imageService->deleteImage($image);
         }
 
-        $roomName = $room->name;
         $room->forceDelete(); // Permanent delete since no bookings
+
+        // Audit log: Room deleted
+        AuditService::log(
+            AuditService::EVENT_ROOM_DELETED,
+            'room',
+            $roomId,
+            ['room_name' => $roomName]
+        );
 
         return redirect()
             ->route('admin.rooms.index')
@@ -161,9 +218,19 @@ class RoomController extends Controller
             'maintenance_reason' => 'nullable|string|max:200',
         ]);
 
-        $room->update(['status' => $validated['status']]);
+        $oldStatus = $room->status;
+        $newStatus = $validated['status'];
 
-        if ($validated['status'] === 'under_maintenance' && $validated['maintenance_start'] && $validated['maintenance_end']) {
+        $room->update(['status' => $newStatus]);
+
+        $details = [
+            'room_name' => $room->name,
+            'old_status' => $oldStatus,
+            'new_status' => $newStatus,
+        ];
+
+        // If scheduling maintenance
+        if ($newStatus === 'under_maintenance' && $validated['maintenance_start'] && $validated['maintenance_end']) {
             RoomMaintenanceSchedule::create([
                 'room_id' => $room->id,
                 'start_datetime' => $validated['maintenance_start'],
@@ -171,6 +238,26 @@ class RoomController extends Controller
                 'reason' => $validated['maintenance_reason'],
                 'created_by' => auth()->id(),
             ]);
+
+            $details['maintenance'] = [
+                'start' => $validated['maintenance_start'],
+                'end' => $validated['maintenance_end'],
+                'reason' => $validated['maintenance_reason'],
+            ];
+
+            AuditService::log(
+                AuditService::EVENT_ROOM_MAINTENANCE_SCHEDULED,
+                'room',
+                $room->id,
+                $details
+            );
+        } else {
+            AuditService::log(
+                AuditService::EVENT_ROOM_STATUS_CHANGED,
+                'room',
+                $room->id,
+                $details
+            );
         }
 
         return back()->with('success', 'Room status updated successfully.');

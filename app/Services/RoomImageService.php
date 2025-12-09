@@ -46,6 +46,18 @@ class RoomImageService
             ]);
 
             $uploadedImages[] = $image;
+
+            // Audit log: Image uploaded
+            AuditService::log(
+                AuditService::EVENT_ROOM_IMAGE_UPLOADED,
+                'room',
+                $room->id,
+                [
+                    'room_name' => $room->name,
+                    'image_id' => $image->id,
+                    'filename' => $file->getClientOriginalName(),
+                ]
+            );
         }
 
         return $uploadedImages;
@@ -59,6 +71,9 @@ class RoomImageService
      */
     public function deleteImage(RoomImage $image): bool
     {
+        $room = $image->room;
+        $imageId = $image->id;
+
         // Delete file from storage
         if (Storage::disk($this->disk)->exists($image->path)) {
             Storage::disk($this->disk)->delete($image->path);
@@ -80,6 +95,17 @@ class RoomImageService
                 $newPrimary->update(['is_primary' => true]);
             }
         }
+
+        // Audit log: Image deleted
+        AuditService::log(
+            AuditService::EVENT_ROOM_IMAGE_DELETED,
+            'room',
+            $room->id,
+            [
+                'room_name' => $room->name,
+                'image_id' => $imageId,
+            ]
+        );
 
         return true;
     }

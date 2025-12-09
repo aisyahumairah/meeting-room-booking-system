@@ -8,6 +8,24 @@ use Illuminate\Support\Facades\Request;
 
 class AuditService
 {
+    // Authentication Events
+    public const EVENT_LOGIN_SUCCESS = 'login_success';
+    public const EVENT_LOGIN_FAILED = 'login_failed';
+    public const EVENT_LOGOUT = 'logout';
+    public const EVENT_PASSWORD_RESET_REQUESTED = 'password_reset_requested';
+    public const EVENT_PASSWORD_RESET_COMPLETED = 'password_reset_completed';
+    public const EVENT_PASSWORD_CHANGED = 'password_changed';
+    public const EVENT_PROFILE_UPDATED = 'profile_updated';
+
+    // Room Management Events
+    public const EVENT_ROOM_CREATED = 'room.created';
+    public const EVENT_ROOM_UPDATED = 'room.updated';
+    public const EVENT_ROOM_DELETED = 'room.deleted';
+    public const EVENT_ROOM_STATUS_CHANGED = 'room.status_changed';
+    public const EVENT_ROOM_MAINTENANCE_SCHEDULED = 'room.maintenance_scheduled';
+    public const EVENT_ROOM_MAINTENANCE_CANCELLED = 'room.maintenance_cancelled';
+    public const EVENT_ROOM_IMAGE_UPLOADED = 'room.image_uploaded';
+    public const EVENT_ROOM_IMAGE_DELETED = 'room.image_deleted';
     public static function log(
         string $eventType,
         ?string $targetType = null,
