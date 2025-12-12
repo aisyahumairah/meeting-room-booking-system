@@ -64,7 +64,7 @@ This phase implements **auto-approval** with first-come-first-served booking:
 
 | Step | File | Description | Priority | Status |
 |------|------|-------------|----------|--------|
-| 3.1 | [step-3.1-database-schema.md](./step-3.1-database-schema.md) | Bookings, booking_series tables | CRITICAL | TODO |
+| 3.1 | [step-3.1-database-schema.md](./step-3.1-database-schema.md) | Bookings, booking_series tables | CRITICAL | COMPLETE |
 | 3.2 | [step-3.2-booking-creation.md](./step-3.2-booking-creation.md) | One-time booking with auto-approval | CRITICAL | TODO |
 | 3.3 | [step-3.3-recurring-bookings.md](./step-3.3-recurring-bookings.md) | Daily/weekly/monthly patterns | HIGH | TODO |
 | 3.4 | [step-3.4-my-bookings.md](./step-3.4-my-bookings.md) | Personal booking list & calendar view | HIGH | TODO |
