@@ -1,7 +1,7 @@
 # Step 3.1: Database Schema - Bookings
 
 **Priority:** CRITICAL | **Ref:** §6.2.1, §6.2.2 | **Dependencies:** Phase 2 Complete  
-**Status:** TODO
+**Status:** COMPLETE
 
 ---
 
@@ -893,16 +893,16 @@ php artisan test --filter=BookingTest
 
 ## Acceptance Criteria
 
-- [ ] `bookings` table exists with all columns
-- [ ] `booking_series` table exists with all columns
-- [ ] Booking model has relationships: user, room, series, cancelledByUser
-- [ ] Booking model has scopes: confirmed, cancelled, completed, forUser, forRoom, upcoming, past
-- [ ] Booking model has accessors: duration, status_badge, is_editable, is_cancellable
-- [ ] BookingSeries model has relationships: user, room, bookings
-- [ ] Reference number generation works correctly (BK-YYYY-NNNNN)
-- [ ] BookingFactory creates valid bookings
-- [ ] BookingSeeder populates sample data
-- [ ] All unit tests pass
+- [x] `bookings` table exists with all columns
+- [x] `booking_series` table exists with all columns
+- [x] Booking model has relationships: user, room, series, cancelledByUser
+- [x] Booking model has scopes: confirmed, cancelled, completed, forUser, forRoom, upcoming, past
+- [x] Booking model has accessors: duration, status_badge, is_editable, is_cancellable
+- [x] BookingSeries model has relationships: user, room, bookings
+- [x] Reference number generation works correctly (BK-YYYY-NNNNN)
+- [x] BookingFactory creates valid bookings
+- [x] BookingSeeder populates sample data
+- [x] All unit tests pass (16 tests)
 
 ---
 

@@ -5,6 +5,7 @@ use App\Http\Controllers\Auth\ChangePasswordController;
 use App\Http\Controllers\Auth\ForgotPasswordController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\ResetPasswordController;
+use App\Http\Controllers\BookingController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\RoomController;
@@ -56,8 +57,16 @@ Route::middleware(['auth', 'active', 'must.change.password'])->group(function ()
     Route::get('/rooms', [RoomController::class, 'index'])->name('rooms.index');
     Route::get('/rooms/{room}', [RoomController::class, 'show'])->name('rooms.show');
 
-    // User's own bookings (to be implemented in Phase 3)
-    // Route::get('/my-bookings', [BookingController::class, 'myBookings'])->name('bookings.my');
+    // Booking creation (all authenticated users)
+    Route::get('/bookings/create', [BookingController::class, 'create'])->name('bookings.create');
+    Route::post('/bookings', [BookingController::class, 'store'])->name('bookings.store');
+
+    // AJAX routes for booking
+    Route::post('/ajax/bookings/check-availability', [BookingController::class, 'checkAvailability'])
+        ->name('ajax.bookings.check-availability');
+
+    // User's own bookings (placeholder for Step 3.4)
+// Route::get('/my-bookings', [BookingController::class, 'myBookings'])->name('my-bookings');
 });
 
 // API routes (authenticated)
@@ -74,14 +83,17 @@ Route::middleware(['auth', 'active', 'must.change.password', 'role:administrator
         // Room management
         Route::resource('rooms', AdminRoomController::class);
         Route::put('rooms/{room}/status', [AdminRoomController::class, 'updateStatus'])->name('rooms.status');
-        Route::post('rooms/{room}/images/{image}/primary', [AdminRoomController::class, 'setPrimaryImage'])->name('rooms.images.primary');
+        Route::post('rooms/{room}/images/{image}/primary', [
+            AdminRoomController::class,
+            'setPrimaryImage'
+        ])->name('rooms.images.primary');
         Route::delete('rooms/{room}/images/{image}', [AdminRoomController::class, 'deleteImage'])->name('rooms.images.destroy');
 
         // Booking management placeholder (to be implemented in Phase 3)
-        // Route::get('/bookings', [BookingController::class, 'index'])->name('bookings.index');
-
+// Route::get('/bookings', [BookingController::class, 'index'])->name('bookings.index');
+    
         // Reports (to be implemented in Phase 4)
-        // Route::get('/reports', [ReportController::class, 'index'])->name('reports.index');
+// Route::get('/reports', [ReportController::class, 'index'])->name('reports.index');
     });
 
 // Director/SysAdmin routes - User Management and Audit
@@ -95,7 +107,7 @@ Route::middleware(['auth', 'active', 'must.change.password', 'role:director,syst
         })->name('users.index');
 
         // Audit logs (to be implemented in Step 1.7)
-        // Route::get('/audit-logs', [AuditLogController::class, 'index'])->name('audit.index');
+// Route::get('/audit-logs', [AuditLogController::class, 'index'])->name('audit.index');
     });
 
 // SysAdmin only routes - System Configuration
@@ -104,6 +116,6 @@ Route::middleware(['auth', 'active', 'must.change.password', 'role:system_admin'
     ->name('admin.')
     ->group(function () {
         // System settings (to be implemented in Phase 4)
-        // Route::get('/settings', [SettingsController::class, 'index'])->name('settings.index');
-        // Route::put('/settings', [SettingsController::class, 'update'])->name('settings.update');
+// Route::get('/settings', [SettingsController::class, 'index'])->name('settings.index');
+// Route::put('/settings', [SettingsController::class, 'update'])->name('settings.update');
     });
