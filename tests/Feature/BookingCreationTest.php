@@ -18,7 +18,10 @@ class BookingCreationTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->user = User::factory()->create(['status' => 'active']);
+        $this->user = User::factory()->create([
+            'status' => 'active',
+            'must_change_password' => false,
+        ]);
         $this->room = Room::factory()->create(['status' => 'active']);
     }
 
