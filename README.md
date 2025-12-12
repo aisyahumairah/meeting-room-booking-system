@@ -26,41 +26,45 @@ All authenticated users have access to:
 
 ## Development Environment Setup
 
-To set up the development environment, follow these steps:
+This project is optimized for a **Laravel Herd** and **DBngin** workflow on Windows.
 
-1.  **Clone the repository**
+1.  **Clone the repository** into your Herd directory (e.g., `d:\Herd\mrbs`).
 2.  **Install dependencies**
-    ```bash
+    ```powershell
     composer install
     npm install
     ```
 3.  **Environment Configuration**
     - Copy `.env.example` to `.env`:
-      ```bash
-      cp .env.example .env
+      ```powershell
+      copy .env.example .env
       ```
-    - Configure the database settings in `.env`. The project is configured for **PostgreSQL**:
-      ```ini
-      DB_CONNECTION=pgsql
-      DB_HOST=127.0.0.1
-      DB_PORT=5432
-      DB_DATABASE=mrbs
-      DB_USERNAME=postgres
-      DB_PASSWORD=your_password
-      ```
+    - **Database (DBngin)**:
+        - Open **DBngin** and start the PostgreSQL service (default port 5432).
+        - Create a new database named `mrbs`.
+        - Configure `.env`:
+          ```ini
+          DB_CONNECTION=pgsql
+          DB_HOST=127.0.0.1
+          DB_PORT=5432
+          DB_DATABASE=mrbs
+          DB_USERNAME=postgres  # Default DBngin user
+          DB_PASSWORD=          # Default is often empty
+          ```
 4.  **Generate App Key**
-    ```bash
+    ```powershell
     php artisan key:generate
     ```
 5.  **Run Migrations and Seeders**
-    ```bash
+    ```powershell
     php artisan migrate --seed
     ```
-6.  **Serve the Application**
-    ```bash
-    npm run dev
-    php artisan serve
-    ```
+6.  **Run the Application**
+    - **Backend**: Handled automatically by Herd at [http://mrbs.test](http://mrbs.test).
+    - **Frontend Assets**: Run the Vite development server:
+      ```powershell
+      npm run dev
+      ```
 
 ## Development Approach
 
