@@ -26,6 +26,24 @@ class AuditService
     public const EVENT_ROOM_MAINTENANCE_CANCELLED = 'room.maintenance_cancelled';
     public const EVENT_ROOM_IMAGE_UPLOADED = 'room.image_uploaded';
     public const EVENT_ROOM_IMAGE_DELETED = 'room.image_deleted';
+
+    // User Management Events
+    public const EVENT_USER_CREATED = 'user.created';
+    public const EVENT_USER_UPDATED = 'user.updated';
+    public const EVENT_USER_ROLE_CHANGED = 'user.role_changed';
+    public const EVENT_USER_DEACTIVATED = 'user.deactivated';
+    public const EVENT_USER_REACTIVATED = 'user.reactivated';
+    public const EVENT_USER_DELETED = 'user.deleted';
+    public const EVENT_USER_PASSWORD_RESET_BY_ADMIN = 'user.password_reset_by_admin';
+
+    // Audit & Report Events
+    public const EVENT_AUDIT_LOG_EXPORTED = 'audit_log.exported';
+    public const EVENT_REPORT_GENERATED = 'report.generated';
+
+    // Settings Events
+    public const EVENT_SETTINGS_UPDATED = 'settings.updated';
+    public const EVENT_MAINTENANCE_MODE_TOGGLED = 'settings.maintenance_mode_toggled';
+
     public static function log(
         string $eventType,
         ?string $targetType = null,

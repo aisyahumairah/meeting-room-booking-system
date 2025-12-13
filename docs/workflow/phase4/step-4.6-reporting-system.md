@@ -1344,6 +1344,8 @@ Add Reports menu item (for Director/SysAdmin):
 
 ## Testing Requirements
 
+> **Note:** When creating test users with the factory, use `->passwordChanged()` to set `must_change_password` to `false`. Otherwise, the `MustChangePassword` middleware will redirect users causing tests to receive 302 responses instead of 200.
+
 **File:** `tests/Feature/ReportingSystemTest.php`
 
 ```php
@@ -1369,9 +1371,9 @@ class ReportingSystemTest extends TestCase
     {
         parent::setUp();
         
-        $this->sysAdmin = User::factory()->create(['role' => 'system_admin']);
-        $this->director = User::factory()->create(['role' => 'director']);
-        $this->regularUser = User::factory()->create(['role' => 'regular_user']);
+        $this->sysAdmin = User::factory()->passwordChanged()->create(['role' => 'system_admin']);
+        $this->director = User::factory()->passwordChanged()->create(['role' => 'director']);
+        $this->regularUser = User::factory()->passwordChanged()->create(['role' => 'regular_user']);
 
         // Create test data
         $room = Room::factory()->create();
@@ -1473,20 +1475,20 @@ class ReportingSystemTest extends TestCase
 
 ## Acceptance Criteria
 
-- [ ] Reports dashboard displays quick stats
-- [ ] Room Utilization report shows: room name, bookings, hours, utilization %
-- [ ] Booking Statistics report shows: trends, status distribution, top rooms, peak hours
-- [ ] User Activity report shows: user list with bookings and cancellation rate
-- [ ] Date range filters work for all reports
-- [ ] Group by selector works for booking statistics (day/week/month)
-- [ ] Export to Excel (.xlsx) works
-- [ ] Export to CSV works
-- [ ] Export to PDF works
-- [ ] Export actions are logged to audit trail
-- [ ] Utilization percentage calculated correctly (based on working days)
-- [ ] Only Director/SysAdmin can access reports
-- [ ] Sidebar navigation updated
-- [ ] All tests pass: `php artisan test --filter=ReportingSystemTest`
+- [x] Reports dashboard displays quick stats
+- [x] Room Utilization report shows: room name, bookings, hours, utilization %
+- [x] Booking Statistics report shows: trends, status distribution, top rooms, peak hours
+- [x] User Activity report shows: user list with bookings and cancellation rate
+- [x] Date range filters work for all reports
+- [x] Group by selector works for booking statistics (day/week/month)
+- [x] Export to Excel (.xlsx) works
+- [x] Export to CSV works
+- [x] Export to PDF works
+- [x] Export actions are logged to audit trail
+- [x] Utilization percentage calculated correctly (based on working days)
+- [x] Only Director/SysAdmin can access reports
+- [x] Sidebar navigation updated
+- [x] All tests pass: `php artisan test --filter=ReportingSystemTest`
 
 ---
 

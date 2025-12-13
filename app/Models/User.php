@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
@@ -159,6 +160,44 @@ class User extends Authenticatable
     public function bookings(): HasMany
     {
         return $this->hasMany(Booking::class);
+    }
+
+    /**
+     * Get user's notification preferences.
+     */
+    public function notificationPreferences(): HasOne
+    {
+        return $this->hasOne(UserNotificationPreference::class);
+    }
+
+    /**
+     * Get notification preference value, respecting system settings.
+     */
+    public function wantsNotification(string $type): bool
+    {
+        // First check system-level setting
+        $systemKey = "notify_{$type}";
+        if (!SystemSetting::get($systemKey, true)) {
+            return false;
+        }
+
+        // Check master email toggle
+        if (!SystemSetting::isEmailEnabled()) {
+            return false;
+        }
+
+        // Non-optional notifications (always sent if email enabled)
+        if (in_array($type, ['welcome_email', 'password_reset'])) {
+            return true;
+        }
+
+        // Check user preference
+        $prefs = $this->notificationPreferences;
+        if (!$prefs) {
+            return true; // Default to enabled
+        }
+
+        return $prefs->{$type} ?? true;
     }
 
     // =========================================================================

@@ -15,8 +15,7 @@ class BookingController extends Controller
     public function __construct(
         protected BookingService $bookingService,
         protected AuditService $auditService
-    ) {
-    }
+    ) {}
 
     /**
      * Show booking creation form
@@ -74,7 +73,6 @@ class BookingController extends Controller
             return redirect()
                 ->route('dashboard')
                 ->with('success', "Booking confirmed! Reference: {$booking->reference_number}");
-
         } catch (\Exception $e) {
             Log::error('Booking creation failed', [
                 'error' => $e->getMessage(),
@@ -85,6 +83,22 @@ class BookingController extends Controller
                 ->withInput()
                 ->withErrors(['room_id' => $e->getMessage()]);
         }
+    }
+
+    /**
+     * Display the specified booking.
+     */
+    public function show(Booking $booking)
+    {
+        // Users can only view their own bookings unless they are Admin/Director
+        $user = auth()->user();
+        if ($booking->user_id !== $user->id && !$user->canManageBookings()) {
+            abort(403, 'You are not authorized to view this booking.');
+        }
+
+        $booking->load(['room', 'user', 'series']);
+
+        return view('bookings.show', compact('booking'));
     }
 
     /**

@@ -18,7 +18,8 @@ class BookingFactory extends Factory
         $endHour = min($startHour + $duration, 18);
 
         return [
-            'reference_number' => Booking::generateReferenceNumber(),
+            // Use faker's unique uuid for tests to avoid collisions
+            'reference_number' => 'BK-' . now()->year . '-' . $this->faker->unique()->numerify('#####'),
             'user_id' => User::factory(),
             'room_id' => Room::factory(),
             'booking_date' => $this->faker->dateTimeBetween('now', '+30 days')->format('Y-m-d'),

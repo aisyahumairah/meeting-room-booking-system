@@ -12,7 +12,7 @@ class BookingService
 {
     /**
      * Create a new booking with auto-approval (first-come-first-served)
-     * 
+     *
      * @throws \Exception if room is not available
      */
     public function createBooking(array $data, User $booker): Booking
