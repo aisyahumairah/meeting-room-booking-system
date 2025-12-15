@@ -93,6 +93,7 @@ class BookingAuditTest extends TestCase
             'event_type' => 'booking_created',
             'target_type' => 'booking',
             'target_id' => $booking->id,
+            'actor_name' => $admin->name,
             'details' => ['reference' => $booking->reference_number],
         ]);
 
