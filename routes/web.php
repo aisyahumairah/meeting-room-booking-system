@@ -1,6 +1,9 @@
 <?php
 
 use App\Http\Controllers\Admin\RoomController as AdminRoomController;
+use App\Http\Controllers\Admin\BookingController as AdminBookingController;
+use App\Http\Controllers\Api\AvailabilityController;
+use App\Http\Controllers\CalendarController;
 use App\Http\Controllers\Auth\ChangePasswordController;
 use App\Http\Controllers\Auth\ForgotPasswordController;
 use App\Http\Controllers\Auth\LoginController;
@@ -57,16 +60,48 @@ Route::middleware(['auth', 'active', 'must.change.password'])->group(function ()
     Route::get('/rooms', [RoomController::class, 'index'])->name('rooms.index');
     Route::get('/rooms/{room}', [RoomController::class, 'show'])->name('rooms.show');
 
+    // Global Calendar
+    Route::get('/calendar', [CalendarController::class, 'index'])->name('calendar');
+    Route::get('/ajax/calendar/events', [CalendarController::class, 'events'])
+        ->name('ajax.calendar.events');
+
     // Booking creation (all authenticated users)
     Route::get('/bookings/create', [BookingController::class, 'create'])->name('bookings.create');
     Route::post('/bookings', [BookingController::class, 'store'])->name('bookings.store');
 
     // AJAX routes for booking
+    // AJAX routes for booking (Legacy)
     Route::post('/ajax/bookings/check-availability', [BookingController::class, 'checkAvailability'])
         ->name('ajax.bookings.check-availability');
+    Route::post('/ajax/bookings/preview-recurrence', [BookingController::class, 'previewRecurrence'])
+        ->name('ajax.bookings.preview-recurrence');
 
-    // User's own bookings (placeholder for Step 3.4)
-// Route::get('/my-bookings', [BookingController::class, 'myBookings'])->name('my-bookings');
+    // Enhanced Availability API
+    Route::prefix('ajax')->name('ajax.')->group(function () {
+        Route::post('/availability/check', [AvailabilityController::class, 'check'])
+            ->name('availability.check');
+        Route::get('/rooms/{room}/schedule', [AvailabilityController::class, 'roomSchedule'])
+            ->name('rooms.schedule');
+        Route::get('/rooms/{room}/available-slots', [AvailabilityController::class, 'availableSlots'])
+            ->name('rooms.available-slots');
+    });
+
+    // Recurring booking
+    Route::get('/bookings/create-recurring', [BookingController::class, 'createRecurring'])
+        ->name('bookings.create-recurring');
+    Route::post('/bookings/recurring', [BookingController::class, 'storeRecurring'])
+        ->name('bookings.store-recurring');
+
+    // My Bookings
+    Route::get('/my-bookings', [BookingController::class, 'myBookings'])->name('my-bookings');
+    Route::get('/my-bookings/{booking}', [BookingController::class, 'show'])->name('my-bookings.show');
+    Route::get('/my-bookings/{booking}/edit', [BookingController::class, 'edit'])->name('my-bookings.edit');
+    Route::put('/my-bookings/{booking}', [BookingController::class, 'update'])->name('my-bookings.update');
+    Route::delete('/my-bookings/{booking}', [BookingController::class, 'destroy'])->name('my-bookings.destroy');
+
+    // AJAX for calendar
+    Route::get('/ajax/my-bookings/calendar', [BookingController::class, 'myBookingsCalendar'])
+        ->name('ajax.my-bookings.calendar');
 });
 
 // API routes (authenticated)
@@ -89,9 +124,18 @@ Route::middleware(['auth', 'active', 'must.change.password', 'role:administrator
         ])->name('rooms.images.primary');
         Route::delete('rooms/{room}/images/{image}', [AdminRoomController::class, 'deleteImage'])->name('rooms.images.destroy');
 
-        // Booking management placeholder (to be implemented in Phase 3)
-// Route::get('/bookings', [BookingController::class, 'index'])->name('bookings.index');
-    
+        // Booking management
+        Route::middleware('can:manage-bookings')->group(function () {
+            Route::resource('bookings', AdminBookingController::class)
+                ->except(['create', 'store']);
+
+            // Manual trigger for booking completion (testing purposes)
+            Route::post('/bookings/complete-expired', function () {
+                \Illuminate\Support\Facades\Artisan::call('bookings:complete-expired');
+                return back()->with('success', 'Completed expired bookings: ' . \Illuminate\Support\Facades\Artisan::output());
+            })->name('bookings.complete-expired');
+        });
+
         // Reports (to be implemented in Phase 4)
 // Route::get('/reports', [ReportController::class, 'index'])->name('reports.index');
     });

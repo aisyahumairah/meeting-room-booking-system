@@ -19,6 +19,21 @@
                         <form id="bookingForm" action="{{ route('bookings.store') }}" method="POST">
                             @csrf
 
+                            {{-- Race condition warning --}}
+                            @if(session('error'))
+                                <div class="alert alert-danger alert-dismissible mb-4">
+                                    <i class="bx bx-error-circle me-2"></i>
+                                    <strong>Booking Failed!</strong>
+                                    <p class="mb-0 mt-2">{{ session('error') }}</p>
+                                    <p class="mb-0 mt-2 small">
+                                        <i class="bx bx-info-circle me-1"></i>
+                                        Tip: The selection below has been preserved. Please choose a different time and try
+                                        again.
+                                    </p>
+                                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                                </div>
+                            @endif
+
                             {{-- Room Selection --}}
                             <div class="mb-3">
                                 <label class="form-label" for="room_id">Meeting Room</label>
@@ -246,45 +261,60 @@
                         return;
                     }
 
+                    // Show loading state
+                    const container = document.getElementById('availabilityStatus');
+                    const message = document.getElementById('availabilityMessage');
+                    container.style.display = 'block';
+                    message.className = 'alert alert-secondary';
+                    message.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span> Checking availability...';
+                    submitBtn.disabled = true;
+
                     availabilityCheckTimeout = setTimeout(() => {
-                        fetch('{{ route("ajax.bookings.check-availability") }}', {
+                        fetch('{{ route("ajax.availability.check") }}', {
                             method: 'POST',
                             headers: {
                                 'Content-Type': 'application/json',
                                 'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                                'Accept': 'application/json',
                             },
                             body: JSON.stringify({
                                 room_id: roomId,
-                                booking_date: date,
+                                date: date,
                                 start_time: startTime,
                                 end_time: endTime,
                             }),
                         })
-                            .then(response => response.json())
+                            .then(response => {
+                                if (!response.ok) {
+                                    throw new Error('Network error');
+                                }
+                                return response.json();
+                            })
                             .then(data => {
-                                showAvailabilityStatus(data.available, data.conflict);
+                                if (data.available) {
+                                    message.className = 'alert alert-success';
+                                    message.innerHTML = '<i class="bx bx-check-circle me-1"></i> <strong>Available!</strong> This time slot is free.';
+                                    submitBtn.disabled = false;
+                                } else {
+                                    message.className = 'alert alert-danger';
+                                    let errorHtml = `<i class="bx bx-x-circle me-1"></i> <strong>Not Available</strong><br>${data.message}`;
+
+                                    // Show conflict details if available
+                                    if (data.conflict) {
+                                        errorHtml += `<br><small class="text-muted">Existing booking: ${data.conflict.time} (${data.conflict.reference})</small>`;
+                                    }
+
+                                    message.innerHTML = errorHtml;
+                                    submitBtn.disabled = true;
+                                }
                             })
                             .catch(error => {
                                 console.error('Availability check failed:', error);
+                                message.className = 'alert alert-warning';
+                                message.innerHTML = '<i class="bx bx-error me-1"></i> Could not verify availability. Please try again.';
+                                submitBtn.disabled = false; // Allow submission, server will validate
                             });
-                    }, 500);
-                }
-
-                function showAvailabilityStatus(available, conflict) {
-                    const container = document.getElementById('availabilityStatus');
-                    const message = document.getElementById('availabilityMessage');
-
-                    container.style.display = 'block';
-
-                    if (available) {
-                        message.className = 'alert alert-success';
-                        message.innerHTML = '<i class="bx bx-check-circle me-1"></i> Room is available!';
-                        submitBtn.disabled = false;
-                    } else {
-                        message.className = 'alert alert-danger';
-                        message.innerHTML = `<i class="bx bx-x-circle me-1"></i> ${conflict?.message || 'Room is not available'}`;
-                        submitBtn.disabled = true;
-                    }
+                    }, 300); // Debounce 300ms
                 }
 
                 function hideAvailabilityStatus() {

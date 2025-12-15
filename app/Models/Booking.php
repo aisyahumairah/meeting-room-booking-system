@@ -56,6 +56,16 @@ class Booking extends Model
         return $this->belongsTo(User::class, 'cancelled_by');
     }
 
+    /**
+     * Get audit logs for this booking
+     */
+    public function auditLogs()
+    {
+        return $this->hasMany(AuditLog::class, 'target_id')
+            ->where('target_type', 'booking')
+            ->orderBy('created_at', 'desc');
+    }
+
     // =====================
     // ACCESSORS
     // =====================
