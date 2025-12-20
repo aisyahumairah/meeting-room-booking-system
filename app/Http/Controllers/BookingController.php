@@ -11,6 +11,7 @@ use App\Models\BookingSeries;
 use App\Models\Room;
 use App\Services\BookingService;
 use App\Services\AuditService;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 
@@ -19,8 +20,7 @@ class BookingController extends Controller
     public function __construct(
         protected BookingService $bookingService,
         protected AuditService $auditService
-    ) {
-    }
+    ) {}
 
     /**
      * Show booking creation form
@@ -84,7 +84,6 @@ class BookingController extends Controller
             return redirect()
                 ->route('dashboard')
                 ->with('success', "Booking confirmed! Reference: {$booking->reference_number}");
-
         } catch (\Exception $e) {
             Log::warning('Booking creation failed (possible race condition)', [
                 'error' => $e->getMessage(),
@@ -196,7 +195,6 @@ class BookingController extends Controller
             return redirect()
                 ->route('my-bookings')
                 ->with('success', "Recurring booking confirmed! {$series->bookings()->count()} bookings created. Reference: {$series->reference_number}");
-
         } catch (\Exception $e) {
             return back()
                 ->withInput()
@@ -311,19 +309,24 @@ class BookingController extends Controller
     public function myBookingsCalendar(Request $request)
     {
         $request->validate([
-            'start' => 'required|date',
-            'end' => 'required|date',
+            'start' => 'required|string',
+            'end' => 'required|string',
         ]);
+
+        // FullCalendar sends ISO8601 dates (potentially with time), but we filter by date only
+        $startDate = Carbon::parse($request->start)->format('Y-m-d');
+        $endDate = Carbon::parse($request->end)->format('Y-m-d');
 
         $bookings = Booking::with('room')
             ->forUser(auth()->id())
-            ->whereBetween('booking_date', [$request->start, $request->end])
+            ->whereBetween('booking_date', [$startDate, $endDate])
             ->get();
 
         $events = $bookings->map(function ($booking) {
             return [
                 'id' => $booking->id,
                 'title' => $booking->room->name,
+                // FullCalendar expects 'start' and 'end' in ISO8601
                 'start' => $booking->booking_date->format('Y-m-d') . 'T' . $booking->start_time,
                 'end' => $booking->booking_date->format('Y-m-d') . 'T' . $booking->end_time,
                 'url' => route('my-bookings.show', $booking),
@@ -433,7 +436,6 @@ class BookingController extends Controller
             return redirect()
                 ->route('my-bookings.show', $booking)
                 ->with('success', $message);
-
         } catch (\Exception $e) {
             return back()
                 ->withInput()
@@ -510,7 +512,6 @@ class BookingController extends Controller
             return redirect()
                 ->route('my-bookings')
                 ->with('success', $message);
-
         } catch (\Exception $e) {
             return back()->withErrors(['error' => 'Failed to cancel booking: ' . $e->getMessage()]);
         }

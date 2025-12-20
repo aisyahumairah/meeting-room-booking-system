@@ -238,7 +238,7 @@ class BookingService
         if (!empty($conflicts)) {
             throw new \Exception(
                 'Room is not available on the following dates: ' .
-                implode(', ', array_map(fn($d) => $d->format('M d, Y'), $conflicts))
+                    implode(', ', array_map(fn($d) => $d->format('M d, Y'), $conflicts))
             );
         }
 
@@ -329,7 +329,7 @@ class BookingService
 
                 while ($current->lte($endDate) && count($dates) < $maxOccurrences) {
                     foreach ($daysOfWeek as $dayOfWeek) {
-                        $day = $current->copy()->setISOWeekday($dayOfWeek);
+                        $day = $current->copy()->isoWeekday($dayOfWeek);
                         if ($day->gte($startDate) && $day->lte($endDate) && count($dates) < $maxOccurrences) {
                             $dates[] = $day->copy();
                         }
@@ -567,7 +567,7 @@ class BookingService
             if (!empty($conflicts)) {
                 throw new \Exception(
                     'Cannot update series. Room is not available on: ' .
-                    implode(', ', array_map(fn($d) => $d->format('M d, Y'), $conflicts))
+                        implode(', ', array_map(fn($d) => $d->format('M d, Y'), $conflicts))
                 );
             }
 

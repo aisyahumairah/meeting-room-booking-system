@@ -137,7 +137,7 @@ Route::middleware(['auth', 'active', 'must.change.password', 'role:administrator
         });
 
         // Reports (to be implemented in Phase 4)
-// Route::get('/reports', [ReportController::class, 'index'])->name('reports.index');
+        // Route::get('/reports', [ReportController::class, 'index'])->name('reports.index');
     });
 
 // Director/SysAdmin routes - User Management and Audit
@@ -151,7 +151,7 @@ Route::middleware(['auth', 'active', 'must.change.password', 'role:director,syst
         })->name('users.index');
 
         // Audit logs (to be implemented in Step 1.7)
-// Route::get('/audit-logs', [AuditLogController::class, 'index'])->name('audit.index');
+        // Route::get('/audit-logs', [AuditLogController::class, 'index'])->name('audit.index');
     });
 
 // SysAdmin only routes - System Configuration
@@ -160,6 +160,6 @@ Route::middleware(['auth', 'active', 'must.change.password', 'role:system_admin'
     ->name('admin.')
     ->group(function () {
         // System settings (to be implemented in Phase 4)
-// Route::get('/settings', [SettingsController::class, 'index'])->name('settings.index');
-// Route::put('/settings', [SettingsController::class, 'update'])->name('settings.update');
+        // Route::get('/settings', [SettingsController::class, 'index'])->name('settings.index');
+        // Route::put('/settings', [SettingsController::class, 'update'])->name('settings.update');
     });
