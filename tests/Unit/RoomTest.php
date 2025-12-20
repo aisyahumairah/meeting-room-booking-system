@@ -90,14 +90,36 @@ class RoomTest extends TestCase
 
     public function test_room_can_check_if_has_bookings(): void
     {
-        // Skip until Booking model is created in Phase 3
-        $this->markTestSkipped('Booking model not yet created - will be implemented in Phase 3.');
+        $room = Room::factory()->create();
+
+        // Initially should have no bookings
+        $this->assertFalse($room->hasBookings());
+        $this->assertEquals(0, $room->getBookingCount());
+
+        // Create a booking for this room
+        \App\Models\Booking::factory()->create([
+            'room_id' => $room->id,
+        ]);
+
+        // Now should have bookings
+        $this->assertTrue($room->hasBookings());
+        $this->assertEquals(1, $room->getBookingCount());
     }
 
     public function test_room_can_be_deleted_check(): void
     {
-        // Skip until Booking model is created in Phase 3
-        $this->markTestSkipped('Booking model not yet created - will be implemented in Phase 3.');
+        $room = Room::factory()->create();
+
+        // Room without bookings can be deleted
+        $this->assertTrue($room->canBeDeleted());
+
+        // Create a booking for this room
+        \App\Models\Booking::factory()->create([
+            'room_id' => $room->id,
+        ]);
+
+        // Room with bookings cannot be deleted
+        $this->assertFalse($room->canBeDeleted());
     }
 
     public function test_room_status_display_accessor(): void
