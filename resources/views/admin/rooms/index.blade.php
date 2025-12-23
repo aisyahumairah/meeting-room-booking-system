@@ -97,8 +97,8 @@
 
             {{-- Rooms Table --}}
             <div class="card">
-                <div class="table-responsive text-nowrap">
-                    <table class="table table-hover">
+                <div class="card-body">
+                    <table class="table table-hover w-100">
                         <thead>
                             <tr>
                                 <th>
@@ -199,100 +199,7 @@
                                     </td>
                                 </tr>
 
-                                {{-- Status Modal --}}
-                                <div class="modal fade" id="statusModal{{ $room->id }}" tabindex="-1">
-                                    <div class="modal-dialog">
-                                        <div class="modal-content">
-                                            <form action="{{ route('admin.rooms.status', $room) }}" method="POST">
-                                                @csrf
-                                                @method('PUT')
-                                                <div class="modal-header">
-                                                    <h5 class="modal-title">Change Room Status</h5>
-                                                    <button type="button" class="btn-close"
-                                                        data-bs-dismiss="modal"></button>
-                                                </div>
-                                                <div class="modal-body">
-                                                    <p>Update status for <strong>{{ $room->name }}</strong></p>
 
-                                                    <div class="mb-3">
-                                                        <label class="form-label">Status</label>
-                                                        <select class="form-select" name="status"
-                                                            id="statusSelect{{ $room->id }}"
-                                                            onchange="toggleMaintenanceFields({{ $room->id }})">
-                                                            <option value="active"
-                                                                {{ $room->status === 'active' ? 'selected' : '' }}>Active
-                                                            </option>
-                                                            <option value="inactive"
-                                                                {{ $room->status === 'inactive' ? 'selected' : '' }}>
-                                                                Inactive</option>
-                                                            <option value="under_maintenance"
-                                                                {{ $room->status === 'under_maintenance' ? 'selected' : '' }}>
-                                                                Under Maintenance</option>
-                                                        </select>
-                                                    </div>
-
-                                                    <div id="maintenanceFields{{ $room->id }}"
-                                                        class="{{ $room->status !== 'under_maintenance' ? 'd-none' : '' }}">
-                                                        <div class="mb-3">
-                                                            <label class="form-label">Maintenance Start</label>
-                                                            <input type="datetime-local" class="form-control"
-                                                                name="maintenance_start">
-                                                        </div>
-                                                        <div class="mb-3">
-                                                            <label class="form-label">Maintenance End</label>
-                                                            <input type="datetime-local" class="form-control"
-                                                                name="maintenance_end">
-                                                        </div>
-                                                        <div class="mb-3">
-                                                            <label class="form-label">Reason (optional)</label>
-                                                            <textarea class="form-control" name="maintenance_reason" rows="2"></textarea>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div class="modal-footer">
-                                                    <button type="button" class="btn btn-outline-secondary"
-                                                        data-bs-dismiss="modal">Cancel</button>
-                                                    <button type="submit" class="btn btn-primary">Update Status</button>
-                                                </div>
-                                            </form>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                {{-- Delete Modal --}}
-                                <div class="modal fade" id="deleteModal{{ $room->id }}" tabindex="-1">
-                                    <div class="modal-dialog">
-                                        <div class="modal-content">
-                                            <form action="{{ route('admin.rooms.destroy', $room) }}" method="POST">
-                                                @csrf
-                                                @method('DELETE')
-                                                <div class="modal-header">
-                                                    <h5 class="modal-title">Delete Room</h5>
-                                                    <button type="button" class="btn-close"
-                                                        data-bs-dismiss="modal"></button>
-                                                </div>
-                                                <div class="modal-body">
-                                                    <div class="text-center mb-3">
-                                                        <i class="bx bx-error-circle text-danger"
-                                                            style="font-size: 4rem;"></i>
-                                                    </div>
-                                                    <p class="text-center">
-                                                        Are you sure you want to delete
-                                                        <strong>{{ $room->name }}</strong>?
-                                                    </p>
-                                                    <p class="text-center text-muted small">
-                                                        This action cannot be undone. Rooms with bookings cannot be deleted.
-                                                    </p>
-                                                </div>
-                                                <div class="modal-footer">
-                                                    <button type="button" class="btn btn-outline-secondary"
-                                                        data-bs-dismiss="modal">Cancel</button>
-                                                    <button type="submit" class="btn btn-danger">Delete Room</button>
-                                                </div>
-                                            </form>
-                                        </div>
-                                    </div>
-                                </div>
                             @empty
                                 <tr>
                                     <td colspan="6" class="text-center py-5">
@@ -317,6 +224,96 @@
             </div>
         </div>
     </div>
+
+    {{-- Modals --}}
+    @foreach ($rooms as $room)
+        {{-- Status Modal --}}
+        <div class="modal fade" id="statusModal{{ $room->id }}" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <form action="{{ route('admin.rooms.status', $room) }}" method="POST">
+                        @csrf
+                        @method('PUT')
+                        <div class="modal-header">
+                            <h5 class="modal-title">Change Room Status</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                        </div>
+                        <div class="modal-body">
+                            <p>Update status for <strong>{{ $room->name }}</strong></p>
+
+                            <div class="mb-3">
+                                <label class="form-label">Status</label>
+                                <select class="form-select" name="status" id="statusSelect{{ $room->id }}"
+                                    onchange="toggleMaintenanceFields({{ $room->id }})">
+                                    <option value="active" {{ $room->status === 'active' ? 'selected' : '' }}>Active
+                                    </option>
+                                    <option value="inactive" {{ $room->status === 'inactive' ? 'selected' : '' }}>
+                                        Inactive</option>
+                                    <option value="under_maintenance"
+                                        {{ $room->status === 'under_maintenance' ? 'selected' : '' }}>
+                                        Under Maintenance</option>
+                                </select>
+                            </div>
+
+                            <div id="maintenanceFields{{ $room->id }}"
+                                class="{{ $room->status !== 'under_maintenance' ? 'd-none' : '' }}">
+                                <div class="mb-3">
+                                    <label class="form-label">Maintenance Start</label>
+                                    <input type="datetime-local" class="form-control" name="maintenance_start">
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Maintenance End</label>
+                                    <input type="datetime-local" class="form-control" name="maintenance_end">
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Reason (optional)</label>
+                                    <textarea class="form-control" name="maintenance_reason" rows="2"></textarea>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-outline-secondary"
+                                data-bs-dismiss="modal">Cancel</button>
+                            <button type="submit" class="btn btn-primary">Update Status</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        {{-- Delete Modal --}}
+        <div class="modal fade" id="deleteModal{{ $room->id }}" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <form action="{{ route('admin.rooms.destroy', $room) }}" method="POST">
+                        @csrf
+                        @method('DELETE')
+                        <div class="modal-header">
+                            <h5 class="modal-title">Delete Room</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="text-center mb-3">
+                                <i class="bx bx-error-circle text-danger" style="font-size: 4rem;"></i>
+                            </div>
+                            <p class="text-center">
+                                Are you sure you want to delete
+                                <strong>{{ $room->name }}</strong>?
+                            </p>
+                            <p class="text-center text-muted small">
+                                This action cannot be undone. Rooms with bookings cannot be deleted.
+                            </p>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-outline-secondary"
+                                data-bs-dismiss="modal">Cancel</button>
+                            <button type="submit" class="btn btn-danger">Delete Room</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    @endforeach
 @endsection
 
 @push('scripts')

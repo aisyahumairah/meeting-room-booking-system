@@ -166,7 +166,8 @@
                     </div>
                 </form>
             </div>
-
+        </div>
+        <div class="card mb-4">
             {{-- Tab Content --}}
             <div class="tab-content">
                 {{-- List View --}}

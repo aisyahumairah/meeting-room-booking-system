@@ -95,7 +95,7 @@
         </div>
 
         {{-- Bookings Table --}}
-        <div class="card">
+        <div class="card mb-4">
             <div class="card-header d-flex justify-content-between align-items-center">
                 {{-- Quick Filters --}}
                 <div class="d-flex gap-2">
@@ -182,10 +182,10 @@
                     </div>
                 </form>
             </div>
-
-            {{-- Table --}}
-            <div class="table-responsive">
-                <table class="table table-hover">
+        </div>
+        <div class="card mb-4">
+            <div class="card-body">
+                <table class="table table-hover w-100">
                     <thead>
                         <tr>
                             <th>Reference</th>
@@ -219,7 +219,8 @@
                                 <td>
                                     <div>{{ $booking->booking_date->format('D, M d, Y') }}</div>
                                     <small class="text-muted">{{ $booking->time_range }}
-                                        ({{ $booking->duration }})</small>
+                                        ({{ $booking->duration }})
+                                    </small>
                                 </td>
                                 <td>
                                     <span title="{{ $booking->purpose }}">
@@ -275,7 +276,7 @@
             </div>
 
             {{-- Pagination --}}
-            @if ($bookings->hasPages())
+            {{-- @if ($bookings->hasPages())
                 <div class="card-footer">
                     <div class="d-flex justify-content-between align-items-center">
                         <small class="text-muted">
@@ -286,7 +287,7 @@
                         {{ $bookings->links() }}
                     </div>
                 </div>
-            @endif
+            @endif --}}
         </div>
     </div>
 
