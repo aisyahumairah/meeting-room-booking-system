@@ -104,7 +104,8 @@
                 <div class="text-truncate">Calendar</div>
             </a>
         </li>
-        <li class="menu-item {{ request()->routeIs('my-bookings.*') ? 'active' : '' }}">
+        <li
+            class="menu-item {{ request()->routeIs('my-bookings') || request()->routeIs('my-bookings.*') ? 'active' : '' }}">
             <a href="{{ route('my-bookings') }}" class="menu-link">
                 <i class="menu-icon tf-icons bx bx-list-check"></i>
                 <div class="text-truncate">My Bookings</div>

@@ -137,7 +137,7 @@
                         <a href="{{ route('bookings.create') }}" class="btn btn-primary">
                             <i class="bx bx-plus me-1"></i> New Booking
                         </a>
-                        <a href="#" class="btn btn-outline-primary">
+                        <a href="{{ route('calendar') }}" class="btn btn-outline-primary">
                             <i class="bx bx-calendar me-1"></i> View Calendar
                         </a>
                         <a href="{{ route('rooms.index') }}" class="btn btn-outline-primary">

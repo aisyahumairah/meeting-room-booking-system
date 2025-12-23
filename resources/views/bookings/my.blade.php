@@ -142,8 +142,9 @@
                         <label class="form-label">Room</label>
                         <select class="form-select form-select-sm" name="room_id">
                             <option value="">All Rooms</option>
-                            @foreach($rooms as $room)
-                                <option value="{{ $room->id }}" {{ request('room_id') == $room->id ? 'selected' : '' }}>
+                            @foreach ($rooms as $room)
+                                <option value="{{ $room->id }}"
+                                    {{ request('room_id') == $room->id ? 'selected' : '' }}>
                                     {{ $room->name }}
                                 </option>
                             @endforeach
@@ -189,7 +190,7 @@
                                             <a href="{{ route('my-bookings.show', $booking) }}">
                                                 {{ $booking->reference_number }}
                                             </a>
-                                            @if($booking->is_recurring)
+                                            @if ($booking->is_recurring)
                                                 <i class="bx bx-repeat text-info" title="Recurring"></i>
                                             @endif
                                         </td>
@@ -215,16 +216,19 @@
                                                     <i class="bx bx-dots-vertical-rounded"></i>
                                                 </button>
                                                 <div class="dropdown-menu dropdown-menu-end">
-                                                    <a class="dropdown-item" href="{{ route('my-bookings.show', $booking) }}">
+                                                    <a class="dropdown-item"
+                                                        href="{{ route('my-bookings.show', $booking) }}">
                                                         <i class="bx bx-show me-1"></i> View Details
                                                     </a>
-                                                    @if($booking->is_editable)
-                                                        <a class="dropdown-item" href="{{ route('my-bookings.edit', $booking) }}">
+                                                    @if ($booking->is_editable)
+                                                        <a class="dropdown-item"
+                                                            href="{{ route('my-bookings.edit', $booking) }}">
                                                             <i class="bx bx-edit me-1"></i> Edit
                                                         </a>
                                                     @endif
-                                                    @if($booking->is_cancellable)
-                                                        <a class="dropdown-item text-danger" href="#" onclick="confirmCancel(
+                                                    @if ($booking->is_cancellable)
+                                                        <a class="dropdown-item text-danger" href="#"
+                                                            onclick="confirmCancel(
                                                                             {{ $booking->id }},
                                                                             '{{ $booking->reference_number }}',
                                                                             {{ $booking->is_recurring ? 'true' : 'false' }},
@@ -255,7 +259,7 @@
                     </div>
 
                     {{-- Pagination --}}
-                    @if($bookings->hasPages())
+                    @if ($bookings->hasPages())
                         <div class="card-footer">
                             {{ $bookings->links() }}
                         </div>
@@ -274,18 +278,56 @@
 
     @include('bookings.partials.cancel-modal')
 
+    {{-- Booking Details Modal --}}
+    <div class="modal fade" id="bookingDetailsModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Booking Details</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <dl class="row mb-0">
+                        <dt class="col-sm-4">Reference</dt>
+                        <dd class="col-sm-8" id="modalReference"></dd>
+
+                        <dt class="col-sm-4">Room</dt>
+                        <dd class="col-sm-8" id="modalRoom"></dd>
+
+                        <dt class="col-sm-4">Date</dt>
+                        <dd class="col-sm-8" id="modalDate"></dd>
+
+                        <dt class="col-sm-4">Time</dt>
+                        <dd class="col-sm-8" id="modalTime"></dd>
+
+                        <dt class="col-sm-4">Status</dt>
+                        <dd class="col-sm-8" id="modalStatus"></dd>
+
+                        <dt class="col-sm-4">Purpose</dt>
+                        <dd class="col-sm-8 text-wrap" id="modalPurpose"></dd>
+                    </dl>
+                </div>
+                <div class="modal-footer">
+                    <a href="#" id="modalViewLink" class="btn btn-primary btn-sm">View Full Details</a>
+                    <button type="button" class="btn btn-outline-secondary btn-sm"
+                        data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     @push('styles')
-        <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.css" rel="stylesheet">
+        {{-- FullCalendar v6 injects CSS automatically via JS, so no external CSS file is needed --}}
     @endpush
 
     @push('scripts')
         <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
         <script>
-            document.addEventListener('DOMContentLoaded', function () {
+            document.addEventListener('DOMContentLoaded', function() {
                 let calendar;
 
                 // Initialize calendar when tab is shown
-                document.getElementById('calendar-tab').addEventListener('shown.bs.tab', function () {
+                document.getElementById('calendar-tab').addEventListener('shown.bs.tab', function() {
                     if (!calendar) {
                         initCalendar();
                     } else {
@@ -306,19 +348,89 @@
                         slotMaxTime: '18:00:00',
                         weekends: false,
                         height: 'auto',
-                        events: function (info, successCallback, failureCallback) {
-                            fetch(`{{ route('ajax.my-bookings.calendar') }}?start=${info.startStr}&end=${info.endStr}`)
-                                .then(response => response.json())
-                                .then(data => successCallback(data))
-                                .catch(error => failureCallback(error));
+                        events: function(info, successCallback, failureCallback) {
+                            fetch(
+                                    `{{ route('ajax.my-bookings.calendar') }}?start=${encodeURIComponent(info.startStr)}&end=${encodeURIComponent(info.endStr)}`
+                                )
+                                .then(response => {
+                                    if (!response.ok) {
+                                        throw new Error('Network response was not ok');
+                                    }
+                                    return response.json();
+                                })
+                                .then(data => {
+                                    // console.log('Events fetched:', data);
+                                    successCallback(data);
+                                })
+                                .catch(error => {
+                                    console.error('Error fetching events:', error);
+                                    failureCallback(error);
+                                });
                         },
-                        eventClick: function (info) {
-                            window.location.href = info.event.url;
+                        eventClick: function(info) {
                             info.jsEvent.preventDefault();
+
+                            // Populate modal data
+                            const props = info.event.extendedProps;
+                            const start = info.event.start;
+                            const end = info.event.end;
+
+                            if (!props) return;
+
+                            document.getElementById('modalReference').textContent = props.reference ||
+                                '-';
+                            document.getElementById('modalRoom').textContent = props.room || '-';
+
+                            // Format Date
+                            const dateOptions = {
+                                weekday: 'short',
+                                year: 'numeric',
+                                month: 'short',
+                                day: 'numeric'
+                            };
+                            document.getElementById('modalDate').textContent = start ? start
+                                .toLocaleDateString('en-US', dateOptions) : '-';
+
+                            // Format Time
+                            const timeOptions = {
+                                hour: '2-digit',
+                                minute: '2-digit',
+                                hour12: false
+                            };
+                            const startTime = start ? start.toLocaleTimeString('en-US',
+                                timeOptions) : '';
+                            const endTime = end ? end.toLocaleTimeString('en-US', timeOptions) : '';
+                            document.getElementById('modalTime').textContent =
+                                `${startTime} - ${endTime}`;
+
+                            // Status badge
+                            const statusEl = document.getElementById('modalStatus');
+                            statusEl.innerHTML =
+                                `<span class="badge" style="background-color: ${info.event.backgroundColor}">${props.status.toUpperCase()}</span>`;
+
+                            document.getElementById('modalPurpose').textContent = props.purpose ||
+                                '-';
+
+                            // View Link
+                            const viewLink = document.getElementById('modalViewLink');
+                            if (info.event.url) {
+                                viewLink.href = info.event.url;
+                                viewLink.hidden = false;
+                            } else {
+                                viewLink.hidden = true;
+                            }
+
+                            // Show modal
+                            const modal = new bootstrap.Modal(document.getElementById(
+                                'bookingDetailsModal'));
+                            modal.show();
                         },
-                        eventDidMount: function (info) {
+                        eventDidMount: function(info) {
                             // Add tooltip
-                            info.el.title = `${info.event.extendedProps.room}\n${info.event.extendedProps.purpose}`;
+                            if (info.event.extendedProps.room) {
+                                info.el.title =
+                                    `${info.event.extendedProps.room}\n${info.event.extendedProps.purpose || ''}`;
+                            }
                         }
                     });
                     calendar.render();

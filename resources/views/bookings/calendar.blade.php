@@ -91,7 +91,7 @@
                             <label class="form-label">Room</label>
                             <select class="form-select form-select-sm" id="roomFilter">
                                 <option value="">All Rooms</option>
-                                @foreach($rooms as $room)
+                                @foreach ($rooms as $room)
                                     <option value="{{ $room->id }}">{{ $room->name }}</option>
                                 @endforeach
                             </select>
@@ -121,7 +121,7 @@
                                 <span class="legend-color" style="background-color: #28a745;"></span>
                                 <span>Your Bookings</span>
                             </div>
-                            @if($canViewAllBookings)
+                            @if ($canViewAllBookings)
                                 <div class="legend-item">
                                     <span class="legend-color" style="background-color: #17a2b8;"></span>
                                     <span>Others' Bookings</span>
@@ -167,9 +167,49 @@
         <div class="tooltip-content"></div>
     </div>
 
+    {{-- Booking Details Modal --}}
+    <div class="modal fade" id="bookingDetailsModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Booking Details</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <dl class="row mb-0">
+                        <dt class="col-sm-4">Reference</dt>
+                        <dd class="col-sm-8" id="modalReference"></dd>
+
+                        <dt class="col-sm-4">Room</dt>
+                        <dd class="col-sm-8" id="modalRoom"></dd>
+
+                        <dt class="col-sm-4">User</dt>
+                        <dd class="col-sm-8" id="modalUser"></dd>
+
+                        <dt class="col-sm-4">Date</dt>
+                        <dd class="col-sm-8" id="modalDate"></dd>
+
+                        <dt class="col-sm-4">Time</dt>
+                        <dd class="col-sm-8" id="modalTime"></dd>
+
+                        <dt class="col-sm-4">Status</dt>
+                        <dd class="col-sm-8" id="modalStatus"></dd>
+
+                        <dt class="col-sm-4">Purpose</dt>
+                        <dd class="col-sm-8 text-wrap" id="modalPurpose"></dd>
+                    </dl>
+                </div>
+                <div class="modal-footer">
+                    <a href="#" id="modalViewLink" class="btn btn-primary btn-sm">View Full Details</a>
+                    <button type="button" class="btn btn-outline-secondary btn-sm" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     @push('scripts')
         <script>
-            document.addEventListener('DOMContentLoaded', function () {
+            document.addEventListener('DOMContentLoaded', function() {
                 const calendarEl = document.getElementById('bookingCalendar');
                 const roomFilter = document.getElementById('roomFilter');
                 const dateJump = document.getElementById('dateJump');
@@ -205,9 +245,10 @@
                     },
 
                     // Fetch events
-                    events: function (info, successCallback, failureCallback) {
+                    events: function(info, successCallback, failureCallback) {
                         const roomId = roomFilter.value;
-                        let url = `{{ route('ajax.calendar.events') }}?start=${info.startStr}&end=${info.endStr}`;
+                        let url =
+                            `{{ route('ajax.calendar.events') }}?start=${encodeURIComponent(info.startStr)}&end=${encodeURIComponent(info.endStr)}`;
 
                         if (roomId) {
                             url += `&room_id=${roomId}`;
@@ -223,42 +264,125 @@
                     },
 
                     // Click on event - navigate to detail
-                    eventClick: function (info) {
-                        if (info.event.url) {
-                            window.location.href = info.event.url;
-                            info.jsEvent.preventDefault();
+                    // Click on event - show modal
+                    eventClick: function(info) {
+                        info.jsEvent.preventDefault();
+
+                        // Populate modal data
+                        const props = info.event.extendedProps;
+                        const start = info.event.start;
+                        const end = info.event.end;
+
+                        if (!props) return;
+
+                        document.getElementById('modalReference').textContent = props.reference || '-';
+                        document.getElementById('modalRoom').textContent = props.room || '-';
+                        document.getElementById('modalUser').textContent = props.user || '-';
+
+                        // Format Date
+                        const dateOptions = {
+                            weekday: 'short',
+                            year: 'numeric',
+                            month: 'short',
+                            day: 'numeric'
+                        };
+                        document.getElementById('modalDate').textContent = start ? start.toLocaleDateString(
+                            'en-US', dateOptions) : '-';
+
+                        // Format Time
+                        const timeOptions = {
+                            hour: '2-digit',
+                            minute: '2-digit',
+                            hour12: false
+                        };
+                        const startTime = start ? start.toLocaleTimeString('en-US', timeOptions) : '';
+                        const endTime = end ? end.toLocaleTimeString('en-US', timeOptions) : '';
+                        document.getElementById('modalTime').textContent =
+                            `${startTime} - ${endTime} (${props.duration})`;
+
+                        // Status badge
+                        const statusEl = document.getElementById('modalStatus');
+                        const statusColor = info.event.backgroundColor || '#6c757d';
+                        statusEl.innerHTML =
+                            `<span class="badge" style="background-color: ${statusColor}">${props.status.toUpperCase()}</span>`;
+
+                        document.getElementById('modalPurpose').textContent = props.purpose || '-';
+
+                        // View Link
+                        // View Link
+                        const viewLink = document.getElementById('modalViewLink');
+                        // Only show the link if it's the user's own booking (or if they are admin, handled by backend sending URL)
+                        // BUT user specifically requested "user should cannot view details other user bookings"
+                        // The backend ONLY sends a URL if the user is allowed to view it (own booking or admin).
+                        // However, to be extra safe and explicit based on the request "remove the button view full details on modal"
+                        // we can check the 'isOwn' prop if we want to restricted it strictly to own bookings even for admins,
+                        // OR we stick to the existing logic which already hides it if 'url' is null.
+                        // The user said "user should cannot view details other user bookings".
+                        // In Controller: 'url' is null if (!isOwn && !canViewAll).
+                        // So if I am a regular user, url is ALREADY null for others' bookings.
+                        // If the user means "EVEN IF I can view it, don't show the button", that's different.
+                        // But typically "cannot view details" means "don't show the detailed page".
+                        // Let's assume the user wants to be sure.
+                        // The previous code `if (info.event.url)` ALREADY handles this for regular users.
+                        // If the user thinks it's not working, maybe they are testing as Admin?
+                        // "remove the button... on modal" implying it might be showing up when it shouldn't.
+
+                        // Let's explicitly check props.isOwn to be safe if that's what they mean by "user".
+                        // If they mean "Regular User", then checking `info.event.url` is correct because the controller sets it to null.
+                        // However, let's look at the controller again.
+                        // Controller: 'url' => $isOwn ? route(...) : ($canViewAll ? route(...) : null)
+
+                        // If the user wants NO ONE to see full details of others (even admins via this modal?), or just regular users?
+                        // "user should cannot view details other user bookings" -> implies regular user.
+
+                        // I will add a check for `props.isOwn` to strictly limit it if that's the requirement, 
+                        // OR trust the URL. The prompt implies the button IS showing up.
+                        // If the button IS showing up for other users, it means `info.event.url` IS present.
+                        // Which means the controller thinks they `canViewAll`.
+
+                        // To strictly satisfy "user should cannot view details other user bookings", 
+                        // I will update the JS to ONLY show the button if it is their own booking, 
+                        // ignoring the admin privilege for a moment or strictly following "other user bookings".
+
+                        if (props.isOwn && info.event.url) {
+                            viewLink.href = info.event.url;
+                            viewLink.hidden = false;
                         } else {
-                            // Show tooltip for events without URL (non-owned bookings for regular users)
-                            showEventTooltip(info.event, info.jsEvent);
+                            viewLink.hidden = true;
                         }
+
+                        // Show modal
+                        const modal = new bootstrap.Modal(document.getElementById('bookingDetailsModal'));
+                        modal.show();
                     },
 
                     // Hover on event - show tooltip
-                    eventMouseEnter: function (info) {
+                    eventMouseEnter: function(info) {
                         showEventTooltip(info.event, info.jsEvent);
                     },
 
-                    eventMouseLeave: function (info) {
+                    eventMouseLeave: function(info) {
                         hideEventTooltip();
                     },
 
                     // Click on empty slot - go to create booking
-                    select: function (info) {
+                    select: function(info) {
                         const roomId = roomFilter.value || '';
                         const date = info.startStr.split('T')[0];
-                        const startTime = info.startStr.includes('T')
-                            ? info.startStr.split('T')[1].substring(0, 5)
-                            : '09:00';
-                        const endTime = info.endStr.includes('T')
-                            ? info.endStr.split('T')[1].substring(0, 5)
-                            : '10:00';
+                        const startTime = info.startStr.includes('T') ?
+                            info.startStr.split('T')[1].substring(0, 5) :
+                            '09:00';
+                        const endTime = info.endStr.includes('T') ?
+                            info.endStr.split('T')[1].substring(0, 5) :
+                            '10:00';
 
                         // Navigate to create booking with pre-filled values
-                        window.location.href = `{{ route('bookings.create') }}?room_id=${roomId}&date=${date}&start_time=${startTime}&end_time=${endTime}`;
+                        window.location.href =
+                            `{{ route('bookings.create') }}?room_id=${roomId}&date=${date}&start_time=${startTime}&end_time=${endTime}`;
                     },
 
                     // Date click (in month view)
-                    dateClick: function (info) {
+                    dateClick: function(info) {
                         // Switch to timeGridDay view when clicking a date in dayGridMonth view
                         // Note: dateClick triggers on day cells. select triggers on selection.
                         // If selectable is true, dateClick might conflict if not careful.
@@ -269,7 +393,7 @@
                     },
 
                     // View change
-                    viewDidMount: function (info) {
+                    viewDidMount: function(info) {
                         hideEventTooltip();
                     },
                 });
@@ -277,17 +401,17 @@
                 calendar.render();
 
                 // Room filter change
-                roomFilter.addEventListener('change', function () {
+                roomFilter.addEventListener('change', function() {
                     calendar.refetchEvents();
                 });
 
                 // Date jump
-                dateJump.addEventListener('change', function () {
+                dateJump.addEventListener('change', function() {
                     calendar.gotoDate(this.value);
                 });
 
                 // Today button
-                todayBtn.addEventListener('click', function () {
+                todayBtn.addEventListener('click', function() {
                     calendar.today();
                     dateJump.value = new Date().toISOString().split('T')[0];
                 });
