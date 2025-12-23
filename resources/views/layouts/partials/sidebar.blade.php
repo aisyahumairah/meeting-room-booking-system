@@ -99,13 +99,14 @@
             </a>
         </li>
         <li class="menu-item {{ request()->routeIs('calendar') ? 'active' : '' }}">
-            <a href="#" class="menu-link">
+            <a href="{{ route('calendar') }}" class="menu-link">
                 <i class="menu-icon tf-icons bx bx-calendar"></i>
                 <div class="text-truncate">Calendar</div>
             </a>
         </li>
-        <li class="menu-item {{ request()->routeIs('my-bookings.*') ? 'active' : '' }}">
-            <a href="#" class="menu-link">
+        <li
+            class="menu-item {{ request()->routeIs('my-bookings') || request()->routeIs('my-bookings.*') ? 'active' : '' }}">
+            <a href="{{ route('my-bookings') }}" class="menu-link">
                 <i class="menu-icon tf-icons bx bx-list-check"></i>
                 <div class="text-truncate">My Bookings</div>
             </a>
@@ -114,7 +115,7 @@
         {{-- Admin Booking Management --}}
         @can('manage-bookings')
             <li class="menu-item {{ request()->routeIs('admin.bookings.*') ? 'active' : '' }}">
-                <a href="#" class="menu-link">
+                <a href="{{ route('admin.bookings.index') }}" class="menu-link">
                     <i class="menu-icon tf-icons bx bx-table"></i>
                     <div class="text-truncate">All Bookings</div>
                 </a>

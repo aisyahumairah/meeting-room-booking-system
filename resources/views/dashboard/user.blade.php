@@ -15,7 +15,7 @@
                                 You have <span class="fw-bold">{{ $upcomingBookings->count() }} upcoming
                                     booking{{ $upcomingBookings->count() !== 1 ? 's' : '' }}</span> this week.
                             </p>
-                            <a href="#" class="btn btn-sm btn-primary">
+                            <a href="{{ route('bookings.create') }}" class="btn btn-sm btn-primary">
                                 <i class="bx bx-plus me-1"></i> Book a Room
                             </a>
                         </div>
@@ -134,13 +134,13 @@
                 </div>
                 <div class="card-body">
                     <div class="d-grid gap-2">
-                        <a href="#" class="btn btn-primary">
+                        <a href="{{ route('bookings.create') }}" class="btn btn-primary">
                             <i class="bx bx-plus me-1"></i> New Booking
                         </a>
-                        <a href="#" class="btn btn-outline-primary">
+                        <a href="{{ route('calendar') }}" class="btn btn-outline-primary">
                             <i class="bx bx-calendar me-1"></i> View Calendar
                         </a>
-                        <a href="#" class="btn btn-outline-primary">
+                        <a href="{{ route('rooms.index') }}" class="btn btn-outline-primary">
                             <i class="bx bx-building me-1"></i> Browse Rooms
                         </a>
                         <a href="{{ route('profile.password') }}" class="btn btn-outline-secondary">

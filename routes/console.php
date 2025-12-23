@@ -9,7 +9,15 @@ Artisan::command('inspire', function () {
 })->purpose('Display an inspiring quote');
 
 // Schedule room maintenance status updates every 5 minutes
+// Schedule room maintenance status updates every 5 minutes
 Schedule::command('rooms:update-maintenance-status')->everyFiveMinutes();
+
+// Run every 15 minutes to mark completed bookings
+Schedule::command('bookings:complete-expired')
+    ->everyFifteenMinutes()
+    ->withoutOverlapping()
+    ->runInBackground()
+    ->appendOutputTo(storage_path('logs/scheduler.log'));
 
 // Schedule booking reminders to be sent daily at 9:00 AM
 Schedule::command('bookings:send-reminders')->dailyAt('09:00');

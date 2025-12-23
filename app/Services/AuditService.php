@@ -27,6 +27,16 @@ class AuditService
     public const EVENT_ROOM_IMAGE_UPLOADED = 'room.image_uploaded';
     public const EVENT_ROOM_IMAGE_DELETED = 'room.image_deleted';
 
+    // Booking-related audit events
+    public const BOOKING_CREATED = 'booking_created';
+    public const BOOKING_UPDATED = 'booking_updated';
+    public const BOOKING_CANCELLED = 'booking_cancelled';
+    public const BOOKING_AUTO_COMPLETED = 'booking_auto_completed';
+    public const BOOKING_SERIES_CREATED = 'booking_series_created';
+    public const BOOKING_SERIES_UPDATED = 'booking_series_updated';
+    public const BOOKING_SERIES_CANCELLED = 'booking_series_cancelled';
+
+
     // User Management Events
     public const EVENT_USER_CREATED = 'user.created';
     public const EVENT_USER_UPDATED = 'user.updated';

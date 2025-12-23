@@ -11,6 +11,8 @@ class BookingFactory extends Factory
 {
     protected $model = Booking::class;
 
+    private static $counter = 0;
+
     public function definition(): array
     {
         $startHour = $this->faker->numberBetween(8, 16);
@@ -18,8 +20,7 @@ class BookingFactory extends Factory
         $endHour = min($startHour + $duration, 18);
 
         return [
-            // Use faker's unique uuid for tests to avoid collisions
-            'reference_number' => 'BK-' . now()->year . '-' . $this->faker->unique()->numerify('#####'),
+            'reference_number' => 'BK-' . now()->year . '-' . str_pad(++self::$counter, 5, '0', STR_PAD_LEFT),
             'user_id' => User::factory(),
             'room_id' => Room::factory(),
             'booking_date' => $this->faker->dateTimeBetween('now', '+30 days')->format('Y-m-d'),

@@ -61,7 +61,7 @@ This project is optimized for a **Laravel Herd** and **DBngin** workflow on Wind
     ```
 6.  **Run the Application**
     - **Backend**: Handled automatically by Herd at [http://mrbs.test](http://mrbs.test).
-    - **Frontend Assets**: Run the Vite development server:
+    - **Frontend Assets**: Run the Vite development server(not required):
       ```powershell
       npm run dev
       ```
