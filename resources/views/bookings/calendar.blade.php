@@ -167,6 +167,46 @@
         <div class="tooltip-content"></div>
     </div>
 
+    {{-- Booking Details Modal --}}
+    <div class="modal fade" id="bookingDetailsModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Booking Details</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <dl class="row mb-0">
+                        <dt class="col-sm-4">Reference</dt>
+                        <dd class="col-sm-8" id="modalReference"></dd>
+
+                        <dt class="col-sm-4">Room</dt>
+                        <dd class="col-sm-8" id="modalRoom"></dd>
+
+                        <dt class="col-sm-4">User</dt>
+                        <dd class="col-sm-8" id="modalUser"></dd>
+
+                        <dt class="col-sm-4">Date</dt>
+                        <dd class="col-sm-8" id="modalDate"></dd>
+
+                        <dt class="col-sm-4">Time</dt>
+                        <dd class="col-sm-8" id="modalTime"></dd>
+
+                        <dt class="col-sm-4">Status</dt>
+                        <dd class="col-sm-8" id="modalStatus"></dd>
+
+                        <dt class="col-sm-4">Purpose</dt>
+                        <dd class="col-sm-8 text-wrap" id="modalPurpose"></dd>
+                    </dl>
+                </div>
+                <div class="modal-footer">
+                    <a href="#" id="modalViewLink" class="btn btn-primary btn-sm">View Full Details</a>
+                    <button type="button" class="btn btn-outline-secondary btn-sm" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     @push('scripts')
         <script>
             document.addEventListener('DOMContentLoaded', function() {
@@ -229,14 +269,96 @@
                     },
 
                     // Click on event - navigate to detail
+                    // Click on event - show modal
                     eventClick: function(info) {
-                        if (info.event.url) {
-                            window.location.href = info.event.url;
-                            info.jsEvent.preventDefault();
+                        info.jsEvent.preventDefault();
+
+                        // Populate modal data
+                        const props = info.event.extendedProps;
+                        const start = info.event.start;
+                        const end = info.event.end;
+
+                        if (!props) return;
+
+                        document.getElementById('modalReference').textContent = props.reference || '-';
+                        document.getElementById('modalRoom').textContent = props.room || '-';
+                        document.getElementById('modalUser').textContent = props.user || '-';
+
+                        // Format Date
+                        const dateOptions = {
+                            weekday: 'short',
+                            year: 'numeric',
+                            month: 'short',
+                            day: 'numeric'
+                        };
+                        document.getElementById('modalDate').textContent = start ? start.toLocaleDateString(
+                            'en-US', dateOptions) : '-';
+
+                        // Format Time
+                        const timeOptions = {
+                            hour: '2-digit',
+                            minute: '2-digit',
+                            hour12: false
+                        };
+                        const startTime = start ? start.toLocaleTimeString('en-US', timeOptions) : '';
+                        const endTime = end ? end.toLocaleTimeString('en-US', timeOptions) : '';
+                        document.getElementById('modalTime').textContent =
+                            `${startTime} - ${endTime} (${props.duration})`;
+
+                        // Status badge
+                        const statusEl = document.getElementById('modalStatus');
+                        const statusColor = info.event.backgroundColor || '#6c757d';
+                        statusEl.innerHTML =
+                            `<span class="badge" style="background-color: ${statusColor}">${props.status.toUpperCase()}</span>`;
+
+                        document.getElementById('modalPurpose').textContent = props.purpose || '-';
+
+                        // View Link
+                        // View Link
+                        const viewLink = document.getElementById('modalViewLink');
+                        // Only show the link if it's the user's own booking (or if they are admin, handled by backend sending URL)
+                        // BUT user specifically requested "user should cannot view details other user bookings"
+                        // The backend ONLY sends a URL if the user is allowed to view it (own booking or admin).
+                        // However, to be extra safe and explicit based on the request "remove the button view full details on modal"
+                        // we can check the 'isOwn' prop if we want to restricted it strictly to own bookings even for admins,
+                        // OR we stick to the existing logic which already hides it if 'url' is null.
+                        // The user said "user should cannot view details other user bookings".
+                        // In Controller: 'url' is null if (!isOwn && !canViewAll).
+                        // So if I am a regular user, url is ALREADY null for others' bookings.
+                        // If the user means "EVEN IF I can view it, don't show the button", that's different.
+                        // But typically "cannot view details" means "don't show the detailed page".
+                        // Let's assume the user wants to be sure.
+                        // The previous code `if (info.event.url)` ALREADY handles this for regular users.
+                        // If the user thinks it's not working, maybe they are testing as Admin?
+                        // "remove the button... on modal" implying it might be showing up when it shouldn't.
+
+                        // Let's explicitly check props.isOwn to be safe if that's what they mean by "user".
+                        // If they mean "Regular User", then checking `info.event.url` is correct because the controller sets it to null.
+                        // However, let's look at the controller again.
+                        // Controller: 'url' => $isOwn ? route(...) : ($canViewAll ? route(...) : null)
+
+                        // If the user wants NO ONE to see full details of others (even admins via this modal?), or just regular users?
+                        // "user should cannot view details other user bookings" -> implies regular user.
+
+                        // I will add a check for `props.isOwn` to strictly limit it if that's the requirement,
+                        // OR trust the URL. The prompt implies the button IS showing up.
+                        // If the button IS showing up for other users, it means `info.event.url` IS present.
+                        // Which means the controller thinks they `canViewAll`.
+
+                        // To strictly satisfy "user should cannot view details other user bookings",
+                        // I will update the JS to ONLY show the button if it is their own booking,
+                        // ignoring the admin privilege for a moment or strictly following "other user bookings".
+
+                        if (props.isOwn && info.event.url) {
+                            viewLink.href = info.event.url;
+                            viewLink.hidden = false;
                         } else {
-                            // Show tooltip for events without URL (non-owned bookings for regular users)
-                            showEventTooltip(info.event, info.jsEvent);
+                            viewLink.hidden = true;
                         }
+
+                        // Show modal
+                        const modal = new bootstrap.Modal(document.getElementById('bookingDetailsModal'));
+                        modal.show();
                     },
 
                     // Hover on event - show tooltip

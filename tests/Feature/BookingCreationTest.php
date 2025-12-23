@@ -18,6 +18,13 @@ class BookingCreationTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
+
+        // Disable CSRF protection for tests
+        $this->withoutMiddleware([
+            \Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class,
+            \Illuminate\Foundation\Http\Middleware\ValidateCsrfToken::class,
+        ]);
+
         $this->user = User::factory()->create([
             'status' => 'active',
             'must_change_password' => false,
@@ -147,7 +154,9 @@ class BookingCreationTest extends TestCase
                 'purpose' => 'Team meeting',
             ]);
 
+        $this->assertDatabaseCount('bookings', 1);
         $booking = Booking::latest()->first();
+        $this->assertNotNull($booking);
         $year = now()->year;
         $this->assertMatchesRegularExpression("/^BK-{$year}-\d{5}$/", $booking->reference_number);
     }

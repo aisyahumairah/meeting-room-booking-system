@@ -320,6 +320,7 @@ class BookingController extends Controller
         $bookings = Booking::with('room')
             ->forUser(auth()->id())
             ->whereBetween('booking_date', [$startDate, $endDate])
+            ->whereIn('status', ['confirmed', 'completed'])
             ->get();
 
         $events = $bookings->map(function ($booking) {
