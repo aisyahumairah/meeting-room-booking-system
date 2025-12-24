@@ -13,7 +13,7 @@
                 <h5 class="card-header">Edit Profile</h5>
                 <div class="card-body">
                     <div class="d-flex align-items-start align-items-sm-center gap-4 mb-4">
-                        <img src="{{ asset('assets/img/avatars/1.png') }}" alt="user-avatar" class="d-block rounded"
+                        <img src="{{ asset('assets/img/avatars/kosong.jpeg') }}" alt="user-avatar" class="d-block rounded"
                             height="100" width="100">
                         <div>
                             <h5 class="mb-1">{{ $user->name }}</h5>

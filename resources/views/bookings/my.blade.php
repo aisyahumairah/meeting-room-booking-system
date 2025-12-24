@@ -172,92 +172,92 @@
             <div class="tab-content">
                 {{-- List View --}}
                 <div class="tab-pane fade show active" id="listView" role="tabpanel">
-                    <div class="table-responsive">
-                        <table class="table table-hover">
-                            <thead>
-                                <tr>
-                                    <th>Reference</th>
-                                    <th>Date & Time</th>
-                                    <th>Room</th>
-                                    <th>Purpose</th>
-                                    <th>Status</th>
-                                    <th>Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @forelse($bookings as $booking)
+                    @if ($bookings->isEmpty())
+                        <div class="card-body text-center py-5">
+                            <i class="bx bx-calendar-x bx-lg text-muted mb-3"></i>
+                            <h5 class="text-muted">No bookings found</h5>
+                            <p class="text-muted mb-4">You haven't made any meeting room bookings yet.</p>
+                            <a href="{{ route('bookings.create') }}" class="btn btn-primary">
+                                <i class="bx bx-plus me-1"></i> Create Your First Booking
+                            </a>
+                        </div>
+                    @else
+                        <div class="card-body">
+                            <table class="table table-hover w-100">
+                                <thead>
                                     <tr>
-                                        <td>
-                                            <a href="{{ route('my-bookings.show', $booking) }}">
-                                                {{ $booking->reference_number }}
-                                            </a>
-                                            @if ($booking->is_recurring)
-                                                <i class="bx bx-repeat text-info" title="Recurring"></i>
-                                            @endif
-                                        </td>
-                                        <td>
-                                            <div>{{ $booking->booking_date->format('D, M d, Y') }}</div>
-                                            <small class="text-muted">{{ $booking->time_range }}</small>
-                                        </td>
-                                        <td>
-                                            <div>{{ $booking->room->name }}</div>
-                                            <small class="text-muted">{{ $booking->room->floor_location }}</small>
-                                        </td>
-                                        <td>
-                                            <span title="{{ $booking->purpose }}">
-                                                {{ Str::limit($booking->purpose, 40) }}
-                                            </span>
-                                        </td>
-                                        <td>{!! $booking->status_badge !!}</td>
-                                        <td>
-                                            <div class="dropdown">
-                                                <button type="button"
-                                                    class="btn btn-sm btn-icon btn-outline-secondary dropdown-toggle hide-arrow"
-                                                    data-bs-toggle="dropdown">
-                                                    <i class="bx bx-dots-vertical-rounded"></i>
-                                                </button>
-                                                <div class="dropdown-menu dropdown-menu-end">
-                                                    <a class="dropdown-item"
-                                                        href="{{ route('my-bookings.show', $booking) }}">
-                                                        <i class="bx bx-show me-1"></i> View Details
-                                                    </a>
-                                                    @if ($booking->is_editable)
-                                                        <a class="dropdown-item"
-                                                            href="{{ route('my-bookings.edit', $booking) }}">
-                                                            <i class="bx bx-edit me-1"></i> Edit
-                                                        </a>
-                                                    @endif
-                                                    @if ($booking->is_cancellable)
-                                                        <a class="dropdown-item text-danger" href="#"
-                                                            onclick="confirmCancel(
-                                                                            {{ $booking->id }},
-                                                                            '{{ $booking->reference_number }}',
-                                                                            {{ $booking->is_recurring ? 'true' : 'false' }},
-                                                                            {{ $booking->is_recurring ? $booking->series->bookings()->where('status', 'confirmed')->count() : 0 }}
-                                                                        )">
-                                                            <i class="bx bx-x me-1"></i> Cancel
-                                                        </a>
-                                                    @endif
-                                                </div>
-                                            </div>
-                                        </td>
+                                        <th>Reference</th>
+                                        <th>Date & Time</th>
+                                        <th>Room</th>
+                                        <th>Purpose</th>
+                                        <th>Status</th>
+                                        <th>Actions</th>
                                     </tr>
-                                @empty
-                                    <tr>
-                                        <td colspan="6" class="text-center py-4">
-                                            <div class="text-muted">
-                                                <i class="bx bx-calendar-x bx-lg mb-2"></i>
-                                                <p class="mb-2">No bookings found</p>
-                                                <a href="{{ route('bookings.create') }}" class="btn btn-primary btn-sm">
-                                                    Create Your First Booking
+                                </thead>
+                                <tbody>
+                                    @foreach ($bookings as $booking)
+                                        <tr>
+                                            <td>
+                                                <a href="{{ route('my-bookings.show', $booking) }}">
+                                                    {{ $booking->reference_number }}
                                                 </a>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                @endforelse
-                            </tbody>
-                        </table>
-                    </div>
+                                                @if ($booking->is_recurring)
+                                                    <i class="bx bx-repeat text-info" title="Recurring"></i>
+                                                @endif
+                                            </td>
+                                            <td>
+                                                <div>{{ $booking->booking_date->format('D, M d, Y') }}</div>
+                                                <small class="text-muted">{{ $booking->time_range }}</small>
+                                            </td>
+                                            <td>
+                                                <div>{{ $booking->room->name }}</div>
+                                                <small class="text-muted">{{ $booking->room->floor_location }}</small>
+                                            </td>
+                                            <td>
+                                                <span title="{{ $booking->purpose }}">
+                                                    {{ Str::limit($booking->purpose, 40) }}
+                                                </span>
+                                            </td>
+                                            <td>{!! $booking->status_badge !!}</td>
+                                            <td>
+                                                <div class="dropdown">
+                                                    <button type="button"
+                                                        class="btn btn-sm btn-icon btn-outline-secondary dropdown-toggle hide-arrow"
+                                                        data-bs-toggle="dropdown">
+                                                        <i class="bx bx-dots-vertical-rounded"></i>
+                                                    </button>
+                                                    <div class="dropdown-menu dropdown-menu-end">
+                                                        <a class="dropdown-item"
+                                                            href="{{ route('my-bookings.show', $booking) }}">
+                                                            <i class="bx bx-show me-1"></i> View Details
+                                                        </a>
+                                                        @if ($booking->is_editable)
+                                                            <a class="dropdown-item"
+                                                                href="{{ route('my-bookings.edit', $booking) }}">
+                                                                <i class="bx bx-edit me-1"></i> Edit
+                                                            </a>
+                                                        @endif
+                                                        @if ($booking->is_cancellable)
+                                                            <a class="dropdown-item text-danger" href="#"
+                                                                onclick="confirmCancel(
+                                                                                {{ $booking->id }},
+                                                                                '{{ $booking->reference_number }}',
+                                                                                {{ $booking->is_recurring ? 'true' : 'false' }},
+                                                                                {{ $booking->is_recurring ? $booking->series->bookings()->where('status', 'confirmed')->count() : 0 }}
+                                                                            )">
+                                                                <i class="bx bx-x me-1"></i> Cancel
+                                                            </a>
+                                                        @endif
+                                                    </div>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
+                    @endif
+
 
                     {{-- Pagination --}}
                     @if ($bookings->hasPages())

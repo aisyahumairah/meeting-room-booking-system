@@ -82,7 +82,7 @@
                             </tr>
                         </thead>
                         <tbody class="table-border-bottom-0">
-                            @forelse($upcomingBookings as $booking)
+                            @foreach ($upcomingBookings as $booking)
                                 <tr>
                                     <td>
                                         <i class="bx bx-building-house fa-lg text-primary me-3"></i>
@@ -112,14 +112,7 @@
                                         </div>
                                     </td>
                                 </tr>
-                            @empty
-                                <tr>
-                                    <td colspan="4" class="text-center text-muted py-4">
-                                        <i class="bx bx-calendar bx-lg mb-2 d-block"></i>
-                                        No upcoming bookings
-                                    </td>
-                                </tr>
-                            @endforelse
+                            @endforeach
                         </tbody>
                     </table>
                 </div>
