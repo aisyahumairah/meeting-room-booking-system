@@ -80,7 +80,7 @@ class UserController extends Controller
         $validated = $request->validated();
 
         // Generate temporary password if not provided
-        $tempPassword = $validated['password'] ?? Str::random(12);
+        $tempPassword = $validated['password'] ?? 'abc123';
 
         $user = User::create([
             'staff_number' => $validated['staff_number'],

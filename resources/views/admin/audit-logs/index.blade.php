@@ -141,8 +141,8 @@
                     <i class='bx bx-lock-alt'></i> Logs are immutable and cannot be edited or deleted
                 </span>
             </div>
-            <div class="table-responsive">
-                <table class="table table-hover">
+            <div class="card-body">
+                <table class="table table-hover w-100">
                     <thead>
                         <tr>
                             <th>Timestamp</th>

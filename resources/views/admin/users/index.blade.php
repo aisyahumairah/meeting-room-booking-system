@@ -112,8 +112,8 @@
 
         <!-- Users Table -->
         <div class="card">
-            <div class="table-responsive">
-                <table class="table table-hover">
+            <div class="card-body">
+                <table class="table table-hover w-100">
                     <thead>
                         <tr>
                             <th>Staff #</th>
