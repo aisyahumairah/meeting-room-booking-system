@@ -231,89 +231,6 @@
                                         </ul>
                                     </div>
 
-                                    <!-- Reset Password Modal -->
-                                    <div class="modal fade" id="resetPasswordModal{{ $user->id }}" tabindex="-1">
-                                        <div class="modal-dialog">
-                                            <div class="modal-content">
-                                                <div class="modal-header">
-                                                    <h5 class="modal-title">Reset Password for {{ $user->name }}</h5>
-                                                    <button type="button" class="btn-close"
-                                                        data-bs-dismiss="modal"></button>
-                                                </div>
-                                                <form action="{{ route('admin.users.reset-password', $user) }}"
-                                                    method="POST">
-                                                    @csrf
-                                                    <div class="modal-body">
-                                                        <div class="mb-3">
-                                                            <div class="form-check">
-                                                                <input class="form-check-input" type="radio"
-                                                                    name="method" value="generate"
-                                                                    id="method_generate{{ $user->id }}" checked>
-                                                                <label class="form-check-label"
-                                                                    for="method_generate{{ $user->id }}">
-                                                                    Generate temporary password (display on screen)
-                                                                </label>
-                                                            </div>
-                                                            <div class="form-check">
-                                                                <input class="form-check-input" type="radio"
-                                                                    name="method" value="email"
-                                                                    id="method_email{{ $user->id }}">
-                                                                <label class="form-check-label"
-                                                                    for="method_email{{ $user->id }}">
-                                                                    Send password reset link via email
-                                                                </label>
-                                                            </div>
-                                                        </div>
-                                                        <p class="text-muted small">
-                                                            User will be required to change password on next login.
-                                                        </p>
-                                                    </div>
-                                                    <div class="modal-footer">
-                                                        <button type="button" class="btn btn-outline-secondary"
-                                                            data-bs-dismiss="modal">Cancel</button>
-                                                        <button type="submit" class="btn btn-primary">Reset
-                                                            Password</button>
-                                                    </div>
-                                                </form>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <!-- Delete User Modal -->
-                                    <div class="modal fade" id="deleteUserModal{{ $user->id }}" tabindex="-1">
-                                        <div class="modal-dialog">
-                                            <div class="modal-content">
-                                                <div class="modal-header">
-                                                    <h5 class="modal-title text-danger">Delete User</h5>
-                                                    <button type="button" class="btn-close"
-                                                        data-bs-dismiss="modal"></button>
-                                                </div>
-                                                <form action="{{ route('admin.users.destroy', $user) }}" method="POST">
-                                                    @csrf
-                                                    @method('DELETE')
-                                                    <div class="modal-body">
-                                                        <p>To permanently delete <strong>{{ $user->name }}</strong>, type
-                                                            their full name below:</p>
-                                                        <input type="text" class="form-control"
-                                                            placeholder="{{ $user->name }}"
-                                                            onkeyup="document.getElementById('confirmDelete{{ $user->id }}').disabled = this.value !== '{{ $user->name }}'">
-                                                        <p class="text-danger small mt-2">
-                                                            <i class='bx bx-error-circle'></i> This action cannot be
-                                                            undone.
-                                                        </p>
-                                                    </div>
-                                                    <div class="modal-footer">
-                                                        <button type="button" class="btn btn-outline-secondary"
-                                                            data-bs-dismiss="modal">Cancel</button>
-                                                        <button type="submit" id="confirmDelete{{ $user->id }}"
-                                                            class="btn btn-danger" disabled>
-                                                            Delete Permanently
-                                                        </button>
-                                                    </div>
-                                                </form>
-                                            </div>
-                                        </div>
-                                    </div>
                                 </td>
                             </tr>
                             @empty
@@ -337,5 +254,87 @@
                     </div>
                 @endif
             </div>
+        </div>
+
+        <!-- Modals -->
+        @foreach ($users as $user)
+            <!-- Reset Password Modal -->
+            <div class="modal fade" id="resetPasswordModal{{ $user->id }}" tabindex="-1" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Reset Password for {{ $user->name }}</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <form action="{{ route('admin.users.reset-password', $user) }}" method="POST">
+                            @csrf
+                            <div class="modal-body">
+                                <div class="mb-3">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="method" value="generate"
+                                            id="method_generate{{ $user->id }}" checked>
+                                        <label class="form-check-label" for="method_generate{{ $user->id }}">
+                                            Generate temporary password (display on screen)
+                                        </label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="method" value="email"
+                                            id="method_email{{ $user->id }}">
+                                        <label class="form-check-label" for="method_email{{ $user->id }}">
+                                            Send password reset link via email
+                                        </label>
+                                    </div>
+                                </div>
+                                <p class="text-muted small">
+                                    User will be required to change password on next login.
+                                </p>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-outline-secondary"
+                                    data-bs-dismiss="modal">Cancel</button>
+                                <button type="submit" class="btn btn-primary">Reset Password</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            @if ($user->id !== auth()->id())
+                <!-- Delete User Modal -->
+                <div class="modal fade" id="deleteUserModal{{ $user->id }}" tabindex="-1" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title text-danger">Delete User</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                    aria-label="Close"></button>
+                            </div>
+                            <form action="{{ route('admin.users.destroy', $user) }}" method="POST">
+                                @csrf
+                                @method('DELETE')
+                                <div class="modal-body">
+                                    <p>To permanently delete <strong>{{ $user->name }}</strong>, type
+                                        their full name below:</p>
+                                    <input type="text" class="form-control" placeholder="{{ $user->name }}"
+                                        onkeyup="document.getElementById('confirmDelete{{ $user->id }}').disabled = this.value !== '{{ $user->name }}'">
+                                    <p class="text-danger small mt-2">
+                                        <i class='bx bx-error-circle'></i> This action cannot be
+                                        undone.
+                                    </p>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-outline-secondary"
+                                        data-bs-dismiss="modal">Cancel</button>
+                                    <button type="submit" id="confirmDelete{{ $user->id }}" class="btn btn-danger"
+                                        disabled>
+                                        Delete Permanently
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            @endif
+        @endforeach
         </div>
     @endsection
