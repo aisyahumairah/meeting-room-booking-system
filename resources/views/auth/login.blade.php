@@ -96,7 +96,7 @@
                                         class="form-control @error('password') is-invalid @enderror" name="password"
                                         placeholder="&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;"
                                         aria-describedby="password" required />
-                                    <span class="input-group-text cursor-pointer" id="togglePassword">
+                                    <span class="input-group-text cursor-pointer toggle-password" data-target="password">
                                         <i class="icon-base bx bx-hide"></i>
                                     </span>
                                 </div>
@@ -128,23 +128,3 @@
         </div>
     </div>
 @endsection
-
-@push('scripts')
-    <script>
-        // Password visibility toggle
-        document.getElementById('togglePassword').addEventListener('click', function() {
-            const passwordInput = document.getElementById('password');
-            const icon = this.querySelector('i');
-
-            if (passwordInput.type === 'password') {
-                passwordInput.type = 'text';
-                icon.classList.remove('bx-hide');
-                icon.classList.add('bx-show');
-            } else {
-                passwordInput.type = 'password';
-                icon.classList.remove('bx-show');
-                icon.classList.add('bx-hide');
-            }
-        });
-    </script>
-@endpush
