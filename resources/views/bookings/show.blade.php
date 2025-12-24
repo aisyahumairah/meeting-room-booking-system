@@ -68,10 +68,11 @@
                             </div>
                         @endif
 
-                        @if($booking->is_recurring)
+                        @if ($booking->is_recurring)
                             <div class="alert alert-info">
                                 <i class="bx bx-repeat me-1"></i>
-                                <strong>Recurring Booking</strong> - Part of series {{ $booking->series->reference_number }}
+                                <strong>Recurring Booking</strong> - Part of series
+                                {{ $booking->series->reference_number }}
                                 ({{ $booking->series->occurrence_count }} occurrences)
                             </div>
                         @endif
@@ -150,10 +151,11 @@
                                             </td>
                                             <td class="small">{{ $log->actor_name ?? 'System' }}</td>
                                             <td class="small">
-                                                @if(is_array($log->details))
-                                                    @foreach(array_slice($log->details, 0, 3) as $key => $value)
-                                                        @if(!is_array($value))
-                                                            <span class="text-muted">{{ $key }}:</span> {{ $value }}<br>
+                                                @if (is_array($log->details))
+                                                    @foreach (array_slice($log->details, 0, 3) as $key => $value)
+                                                        @if (!is_array($value))
+                                                            <span class="text-muted">{{ $key }}:</span>
+                                                            {{ $value }}<br>
                                                         @endif
                                                     @endforeach
                                                 @endif

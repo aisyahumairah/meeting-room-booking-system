@@ -1,7 +1,7 @@
 # Step 4.4: System Configuration
 
 **Priority:** HIGH | **Ref:** §7.3.3 | **Dependencies:** None  
-**Status:** TODO
+**Status:** COMPLETE
 
 ---
 
@@ -996,6 +996,8 @@ Add System Settings menu item (for SysAdmin only):
 
 ## Testing Requirements
 
+> **Note:** When creating test users with the factory, use `->passwordChanged()` to set `must_change_password` to `false`. Otherwise, the `MustChangePassword` middleware will redirect users causing tests to receive 302 responses instead of 200.
+
 **File:** `tests/Feature/SystemConfigurationTest.php`
 
 ```php
@@ -1022,9 +1024,9 @@ class SystemConfigurationTest extends TestCase
         
         $this->seed(\Database\Seeders\SystemSettingSeeder::class);
         
-        $this->sysAdmin = User::factory()->create(['role' => 'system_admin']);
-        $this->director = User::factory()->create(['role' => 'director']);
-        $this->regularUser = User::factory()->create(['role' => 'regular_user']);
+        $this->sysAdmin = User::factory()->passwordChanged()->create(['role' => 'system_admin']);
+        $this->director = User::factory()->passwordChanged()->create(['role' => 'director']);
+        $this->regularUser = User::factory()->passwordChanged()->create(['role' => 'regular_user']);
     }
 
     public function test_sysadmin_can_access_settings(): void
@@ -1160,20 +1162,20 @@ class SystemConfigurationTest extends TestCase
 
 ## Acceptance Criteria
 
-- [ ] Settings page displays all configurable settings
-- [ ] Session & Security section: session timeout, password reset expiry, login limit, lockout duration
-- [ ] Password Policy section is read-only (displays hardcoded values)
-- [ ] Booking Rules section is read-only (displays hardcoded values)
-- [ ] Notification toggles work (master toggle + individual)
-- [ ] Master notification toggle disables individual toggles when off
-- [ ] Maintenance mode toggle requires confirmation
-- [ ] Maintenance mode blocks regular users (shows error page)
-- [ ] Maintenance mode allows admins through
-- [ ] Reset to Defaults button works per section
-- [ ] Settings changes are logged to audit trail
-- [ ] SystemSetting model caches values
-- [ ] Only SysAdmin can access settings
-- [ ] All tests pass: `php artisan test --filter=SystemConfigurationTest`
+- [x] Settings page displays all configurable settings
+- [x] Session & Security section: session timeout, password reset expiry, login limit, lockout duration
+- [x] Password Policy section is read-only (displays hardcoded values)
+- [x] Booking Rules section is read-only (displays hardcoded values)
+- [x] Notification toggles work (master toggle + individual)
+- [x] Master notification toggle disables individual toggles when off
+- [x] Maintenance mode toggle requires confirmation
+- [x] Maintenance mode blocks regular users (shows error page)
+- [x] Maintenance mode allows admins through
+- [x] Reset to Defaults button works per section
+- [x] Settings changes are logged to audit trail
+- [x] SystemSetting model caches values
+- [x] Only SysAdmin can access settings
+- [x] All tests pass: `php artisan test --filter=SystemConfigurationTest`
 
 ---
 

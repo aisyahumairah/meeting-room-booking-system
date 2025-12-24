@@ -1,7 +1,7 @@
 # Step 4.3: User Activity History
 
 **Priority:** MEDIUM | **Ref:** §7.3.2 | **Dependencies:** Step 4.1, Step 4.2  
-**Status:** TODO
+**Status:** COMPLETE
 
 ---
 
@@ -632,6 +632,8 @@ Route::get('users/{user}/activity/export', [Admin\UserController::class, 'export
 
 ## Testing Requirements
 
+> **Note:** When creating test users with the factory, use `->passwordChanged()` to set `must_change_password` to `false`. Otherwise, the `MustChangePassword` middleware will redirect users causing tests to receive 302 responses instead of 200.
+
 **File:** `tests/Feature/UserActivityHistoryTest.php`
 
 ```php
@@ -656,8 +658,8 @@ class UserActivityHistoryTest extends TestCase
     {
         parent::setUp();
         
-        $this->sysAdmin = User::factory()->create(['role' => 'system_admin']);
-        $this->targetUser = User::factory()->create(['role' => 'regular_user']);
+        $this->sysAdmin = User::factory()->passwordChanged()->create(['role' => 'system_admin']);
+        $this->targetUser = User::factory()->passwordChanged()->create(['role' => 'regular_user']);
 
         // Create some audit logs for target user
         AuditService::log('login_success', 'user', $this->targetUser->id);
@@ -767,19 +769,19 @@ class UserActivityHistoryTest extends TestCase
 
 ## Acceptance Criteria
 
-- [ ] User activity page displays user profile at top
-- [ ] Statistics cards show: total bookings, cancellation rate, account age, most booked room
-- [ ] Additional stats show: confirmed/completed/cancelled counts, avg duration, recent logins
-- [ ] Activity timeline displays events in reverse chronological order
-- [ ] Each event shows: type badge, target link, timestamp, details, IP
-- [ ] Date preset filters work (Today, Last 7 Days, etc.)
-- [ ] Custom date range filter works
-- [ ] Event type filter works
-- [ ] Pagination works (50 per page)
-- [ ] Export to CSV/Excel works
-- [ ] Links to related entities (booking, room) work
-- [ ] Only Director/SysAdmin can access
-- [ ] All tests pass: `php artisan test --filter=UserActivityHistoryTest`
+- [x] User activity page displays user profile at top
+- [x] Statistics cards show: total bookings, cancellation rate, account age, most booked room
+- [x] Additional stats show: confirmed/completed/cancelled counts, avg duration, recent logins
+- [x] Activity timeline displays events in reverse chronological order
+- [x] Each event shows: type badge, target link, timestamp, details, IP
+- [x] Date preset filters work (Today, Last 7 Days, etc.)
+- [x] Custom date range filter works
+- [x] Event type filter works
+- [x] Pagination works (50 per page)
+- [x] Export to CSV/Excel works
+- [x] Links to related entities (booking, room) work
+- [x] Only Director/SysAdmin can access
+- [x] All tests pass: `php artisan test --filter=UserActivityHistoryTest`
 
 ---
 

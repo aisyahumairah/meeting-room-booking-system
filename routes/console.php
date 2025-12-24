@@ -18,3 +18,6 @@ Schedule::command('bookings:complete-expired')
     ->withoutOverlapping()
     ->runInBackground()
     ->appendOutputTo(storage_path('logs/scheduler.log'));
+
+// Schedule booking reminders to be sent daily at 9:00 AM
+Schedule::command('bookings:send-reminders')->dailyAt('09:00');

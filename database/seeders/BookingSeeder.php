@@ -33,7 +33,46 @@ class BookingSeeder extends Seeder
             'One-on-One Discussion',
         ];
 
-        // Create some upcoming confirmed bookings
+        // Guarantee bookings for demo users
+        $demoUsers = User::whereIn('email', ['user@mrbs.local', 'admin@mrbs.local'])->get();
+
+        foreach ($demoUsers as $user) {
+            // Future bookings
+            for ($i = 0; $i < 3; $i++) {
+                $room = $rooms->random();
+                $date = Carbon::now()->addDays(rand(1, 14));
+                $startHour = rand(9, 16);
+
+                if ($room->isAvailable($date->format('Y-m-d'), sprintf('%02d:00', $startHour), sprintf('%02d:00', $startHour + 1))) {
+                    Booking::create([
+                        'reference_number' => Booking::generateReferenceNumber(),
+                        'user_id' => $user->id,
+                        'room_id' => $room->id,
+                        'booking_date' => $date->format('Y-m-d'),
+                        'start_time' => sprintf('%02d:00', $startHour),
+                        'end_time' => sprintf('%02d:00', $startHour + 1),
+                        'purpose' => 'My Demo Booking ' . ($i + 1),
+                        'status' => 'confirmed',
+                    ]);
+                }
+            }
+
+            // Past booking
+            $room = $rooms->random();
+            $date = Carbon::now()->subDays(rand(1, 7));
+            Booking::create([
+                'reference_number' => Booking::generateReferenceNumber(),
+                'user_id' => $user->id,
+                'room_id' => $room->id,
+                'booking_date' => $date->format('Y-m-d'),
+                'start_time' => '10:00',
+                'end_time' => '11:00',
+                'purpose' => 'Past Demo Booking',
+                'status' => 'completed',
+            ]);
+        }
+
+        // Create some upcoming confirmed bookings for random users
         foreach (range(1, 15) as $i) {
             $user = $users->random();
             $room = $rooms->random();
@@ -100,6 +139,6 @@ class BookingSeeder extends Seeder
             ]);
         }
 
-        $this->command->info('Created ' . Booking::count() . ' sample bookings.');
+        $this->command->info('Created ' . Booking::count() . ' sample bookings (including demo user data).');
     }
 }

@@ -254,7 +254,12 @@
                             url += `&room_id=${roomId}`;
                         }
 
-                        fetch(url)
+                        fetch(url, {
+                                headers: {
+                                    'Accept': 'application/json',
+                                    'X-Requested-With': 'XMLHttpRequest'
+                                }
+                            })
                             .then(response => response.json())
                             .then(data => successCallback(data))
                             .catch(error => {

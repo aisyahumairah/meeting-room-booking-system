@@ -109,6 +109,22 @@ class BookingController extends Controller
     }
 
     /**
+     * Display the specified booking.
+     */
+    public function show(Booking $booking)
+    {
+        // Users can only view their own bookings unless they are Admin/Director
+        $user = auth()->user();
+        if ($booking->user_id !== $user->id && !$user->canManageBookings()) {
+            abort(403, 'You are not authorized to view this booking.');
+        }
+
+        $booking->load(['room', 'user', 'series']);
+
+        return view('bookings.show', compact('booking'));
+    }
+
+    /**
      * Check availability via AJAX
      */
     public function checkAvailability(Request $request)

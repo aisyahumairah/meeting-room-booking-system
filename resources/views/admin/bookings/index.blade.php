@@ -249,7 +249,7 @@
                                                 <div class="dropdown-divider"></div>
                                                 <a class="dropdown-item text-danger" href="#"
                                                     onclick="confirmCancel(
-                                                                           {{ $booking->id }}, 
+                                                                           {{ $booking->id }},
                                                                            '{{ $booking->reference_number }}',
                                                                            {{ $booking->is_recurring ? 'true' : 'false' }},
                                                                            {{ $booking->is_recurring ? $booking->series->bookings()->where('status', 'confirmed')->count() : 0 }}

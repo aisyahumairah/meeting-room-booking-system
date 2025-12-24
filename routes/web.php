@@ -4,6 +4,10 @@ use App\Http\Controllers\Admin\RoomController as AdminRoomController;
 use App\Http\Controllers\Admin\BookingController as AdminBookingController;
 use App\Http\Controllers\Api\AvailabilityController;
 use App\Http\Controllers\CalendarController;
+use App\Http\Controllers\Admin\UserController as AdminUserController;
+use App\Http\Controllers\Admin\AuditLogController as AdminAuditLogController;
+use App\Http\Controllers\Admin\SettingsController as AdminSettingsController;
+use App\Http\Controllers\Admin\ReportController as AdminReportController;
 use App\Http\Controllers\Auth\ChangePasswordController;
 use App\Http\Controllers\Auth\ForgotPasswordController;
 use App\Http\Controllers\Auth\LoginController;
@@ -36,7 +40,7 @@ Route::middleware('guest')->group(function () {
 });
 
 // Authenticated routes - All logged in users
-Route::middleware(['auth', 'active', 'must.change.password'])->group(function () {
+Route::middleware(['auth', 'active', 'must.change.password', 'maintenance.custom'])->group(function () {
     Route::post('logout', [LoginController::class, 'logout'])->name('logout');
 
     Route::get('password/change', [ChangePasswordController::class, 'showForm'])->name('password.change');
@@ -55,6 +59,8 @@ Route::middleware(['auth', 'active', 'must.change.password'])->group(function ()
     Route::put('profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::get('profile/password', [ProfileController::class, 'showChangePasswordForm'])->name('profile.password');
     Route::put('profile/password', [ProfileController::class, 'changePassword'])->name('profile.password.update');
+    Route::get('profile/notifications', [ProfileController::class, 'notifications'])->name('profile.notifications');
+    Route::put('profile/notifications', [ProfileController::class, 'updateNotifications'])->name('profile.notifications.update');
 
     // Room Browsing (all authenticated users)
     Route::get('/rooms', [RoomController::class, 'index'])->name('rooms.index');
@@ -68,6 +74,7 @@ Route::middleware(['auth', 'active', 'must.change.password'])->group(function ()
     // Booking creation (all authenticated users)
     Route::get('/bookings/create', [BookingController::class, 'create'])->name('bookings.create');
     Route::post('/bookings', [BookingController::class, 'store'])->name('bookings.store');
+    Route::get('/bookings/{booking}', [BookingController::class, 'show'])->name('bookings.show');
 
     // AJAX routes for booking
     // AJAX routes for booking (Legacy)
@@ -145,13 +152,17 @@ Route::middleware(['auth', 'active', 'must.change.password', 'role:director,syst
     ->prefix('admin')
     ->name('admin.')
     ->group(function () {
-        // User management placeholder (to be implemented in Phase 3)
-        Route::get('/users', function () {
-            return response()->json(['message' => 'User management placeholder']);
-        })->name('users.index');
+        // User Management
+        Route::resource('users', AdminUserController::class)->except(['show']);
+        Route::put('users/{user}/deactivate', [AdminUserController::class, 'deactivate'])->name('users.deactivate');
+        Route::put('users/{user}/activate', [AdminUserController::class, 'activate'])->name('users.activate');
+        Route::post('users/{user}/reset-password', [AdminUserController::class, 'resetPassword'])->name('users.reset-password');
+        Route::get('users/{user}/activity', [AdminUserController::class, 'activity'])->name('users.activity');
+        Route::get('users/{user}/activity/export', [AdminUserController::class, 'exportActivity'])->name('users.activity.export');
 
-        // Audit logs (to be implemented in Step 1.7)
-        // Route::get('/audit-logs', [AuditLogController::class, 'index'])->name('audit.index');
+        // Audit logs (Director/SysAdmin only)
+        Route::get('audit-logs', [AdminAuditLogController::class, 'index'])->name('audit-logs.index');
+        Route::get('audit-logs/export', [AdminAuditLogController::class, 'export'])->name('audit-logs.export');
     });
 
 // SysAdmin only routes - System Configuration
@@ -159,7 +170,23 @@ Route::middleware(['auth', 'active', 'must.change.password', 'role:system_admin'
     ->prefix('admin')
     ->name('admin.')
     ->group(function () {
-        // System settings (to be implemented in Phase 4)
-        // Route::get('/settings', [SettingsController::class, 'index'])->name('settings.index');
-        // Route::put('/settings', [SettingsController::class, 'update'])->name('settings.update');
+        // System settings
+        Route::get('settings', [AdminSettingsController::class, 'index'])->name('settings.index');
+        Route::put('settings', [AdminSettingsController::class, 'update'])->name('settings.update');
+        Route::post('settings/reset', [AdminSettingsController::class, 'reset'])->name('settings.reset');
     });
+
+// Reports (Director/SysAdmin only)
+Route::prefix('admin/reports')->name('admin.reports.')->middleware(['auth', 'active', 'must.change.password', 'role:director,system_admin'])->group(function () {
+    Route::get('/', [AdminReportController::class, 'index'])->name('index');
+
+    // View Reports
+    Route::get('room-utilization', [AdminReportController::class, 'roomUtilization'])->name('room-utilization');
+    Route::get('booking-statistics', [AdminReportController::class, 'bookingStatistics'])->name('booking-statistics');
+    Route::get('user-activity', [AdminReportController::class, 'userActivity'])->name('user-activity');
+
+    // Export Reports
+    Route::get('room-utilization/export', [AdminReportController::class, 'exportRoomUtilization'])->name('room-utilization.export');
+    Route::get('booking-statistics/export', [AdminReportController::class, 'exportBookingStatistics'])->name('booking-statistics.export');
+    Route::get('user-activity/export', [AdminReportController::class, 'exportUserActivity'])->name('user-activity.export');
+});

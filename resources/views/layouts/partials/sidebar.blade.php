@@ -128,7 +128,7 @@
                 <span class="menu-header-text">Reports</span>
             </li>
             <li class="menu-item {{ request()->routeIs('admin.reports.*') ? 'active' : '' }}">
-                <a href="#" class="menu-link">
+                <a href="{{ route('admin.reports.index') }}" class="menu-link">
                     <i class="menu-icon tf-icons bx bx-bar-chart-alt-2"></i>
                     <div class="text-truncate">Reports Hub</div>
                 </a>
@@ -142,24 +142,24 @@
             </li>
             <li class="menu-item {{ request()->routeIs('admin.users.*') ? 'active' : '' }}">
                 <a href="{{ route('admin.users.index') }}" class="menu-link">
-                    <i class="menu-icon tf-icons bx bx-user"></i>
+                    <i class="menu-icon tf-icons bx bx-user-circle"></i>
                     <div class="text-truncate">User Management</div>
                 </a>
             </li>
         @endcan
 
         @can('access-audit')
-            <li class="menu-item {{ request()->routeIs('admin.audit.*') ? 'active' : '' }}">
-                <a href="#" class="menu-link">
+            <li class="menu-item {{ request()->routeIs('admin.audit-logs.*') ? 'active' : '' }}">
+                <a href="{{ route('admin.audit-logs.index') }}" class="menu-link">
                     <i class="menu-icon tf-icons bx bx-history"></i>
-                    <div class="text-truncate">Audit Logs</div>
+                    <div class="text-truncate">Audit Trail</div>
                 </a>
             </li>
         @endcan
 
         @can('configure-system')
             <li class="menu-item {{ request()->routeIs('admin.settings.*') ? 'active' : '' }}">
-                <a href="#" class="menu-link">
+                <a href="{{ route('admin.settings.index') }}" class="menu-link">
                     <i class="menu-icon tf-icons bx bx-cog"></i>
                     <div class="text-truncate">System Settings</div>
                 </a>

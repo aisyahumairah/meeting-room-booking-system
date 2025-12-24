@@ -1,7 +1,7 @@
 # Step 4.1: User Management
 
 **Priority:** HIGH | **Ref:** §7.2.1 | **Dependencies:** Phase 1-3 Complete  
-**Status:** TODO
+**Status:** COMPLETE
 
 ---
 
@@ -1230,19 +1230,19 @@ class UserManagementTest extends TestCase
 
 ## Acceptance Criteria
 
-- [ ] User list page displays all users with search, filters, and pagination
-- [ ] Stats cards show total, active, and inactive user counts
-- [ ] Create user form works with validation
-- [ ] Edit user form works (staff_number and email are read-only)
-- [ ] Role change shows warning and logs to audit trail
-- [ ] Deactivate/reactivate toggle works correctly
-- [ ] Cannot deactivate own account
-- [ ] Cannot delete user with bookings or audit activity
-- [ ] Delete requires typing user name to confirm
-- [ ] Password reset (generate/email) works
-- [ ] User activity link navigates to activity history
-- [ ] All actions logged to audit trail
-- [ ] All tests pass: `php artisan test --filter=UserManagementTest`
+- [x] User list page displays all users with search, filters, and pagination
+- [x] Stats cards show total, active, and inactive user counts
+- [x] Create user form works with validation
+- [x] Edit user form works (staff_number and email are read-only)
+- [x] Role change shows warning and logs to audit trail
+- [x] Deactivate/reactivate toggle works correctly
+- [x] Cannot deactivate own account
+- [x] Cannot delete user with bookings or audit activity
+- [x] Delete requires typing user name to confirm
+- [x] Password reset (generate/email) works
+- [x] User activity link navigates to activity history
+- [x] All actions logged to audit trail
+- [x] All tests pass: `php artisan test --filter=UserManagementTest`
 
 ---
 

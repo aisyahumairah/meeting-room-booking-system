@@ -205,9 +205,31 @@ class BookingCreationTest extends TestCase
 
     public function test_ajax_availability_check_returns_conflict()
     {
-        // TODO: This test needs investigation - time comparison with PostgreSQL
-        // The core functionality works (double-booking is prevented in store())
-        // Skipping this edge case AJAX test for now
-        $this->markTestSkipped('AJAX conflict detection test needs PostgreSQL time comparison investigation');
+        // Create an existing booking
+        Booking::factory()->create([
+            'room_id' => $this->room->id,
+            'booking_date' => now()->addDays(5)->format('Y-m-d'),
+            'start_time' => '09:00',
+            'end_time' => '11:00',
+            'status' => 'confirmed',
+        ]);
+
+        // Try to check availability for overlapping time
+        $response = $this->actingAs($this->user)
+            ->postJson(route('ajax.bookings.check-availability'), [
+                'room_id' => $this->room->id,
+                'booking_date' => now()->addDays(5)->format('Y-m-d'),
+                'start_time' => '10:00', // Overlaps with 09:00-11:00
+                'end_time' => '12:00',
+            ]);
+
+        $response->assertStatus(200)
+            ->assertJson([
+                'available' => false,
+            ])
+            ->assertJsonStructure([
+                'available',
+                'conflict' => ['type', 'message'],
+            ]);
     }
 }

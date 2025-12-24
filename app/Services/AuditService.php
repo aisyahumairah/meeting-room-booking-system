@@ -36,6 +36,24 @@ class AuditService
     public const BOOKING_SERIES_UPDATED = 'booking_series_updated';
     public const BOOKING_SERIES_CANCELLED = 'booking_series_cancelled';
 
+
+    // User Management Events
+    public const EVENT_USER_CREATED = 'user.created';
+    public const EVENT_USER_UPDATED = 'user.updated';
+    public const EVENT_USER_ROLE_CHANGED = 'user.role_changed';
+    public const EVENT_USER_DEACTIVATED = 'user.deactivated';
+    public const EVENT_USER_REACTIVATED = 'user.reactivated';
+    public const EVENT_USER_DELETED = 'user.deleted';
+    public const EVENT_USER_PASSWORD_RESET_BY_ADMIN = 'user.password_reset_by_admin';
+
+    // Audit & Report Events
+    public const EVENT_AUDIT_LOG_EXPORTED = 'audit_log.exported';
+    public const EVENT_REPORT_GENERATED = 'report.generated';
+
+    // Settings Events
+    public const EVENT_SETTINGS_UPDATED = 'settings.updated';
+    public const EVENT_MAINTENANCE_MODE_TOGGLED = 'settings.maintenance_mode_toggled';
+
     public static function log(
         string $eventType,
         ?string $targetType = null,

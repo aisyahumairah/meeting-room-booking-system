@@ -231,9 +231,22 @@ class RoomManagementTest extends TestCase
 
     public function test_admin_cannot_delete_room_with_bookings(): void
     {
-        // Note: This test will need a Booking model to work fully
-        // For now, we'll skip it until Phase 3 implements bookings
-        $this->markTestSkipped('Booking model not yet created - will be implemented in Phase 3.');
+        $room = Room::factory()->create();
+
+        // Create a booking for this room
+        \App\Models\Booking::factory()->create([
+            'room_id' => $room->id,
+        ]);
+
+        $response = $this->actingAs($this->admin)
+            ->from(route('admin.rooms.index'))
+            ->delete(route('admin.rooms.destroy', $room));
+
+        $response->assertRedirect(route('admin.rooms.index'));
+        $response->assertSessionHas('error');
+
+        // Room should still exist
+        $this->assertDatabaseHas('rooms', ['id' => $room->id]);
     }
 
     // =====================
