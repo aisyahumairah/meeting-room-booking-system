@@ -304,20 +304,6 @@ class BookingController extends Controller
         return view('bookings.my', compact('bookings', 'rooms', 'stats'));
     }
 
-    /**
-     * Display a single booking
-     */
-    public function show(Booking $booking)
-    {
-        // Authorization: user can only view their own bookings
-        if ($booking->user_id !== auth()->id() && !auth()->user()->canManageBookings()) {
-            abort(403, 'You can only view your own bookings.');
-        }
-
-        $booking->load(['room', 'user', 'series.bookings', 'cancelledByUser']);
-
-        return view('bookings.show', compact('booking'));
-    }
 
     /**
      * Get user's bookings for calendar (AJAX)
