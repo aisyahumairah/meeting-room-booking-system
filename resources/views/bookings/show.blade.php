@@ -55,7 +55,7 @@
                             <p>{{ $booking->purpose }}</p>
                         </div>
 
-                        @if ($booking->status === 'cancelled')
+                        @if($booking->status === 'cancelled')
                             <div class="alert alert-danger">
                                 <h6 class="alert-heading mb-2">
                                     <i class="bx bx-x-circle me-1"></i> Booking Cancelled
@@ -80,12 +80,12 @@
 
                     {{-- Actions --}}
                     <div class="card-footer">
-                        @if ($booking->is_editable)
+                        @if($booking->is_editable)
                             <a href="{{ route('my-bookings.edit', $booking) }}" class="btn btn-primary me-2">
                                 <i class="bx bx-edit me-1"></i> Edit Booking
                             </a>
                         @endif
-                        @if ($booking->is_cancellable)
+                        @if($booking->is_cancellable)
                             <button type="button" class="btn btn-outline-danger"
                                 onclick="confirmCancel({{ $booking->id }}, '{{ $booking->reference_number }}')">
                                 <i class="bx bx-x me-1"></i> Cancel Booking
@@ -95,7 +95,7 @@
                 </div>
 
                 {{-- Series Occurrences (if recurring) --}}
-                @if ($booking->is_recurring && $booking->series)
+                @if($booking->is_recurring && $booking->series)
                     <div class="card mb-4">
                         <div class="card-header">
                             <h5 class="mb-0">Series Occurrences</h5>
@@ -110,7 +110,7 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    @foreach ($booking->series->bookings()->orderBy('booking_date')->get() as $occurrence)
+                                    @foreach($booking->series->bookings()->orderBy('booking_date')->get() as $occurrence)
                                         <tr class="{{ $occurrence->id === $booking->id ? 'table-primary' : '' }}">
                                             <td>{{ $occurrence->booking_date->format('D, M d, Y') }}</td>
                                             <td>{{ $occurrence->time_range }}</td>
@@ -124,7 +124,7 @@
                 @endif
 
                 {{-- Audit History (Admin only) --}}
-                @if (auth()->user()->canManageBookings())
+                @if(auth()->user()->canManageBookings())
                     <div class="card mt-4">
                         <div class="card-header">
                             <h6 class="mb-0"><i class="bx bx-history me-1"></i> Audit History</h6>
@@ -163,8 +163,7 @@
                                         </tr>
                                     @empty
                                         <tr>
-                                            <td colspan="4" class="text-center text-muted py-3">No audit history
-                                                available</td>
+                                            <td colspan="4" class="text-center text-muted py-3">No audit history available</td>
                                         </tr>
                                     @endforelse
                                 </tbody>
@@ -205,7 +204,7 @@
                             <span class="text-muted">Created</span>
                             <span>{{ $booking->created_at->format('M d, Y H:i') }}</span>
                         </li>
-                        @if ($booking->updated_at != $booking->created_at)
+                        @if($booking->updated_at != $booking->created_at)
                             <li class="list-group-item d-flex justify-content-between">
                                 <span class="text-muted">Last Updated</span>
                                 <span>{{ $booking->updated_at->format('M d, Y H:i') }}</span>

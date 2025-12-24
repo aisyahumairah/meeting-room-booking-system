@@ -340,13 +340,13 @@
                         // If the user wants NO ONE to see full details of others (even admins via this modal?), or just regular users?
                         // "user should cannot view details other user bookings" -> implies regular user.
 
-                        // I will add a check for `props.isOwn` to strictly limit it if that's the requirement,
+                        // I will add a check for `props.isOwn` to strictly limit it if that's the requirement, 
                         // OR trust the URL. The prompt implies the button IS showing up.
                         // If the button IS showing up for other users, it means `info.event.url` IS present.
                         // Which means the controller thinks they `canViewAll`.
 
-                        // To strictly satisfy "user should cannot view details other user bookings",
-                        // I will update the JS to ONLY show the button if it is their own booking,
+                        // To strictly satisfy "user should cannot view details other user bookings", 
+                        // I will update the JS to ONLY show the button if it is their own booking, 
                         // ignoring the admin privilege for a moment or strictly following "other user bookings".
 
                         if (props.isOwn && info.event.url) {
