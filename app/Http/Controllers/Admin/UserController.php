@@ -112,7 +112,7 @@ class UserController extends Controller
 
         return redirect()
             ->route('admin.users.index')
-            ->with('success', "User {$user->name} created successfully.");
+            ->with('success', "User {$user->name} created successfully. Temporary password: {$tempPassword}");
     }
 
     /**
@@ -259,7 +259,7 @@ class UserController extends Controller
         $method = $request->input('method', 'generate'); // 'generate' or 'email'
 
         if ($method === 'generate') {
-            $tempPassword = Str::random(12);
+            $tempPassword = 'abc123';
             $user->update([
                 'password' => Hash::make($tempPassword),
                 'must_change_password' => true,

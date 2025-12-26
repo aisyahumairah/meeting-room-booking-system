@@ -8,25 +8,25 @@
         <div class="d-flex justify-content-between align-items-center mb-4">
             <div>
                 <a href="{{ route('admin.users.index') }}" class="text-muted text-decoration-none">
-                    <i class='bx bx-arrow-back me-1'></i> Back to User List
+                    <i class="icon-base bx bx-arrow-back icon-sm me-1"></i> Back to User List
                 </a>
                 <h4 class="mb-0 mt-2">Activity History</h4>
             </div>
             <div class="btn-group">
                 <button type="button" class="btn btn-outline-primary dropdown-toggle" data-bs-toggle="dropdown">
-                    <i class='bx bx-download me-1'></i> Export
+                    <i class="icon-base bx bx-download icon-sm me-1"></i> Export
                 </button>
                 <ul class="dropdown-menu">
                     <li>
                         <a class="dropdown-item"
                             href="{{ route('admin.users.activity.export', array_merge(['user' => $user->id], request()->all(), ['format' => 'csv'])) }}">
-                            <i class='bx bx-file me-2'></i> Export as CSV
+                            <i class="icon-base bx bx-file icon-sm me-2"></i> Export as CSV
                         </a>
                     </li>
                     <li>
                         <a class="dropdown-item"
                             href="{{ route('admin.users.activity.export', array_merge(['user' => $user->id], request()->all(), ['format' => 'xlsx'])) }}">
-                            <i class='bx bx-spreadsheet me-2'></i> Export as Excel
+                            <i class="icon-base bx bx-spreadsheet icon-sm me-2"></i> Export as Excel
                         </a>
                     </li>
                 </ul>
@@ -101,8 +101,10 @@
                                 <h3 class="mb-0">{{ $stats['total_bookings'] }}</h3>
                                 <small class="text-muted">Total Bookings</small>
                             </div>
-                            <div class="avatar bg-label-primary">
-                                <i class='bx bx-calendar fs-4'></i>
+                            <div class="avatar">
+                                <span class="avatar-initial rounded bg-label-primary">
+                                    <i class="icon-base bx bx-calendar icon-md"></i>
+                                </span>
                             </div>
                         </div>
                     </div>
@@ -118,8 +120,11 @@
                                 </h3>
                                 <small class="text-muted">Cancellation Rate</small>
                             </div>
-                            <div class="avatar bg-label-{{ $stats['cancellation_rate'] > 20 ? 'warning' : 'success' }}">
-                                <i class='bx bx-x-circle fs-4'></i>
+                            <div class="avatar">
+                                <span
+                                    class="avatar-initial rounded bg-label-{{ $stats['cancellation_rate'] > 20 ? 'warning' : 'success' }}">
+                                    <i class="icon-base bx bx-x-circle icon-md"></i>
+                                </span>
                             </div>
                         </div>
                         <div class="small text-muted mt-1">
@@ -136,8 +141,10 @@
                                 <h3 class="mb-0">{{ $stats['account_age_days'] }}</h3>
                                 <small class="text-muted">Days Since Joined</small>
                             </div>
-                            <div class="avatar bg-label-info">
-                                <i class='bx bx-time-five fs-4'></i>
+                            <div class="avatar">
+                                <span class="avatar-initial rounded bg-label-info">
+                                    <i class="icon-base bx bx-time-five icon-md"></i>
+                                </span>
                             </div>
                         </div>
                         <div class="small text-muted mt-1">
@@ -155,8 +162,10 @@
                                 </h6>
                                 <small class="text-muted">Most Booked Room</small>
                             </div>
-                            <div class="avatar bg-label-secondary">
-                                <i class='bx bx-door-open fs-4'></i>
+                            <div class="avatar">
+                                <span class="avatar-initial rounded bg-label-secondary">
+                                    <i class="icon-base bx bx-door-open icon-md"></i>
+                                </span>
                             </div>
                         </div>
                         @if ($stats['most_booked_room_count'] > 0)
@@ -199,8 +208,10 @@
                                 <small class="text-muted">Avg. Duration</small>
                                 <h5 class="mb-0">{{ $stats['avg_booking_duration'] }} min</h5>
                             </div>
-                            <div class="avatar bg-label-info">
-                                <i class='bx bx-timer fs-4'></i>
+                            <div class="avatar">
+                                <span class="avatar-initial rounded bg-label-info">
+                                    <i class="icon-base bx bx-timer icon-md"></i>
+                                </span>
                             </div>
                         </div>
                     </div>
@@ -214,8 +225,10 @@
                                 <small class="text-muted">Logins (Last 30 Days)</small>
                                 <h5 class="mb-0">{{ $stats['recent_logins'] }}</h5>
                             </div>
-                            <div class="avatar bg-label-success">
-                                <i class='bx bx-log-in fs-4'></i>
+                            <div class="avatar">
+                                <span class="avatar-initial rounded bg-label-success">
+                                    <i class="icon-base bx bx-log-in icon-md"></i>
+                                </span>
                             </div>
                         </div>
                     </div>
@@ -308,8 +321,10 @@
                                     default => 'bg-label-primary',
                                 };
                             @endphp
-                            <div class="avatar avatar-sm {{ $bgClass }}">
-                                <i class='bx {{ $iconClass }}'></i>
+                            <div class="avatar avatar-sm">
+                                <span class="avatar-initial rounded-circle {{ $bgClass }}">
+                                    <i class="icon-base bx {{ $iconClass }} icon-xs"></i>
+                                </span>
                             </div>
                         </div>
                         <div class="flex-grow-1">
@@ -358,13 +373,14 @@
                                 </div>
                             @endif
                             <div class="text-muted small mt-1">
-                                <i class='bx bx-globe'></i> {{ $activity->ip_address ?? 'Unknown IP' }}
+                                <i class="icon-base bx bx-globe icon-xs me-1"></i>
+                                {{ $activity->ip_address ?? 'Unknown IP' }}
                             </div>
                         </div>
                     </div>
                 @empty
                     <div class="text-center py-4">
-                        <i class='bx bx-history fs-1 text-muted'></i>
+                        <i class="icon-base bx bx-history icon-xl text-muted"></i>
                         <p class="text-muted mt-2">No activity found for the selected criteria.</p>
                     </div>
                 @endforelse

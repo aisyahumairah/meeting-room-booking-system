@@ -8,9 +8,23 @@
         <div class="d-flex justify-content-between align-items-center mb-4">
             <h4 class="mb-0">User Management</h4>
             <a href="{{ route('admin.users.create') }}" class="btn btn-primary">
-                <i class='bx bx-plus'></i> Create New User
+                <i class="icon-base bx bx-plus icon-sm"></i> Create New User
             </a>
         </div>
+
+        {{-- @if (session('success'))
+            <div class="alert alert-success alert-dismissible mb-4" role="alert">
+                {{ session('success') }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        @endif
+
+        @if (session('error'))
+            <div class="alert alert-danger alert-dismissible mb-4" role="alert">
+                {{ session('error') }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        @endif --}}
 
         <!-- Stats Cards -->
         <div class="row mb-4">
@@ -18,8 +32,10 @@
                 <div class="card">
                     <div class="card-body">
                         <div class="d-flex align-items-center">
-                            <div class="avatar avatar-lg bg-label-primary me-3">
-                                <i class='bx bx-user fs-3'></i>
+                            <div class="avatar avatar-lg me-3">
+                                <span class="avatar-initial rounded bg-label-primary">
+                                    <i class="icon-base bx bx-user icon-lg"></i>
+                                </span>
                             </div>
                             <div>
                                 <h6 class="mb-0">{{ $counts['total'] }}</h6>
@@ -33,8 +49,10 @@
                 <div class="card">
                     <div class="card-body">
                         <div class="d-flex align-items-center">
-                            <div class="avatar avatar-lg bg-label-success me-3">
-                                <i class='bx bx-check-circle fs-3'></i>
+                            <div class="avatar avatar-lg me-3">
+                                <span class="avatar-initial rounded bg-label-success">
+                                    <i class="icon-base bx bx-check-circle icon-lg"></i>
+                                </span>
                             </div>
                             <div>
                                 <h6 class="mb-0">{{ $counts['active'] }}</h6>
@@ -48,8 +66,10 @@
                 <div class="card">
                     <div class="card-body">
                         <div class="d-flex align-items-center">
-                            <div class="avatar avatar-lg bg-label-secondary me-3">
-                                <i class='bx bx-x-circle fs-3'></i>
+                            <div class="avatar avatar-lg me-3">
+                                <span class="avatar-initial rounded bg-label-secondary">
+                                    <i class="icon-base bx bx-x-circle icon-lg"></i>
+                                </span>
                             </div>
                             <div>
                                 <h6 class="mb-0">{{ $counts['inactive'] }}</h6>
@@ -78,7 +98,8 @@
                                 User</option>
                             <option value="administrator" {{ request('role') == 'administrator' ? 'selected' : '' }}>
                                 Administrator</option>
-                            <option value="director" {{ request('role') == 'director' ? 'selected' : '' }}>Director</option>
+                            <option value="director" {{ request('role') == 'director' ? 'selected' : '' }}>Director
+                            </option>
                             <option value="system_admin" {{ request('role') == 'system_admin' ? 'selected' : '' }}>System
                                 Admin</option>
                         </select>
@@ -170,17 +191,17 @@
                                 <td>
                                     <div class="dropdown">
                                         <button class="btn btn-sm btn-icon" data-bs-toggle="dropdown">
-                                            <i class='bx bx-dots-vertical-rounded'></i>
+                                            <i class="icon-base bx bx-dots-vertical-rounded icon-sm"></i>
                                         </button>
                                         <ul class="dropdown-menu">
                                             <li>
                                                 <a class="dropdown-item" href="{{ route('admin.users.edit', $user) }}">
-                                                    <i class='bx bx-edit-alt me-2'></i> Edit
+                                                    <i class="icon-base bx bx-edit-alt icon-sm me-2"></i> Edit
                                                 </a>
                                             </li>
                                             <li>
                                                 <a class="dropdown-item" href="{{ route('admin.users.activity', $user) }}">
-                                                    <i class='bx bx-history me-2'></i> View Activity
+                                                    <i class="icon-base bx bx-history icon-sm me-2"></i> View Activity
                                                 </a>
                                             </li>
                                             <li>
@@ -194,7 +215,7 @@
                                                         @csrf
                                                         @method('PUT')
                                                         <button type="submit" class="dropdown-item text-warning">
-                                                            <i class='bx bx-user-x me-2'></i> Deactivate
+                                                            <i class="icon-base bx bx-user-x icon-sm me-2"></i> Deactivate
                                                         </button>
                                                     </form>
                                                 </li>
@@ -205,7 +226,8 @@
                                                         @csrf
                                                         @method('PUT')
                                                         <button type="submit" class="dropdown-item text-success">
-                                                            <i class='bx bx-user-check me-2'></i> Reactivate
+                                                            <i class="icon-base bx bx-user-check icon-sm me-2"></i>
+                                                            Reactivate
                                                         </button>
                                                     </form>
                                                 </li>
@@ -213,7 +235,7 @@
                                             <li>
                                                 <button type="button" class="dropdown-item" data-bs-toggle="modal"
                                                     data-bs-target="#resetPasswordModal{{ $user->id }}">
-                                                    <i class='bx bx-key me-2'></i> Reset Password
+                                                    <i class="icon-base bx bx-key icon-sm me-2"></i> Reset Password
                                                 </button>
                                             </li>
                                             @if ($user->id !== auth()->id())
@@ -224,7 +246,7 @@
                                                     <button type="button" class="dropdown-item text-danger"
                                                         data-bs-toggle="modal"
                                                         data-bs-target="#deleteUserModal{{ $user->id }}">
-                                                        <i class='bx bx-trash me-2'></i> Delete
+                                                        <i class="icon-base bx bx-trash icon-sm me-2"></i> Delete
                                                     </button>
                                                 </li>
                                             @endif
@@ -236,7 +258,7 @@
                             @empty
                                 <tr>
                                     <td colspan="8" class="text-center py-4">
-                                        <i class='bx bx-user-x fs-1 text-muted'></i>
+                                        <i class="icon-base bx bx-user-x icon-xl text-muted"></i>
                                         <p class="text-muted mt-2">No users found matching your criteria.</p>
                                     </td>
                                 </tr>

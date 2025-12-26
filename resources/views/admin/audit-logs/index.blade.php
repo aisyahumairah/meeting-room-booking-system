@@ -7,23 +7,23 @@
         <!-- Header -->
         <div class="d-flex justify-content-between align-items-center mb-4">
             <h4 class="mb-0">
-                <i class='bx bx-history me-2'></i>Audit Trail
+                <i class="icon-base bx bx-history icon-md me-2"></i>Audit Trail
             </h4>
             <div class="btn-group">
                 <button type="button" class="btn btn-outline-primary dropdown-toggle" data-bs-toggle="dropdown">
-                    <i class='bx bx-download me-1'></i> Export
+                    <i class="icon-base bx bx-download icon-sm me-1"></i> Export
                 </button>
                 <ul class="dropdown-menu">
                     <li>
                         <a class="dropdown-item"
                             href="{{ route('admin.audit-logs.export', array_merge(request()->all(), ['format' => 'csv'])) }}">
-                            <i class='bx bx-file me-2'></i> Export as CSV
+                            <i class="icon-base bx bx-file icon-sm me-2"></i> Export as CSV
                         </a>
                     </li>
                     <li>
                         <a class="dropdown-item"
                             href="{{ route('admin.audit-logs.export', array_merge(request()->all(), ['format' => 'xlsx'])) }}">
-                            <i class='bx bx-spreadsheet me-2'></i> Export as Excel
+                            <i class="icon-base bx bx-spreadsheet icon-sm me-2"></i> Export as Excel
                         </a>
                     </li>
                 </ul>
@@ -136,9 +136,9 @@
         <!-- Audit Logs Table -->
         <div class="card">
             <div class="card-header d-flex justify-content-between align-items-center">
-                <span>Showing {{ $logs->total() }} entries</span>
+                <span>Total: {{ $logs->total() }} entries</span>
                 <span class="text-muted small">
-                    <i class='bx bx-lock-alt'></i> Logs are immutable and cannot be edited or deleted
+                    <i class="icon-base bx bx-lock-alt me-1"></i>Logs are immutable and cannot be edited or deleted
                 </span>
             </div>
             <div class="card-body">
@@ -151,11 +151,11 @@
                             <th>Target</th>
                             <th>Summary</th>
                             <th>IP Address</th>
-                            <th></th>
+                            <th class="text-center">Action</th>
                         </tr>
                     </thead>
                     <tbody>
-                        @forelse($logs as $log)
+                        @foreach ($logs as $log)
                             <tr>
                                 <td>
                                     <span class="text-nowrap">{{ $log->created_at->format('M d, Y') }}</span><br>
@@ -163,8 +163,8 @@
                                 </td>
                                 <td>
                                     <div class="d-flex align-items-center">
-                                        <div class="avatar avatar-sm me-2 bg-label-primary">
-                                            <span class="avatar-initial rounded-circle">
+                                        <div class="avatar avatar-sm me-2">
+                                            <span class="avatar-initial rounded-circle bg-label-primary">
                                                 {{ substr($log->actor_name ?? 'S', 0, 1) }}
                                             </span>
                                         </div>
@@ -209,100 +209,104 @@
                                     @endif
                                 </td>
                                 <td><code class="small">{{ $log->ip_address ?? '-' }}</code></td>
-                                <td>
+                                <td class="text-center">
                                     <button type="button" class="btn btn-sm btn-icon" data-bs-toggle="modal"
                                         data-bs-target="#logDetailModal{{ $log->id }}">
-                                        <i class='bx bx-show'></i>
+                                        <i class="icon-base bx bx-show icon-sm"></i>
                                     </button>
-
-                                    <!-- Log Detail Modal -->
-                                    <div class="modal fade" id="logDetailModal{{ $log->id }}" tabindex="-1">
-                                        <div class="modal-dialog modal-lg">
-                                            <div class="modal-content">
-                                                <div class="modal-header">
-                                                    <h5 class="modal-title">Audit Log Details</h5>
-                                                    <button type="button" class="btn-close"
-                                                        data-bs-dismiss="modal"></button>
-                                                </div>
-                                                <div class="modal-body">
-                                                    <div class="row mb-3">
-                                                        <div class="col-md-6">
-                                                            <strong>Event ID:</strong> {{ $log->id }}
-                                                        </div>
-                                                        <div class="col-md-6">
-                                                            <strong>Timestamp:</strong>
-                                                            {{ $log->created_at->format('Y-m-d H:i:s') }}
-                                                        </div>
-                                                    </div>
-                                                    <div class="row mb-3">
-                                                        <div class="col-md-6">
-                                                            <strong>Actor:</strong> {{ $log->actor_name ?? 'System' }}
-                                                            @if ($log->actor_id)
-                                                                (ID: {{ $log->actor_id }})
-                                                            @endif
-                                                        </div>
-                                                        <div class="col-md-6">
-                                                            <strong>Event Type:</strong>
-                                                            <span
-                                                                class="badge bg-label-{{ $eventColor }}">{{ $log->event_type }}</span>
-                                                        </div>
-                                                    </div>
-                                                    <div class="row mb-3">
-                                                        <div class="col-md-6">
-                                                            <strong>Target Type:</strong> {{ $log->target_type ?? '-' }}
-                                                        </div>
-                                                        <div class="col-md-6">
-                                                            <strong>Target ID:</strong> {{ $log->target_id ?? '-' }}
-                                                        </div>
-                                                    </div>
-                                                    <div class="row mb-3">
-                                                        <div class="col-md-6">
-                                                            <strong>IP Address:</strong>
-                                                            <code>{{ $log->ip_address ?? '-' }}</code>
-                                                        </div>
-                                                    </div>
-                                                    <div class="mb-3">
-                                                        <strong>User Agent:</strong>
-                                                        <div class="text-muted small">{{ $log->user_agent ?? '-' }}</div>
-                                                    </div>
-                                                    <div>
-                                                        <strong>Details:</strong>
-                                                        @if ($log->details)
-                                                            <pre class="bg-light p-3 rounded mt-2"><code>{{ json_encode($log->details, JSON_PRETTY_PRINT) }}</code></pre>
-                                                        @else
-                                                            <span class="text-muted">No additional details</span>
-                                                        @endif
-                                                    </div>
-                                                </div>
-                                                <div class="modal-footer">
-                                                    <button type="button" class="btn btn-outline-secondary"
-                                                        data-bs-dismiss="modal">Close</button>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
                                 </td>
                             </tr>
-                        @empty
-                            <tr>
-                                <td colspan="7" class="text-center py-4">
-                                    <i class='bx bx-history fs-1 text-muted'></i>
-                                    <p class="text-muted mt-2">No audit logs found for the selected criteria.</p>
-                                </td>
-                            </tr>
-                        @endforelse
+                        @endforeach
                     </tbody>
                 </table>
             </div>
-            @if ($logs->hasPages())
-                <div class="card-footer">
+            {{-- @if ($logs->hasPages())
+                <div class="card-footer border-top">
                     <div class="d-flex justify-content-between align-items-center">
-                        <span class="text-muted">Showing {{ $logs->firstItem() }}-{{ $logs->lastItem() }} of
+                        <span class="text-muted small">Showing {{ $logs->firstItem() }}-{{ $logs->lastItem() }} of
                             {{ $logs->total() }} entries</span>
-                        {{ $logs->links() }}
+                        <div class="pagination-sm">
+                            {{ $logs->links() }}
+                        </div>
                     </div>
                 </div>
-            @endif
+            @endif --}}
         </div>
     </div>
+
+    <!-- Modals -->
+    @foreach ($logs as $log)
+        @php
+            $eventColor = match (true) {
+                str_contains($log->event_type, 'login_success') => 'success',
+                str_contains($log->event_type, 'login_failed') => 'danger',
+                str_contains($log->event_type, 'created') => 'info',
+                str_contains($log->event_type, 'updated') => 'warning',
+                str_contains($log->event_type, 'deleted') => 'danger',
+                str_contains($log->event_type, 'cancelled') => 'danger',
+                str_contains($log->event_type, 'deactivated') => 'secondary',
+                default => 'primary',
+            };
+        @endphp
+        <div class="modal fade" id="logDetailModal{{ $log->id }}" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header border-bottom">
+                        <h5 class="modal-title">Audit Log Details</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="table-responsive">
+                            <table class="table table-sm table-borderless">
+                                <tr>
+                                    <th width="30%">Event ID</th>
+                                    <td>#{{ $log->id }}</td>
+                                </tr>
+                                <tr>
+                                    <th>Timestamp</th>
+                                    <td>{{ $log->created_at->format('Y-m-d H:i:s') }}
+                                        ({{ $log->created_at->diffForHumans() }})
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>Actor</th>
+                                    <td>{{ $log->actor_name ?? 'System' }}
+                                        {{ $log->actor_id ? '(ID: ' . $log->actor_id . ')' : '' }}</td>
+                                </tr>
+                                <tr>
+                                    <th>Event Type</th>
+                                    <td><span class="badge bg-label-{{ $eventColor }}">{{ $log->event_type }}</span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>Target</th>
+                                    <td>{{ $log->target_type ?? '-' }}
+                                        {{ $log->target_id ? '(ID: ' . $log->target_id . ')' : '' }}</td>
+                                </tr>
+                                <tr>
+                                    <th>IP Address</th>
+                                    <td><code>{{ $log->ip_address ?? '-' }}</code></td>
+                                </tr>
+                                <tr>
+                                    <th>User Agent</th>
+                                    <td><small class="text-muted">{{ $log->user_agent ?? '-' }}</small></td>
+                                </tr>
+                            </table>
+                        </div>
+                        <div class="mt-4">
+                            <h6 class="border-bottom pb-2">Detailed Payload</h6>
+                            @if ($log->details)
+                                <pre class="bg-label-secondary p-3 rounded mb-0" style="max-height: 400px; overflow-y: auto;"><code>{{ json_encode($log->details, JSON_PRETTY_PRINT) }}</code></pre>
+                            @else
+                                <div class="alert alert-secondary mb-0">No additional details recorded.</div>
+                            @endif
+                        </div>
+                    </div>
+                    <div class="modal-footer border-top">
+                        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    @endforeach
 @endsection
