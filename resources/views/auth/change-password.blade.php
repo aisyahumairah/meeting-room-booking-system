@@ -15,7 +15,7 @@
                         <h4 class="mb-1">Change Your Password 🔐</h4>
                         <p class="mb-6">For security, please set a new password before continuing.</p>
 
-                        <form action="{{ route('password.change') }}" method="POST">
+                        <form action="{{ route('change.update') }}" method="POST">
                             @csrf
 
                             <div class="mb-6 form-password-toggle">

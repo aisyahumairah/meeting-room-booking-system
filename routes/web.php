@@ -44,7 +44,7 @@ Route::middleware(['auth', 'active', 'must.change.password', 'maintenance.custom
     Route::post('logout', [LoginController::class, 'logout'])->name('logout');
 
     Route::get('password/change', [ChangePasswordController::class, 'showForm'])->name('password.change');
-    Route::post('password/change', [ChangePasswordController::class, 'change']);
+    Route::post('password/change', [ChangePasswordController::class, 'change'])->name('change.update');
 
     // Dashboard routes
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');

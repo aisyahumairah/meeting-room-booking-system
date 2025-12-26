@@ -7,6 +7,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\Rules\Password;
 use Illuminate\View\View;
 
 class ChangePasswordController extends Controller
@@ -14,8 +15,10 @@ class ChangePasswordController extends Controller
     public function showForm(): View|RedirectResponse
     {
         if (!Auth::user()->must_change_password) {
-            return redirect()->route('dashboard.user')
-                ->with('info', 'You do not need to change your password.');
+            if (Auth::user()->canManageBookings()) {
+                return redirect()->route('dashboard.admin');
+            }
+            return redirect()->route('dashboard.user');
         }
         return view('auth.change-password');
     }
@@ -27,10 +30,7 @@ class ChangePasswordController extends Controller
             'password' => [
                 'required',
                 'confirmed',
-                'min:8',
-                'regex:/[a-zA-Z]/',
-                'regex:/[0-9]/',
-                'regex:/[@$!%*#?&]/',
+                Password::min(8)->mixedCase()->numbers()->symbols()
             ],
         ], [
             'password.regex' => 'Password must contain letters, numbers, and special characters.',
@@ -46,12 +46,11 @@ class ChangePasswordController extends Controller
             return back()->withErrors(['password' => 'New password must be different from current.']);
         }
 
-        $user->update([
-            'password' => $request->password,
-            'must_change_password' => false,
-        ]);
+        $user->password = Hash::make($request->password);
+        $user->must_change_password = false;
+        $user->save();
 
-        if ($user->isAdmin() || $user->isDirector()) {
+        if ($user->canManageBookings()) {
             return redirect()->route('dashboard.admin')->with('success', 'Password changed successfully!');
         }
         return redirect()->route('dashboard.user')->with('success', 'Password changed successfully!');
