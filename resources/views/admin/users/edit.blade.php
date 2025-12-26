@@ -5,7 +5,7 @@
 @section('content')
     <div class="container-xxl flex-grow-1 container-p-y">
         <div class="row">
-            <div class="col-md-8 mx-auto">
+            <div class="col-md-12 mx-auto">
                 <div class="card">
                     <div class="card-header d-flex justify-content-between align-items-center">
                         <h5 class="mb-0">Edit User: {{ $user->name }}</h5>
@@ -18,17 +18,27 @@
                             @csrf
                             @method('PUT')
 
-                            <!-- Read-only fields -->
+                            <!-- Primary Identity Fields -->
                             <div class="row mb-3">
                                 <div class="col-md-6">
-                                    <label class="form-label">Staff Number</label>
-                                    <input type="text" class="form-control" value="{{ $user->staff_number }}" disabled>
-                                    <div class="form-text">Staff number cannot be changed.</div>
+                                    <label class="form-label" for="staff_number">Staff Number <span
+                                            class="text-danger">*</span></label>
+                                    <input type="text" id="staff_number" name="staff_number"
+                                        class="form-control @error('staff_number') is-invalid @enderror"
+                                        value="{{ old('staff_number', $user->staff_number) }}" required>
+                                    @error('staff_number')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
                                 </div>
                                 <div class="col-md-6">
-                                    <label class="form-label">Email</label>
-                                    <input type="email" class="form-control" value="{{ $user->email }}" disabled>
-                                    <div class="form-text">Email cannot be changed.</div>
+                                    <label class="form-label" for="email">Email <span
+                                            class="text-danger">*</span></label>
+                                    <input type="email" id="email" name="email"
+                                        class="form-control @error('email') is-invalid @enderror"
+                                        value="{{ old('email', $user->email) }}" required>
+                                    @error('email')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
                                 </div>
                             </div>
 
