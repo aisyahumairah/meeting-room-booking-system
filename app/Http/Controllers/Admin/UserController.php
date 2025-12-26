@@ -132,7 +132,7 @@ class UserController extends Controller
         $oldRole = $user->role;
 
         $changes = [];
-        foreach (['name', 'department', 'phone', 'role'] as $field) {
+        foreach (['staff_number', 'name', 'email', 'department', 'phone', 'role'] as $field) {
             if (isset($validated[$field]) && $user->$field !== $validated[$field]) {
                 $changes[$field] = [
                     'from' => $user->$field,
