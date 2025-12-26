@@ -6,7 +6,7 @@
     <div class="container-xxl flex-grow-1 container-p-y">
         <div class="d-flex justify-content-between align-items-center mb-4">
             <h4 class="mb-0">
-                <i class='bx bx-bar-chart-alt-2 me-2'></i>Reports & Analytics
+                <i class="icon-base bx bx-bar-chart-alt-2 icon-md me-2"></i>Reports & Analytics
             </h4>
         </div>
 
@@ -20,8 +20,10 @@
                                 <h3 class="mb-0">{{ $stats['total_bookings_this_month'] }}</h3>
                                 <small class="text-muted">Bookings This Month</small>
                             </div>
-                            <div class="avatar bg-label-primary">
-                                <i class='bx bx-calendar fs-4'></i>
+                            <div class="avatar">
+                                <span class="avatar-initial rounded bg-label-primary">
+                                    <i class="icon-base bx bx-calendar icon-md"></i>
+                                </span>
                             </div>
                         </div>
                     </div>
@@ -35,8 +37,10 @@
                                 <h3 class="mb-0">{{ $stats['total_rooms'] }}</h3>
                                 <small class="text-muted">Active Rooms</small>
                             </div>
-                            <div class="avatar bg-label-info">
-                                <i class='bx bx-door-open fs-4'></i>
+                            <div class="avatar">
+                                <span class="avatar-initial rounded bg-label-info">
+                                    <i class="icon-base bx bx-door-open icon-md"></i>
+                                </span>
                             </div>
                         </div>
                     </div>
@@ -50,8 +54,10 @@
                                 <h3 class="mb-0">{{ $stats['total_users'] }}</h3>
                                 <small class="text-muted">Active Users</small>
                             </div>
-                            <div class="avatar bg-label-success">
-                                <i class='bx bx-user fs-4'></i>
+                            <div class="avatar">
+                                <span class="avatar-initial rounded bg-label-success">
+                                    <i class="icon-base bx bx-user icon-md"></i>
+                                </span>
                             </div>
                         </div>
                     </div>
@@ -67,8 +73,11 @@
                                 </h3>
                                 <small class="text-muted">Cancellation Rate</small>
                             </div>
-                            <div class="avatar bg-label-{{ $stats['cancellation_rate'] > 15 ? 'warning' : 'secondary' }}">
-                                <i class='bx bx-x-circle fs-4'></i>
+                            <div class="avatar">
+                                <span
+                                    class="avatar-initial rounded bg-label-{{ $stats['cancellation_rate'] > 15 ? 'warning' : 'secondary' }}">
+                                    <i class="icon-base bx bx-x-circle icon-md"></i>
+                                </span>
                             </div>
                         </div>
                     </div>
@@ -81,8 +90,10 @@
             <div class="col-md-4">
                 <div class="card h-100">
                     <div class="card-body text-center">
-                        <div class="avatar avatar-lg bg-label-primary mx-auto mb-3">
-                            <i class='bx bx-building-house fs-2'></i>
+                        <div class="avatar avatar-lg mx-auto mb-3">
+                            <span class="avatar-initial rounded bg-label-primary">
+                                <i class="icon-base bx bx-building-house icon-lg"></i>
+                            </span>
                         </div>
                         <h5>Room Utilization</h5>
                         <p class="text-muted">
@@ -97,8 +108,10 @@
             <div class="col-md-4">
                 <div class="card h-100">
                     <div class="card-body text-center">
-                        <div class="avatar avatar-lg bg-label-info mx-auto mb-3">
-                            <i class='bx bx-line-chart fs-2'></i>
+                        <div class="avatar avatar-lg mx-auto mb-3">
+                            <span class="avatar-initial rounded bg-label-info">
+                                <i class="icon-base bx bx-line-chart icon-lg"></i>
+                            </span>
                         </div>
                         <h5>Booking Statistics</h5>
                         <p class="text-muted">
@@ -113,8 +126,10 @@
             <div class="col-md-4">
                 <div class="card h-100">
                     <div class="card-body text-center">
-                        <div class="avatar avatar-lg bg-label-success mx-auto mb-3">
-                            <i class='bx bx-user-check fs-2'></i>
+                        <div class="avatar avatar-lg mx-auto mb-3">
+                            <span class="avatar-initial rounded bg-label-success">
+                                <i class="icon-base bx bx-user-check icon-lg"></i>
+                            </span>
                         </div>
                         <h5>User Activity</h5>
                         <p class="text-muted">
