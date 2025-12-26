@@ -19,7 +19,8 @@ class BookingController extends Controller
 {
     public function __construct(
         protected BookingService $bookingService,
-        protected AuditService $auditService
+        protected AuditService $auditService,
+        protected \App\Services\BookingStatusService $statusService
     ) {}
 
     /**
@@ -251,6 +252,9 @@ class BookingController extends Controller
      */
     public function myBookings(Request $request)
     {
+        // Auto-complete expired bookings
+        $this->statusService->completeAllExpired();
+
         $query = Booking::with(['room', 'series'])
             ->forUser(auth()->id())
             ->orderBy('booking_date', 'desc')
@@ -310,6 +314,9 @@ class BookingController extends Controller
      */
     public function myBookingsCalendar(Request $request)
     {
+        // Auto-complete expired bookings
+        $this->statusService->completeAllExpired();
+
         $request->validate([
             'start' => 'required|string',
             'end' => 'required|string',
