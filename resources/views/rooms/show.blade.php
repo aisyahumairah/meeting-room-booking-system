@@ -84,6 +84,10 @@
                             <span class="bg-success rounded-circle me-1" style="width: 8px; height: 8px;"></span>
                             Your Booking
                         </span>
+                        <span class="badge bg-label-secondary d-flex align-items-center">
+                            <span class="bg-secondary rounded-circle me-1" style="width: 8px; height: 8px;"></span>
+                            Completed
+                        </span>
                         <span class="badge bg-label-danger d-flex align-items-center">
                             <span class="bg-danger rounded-circle me-1" style="width: 8px; height: 8px;"></span>
                             Maintenance
@@ -182,7 +186,7 @@
                             <i class="bx bx-x-circle me-1"></i> Room Unavailable
                         </button>
                     @else
-                        <a href="#" class="btn btn-primary w-100">
+                        <a href="{{ route('bookings.create', ['room_id' => $room->id]) }}" class="btn btn-primary w-100">
                             <i class="bx bx-calendar-plus me-1"></i> Book This Room
                         </a>
                         <p class="text-muted small text-center mt-2 mb-0">
@@ -205,6 +209,44 @@
             </div>
         </div>
     </div>
+
+    {{-- Booking Details Modal --}}
+    <div class="modal fade" id="bookingDetailsModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Booking Details</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <dl class="row mb-0 mt-2">
+                        <dt class="col-sm-4 mb-2">Reference</dt>
+                        <dd class="col-sm-8 mb-2"><span id="modalReference" class="fw-bold text-primary"></span></dd>
+
+                        <dt class="col-sm-4 mb-2">Date</dt>
+                        <dd class="col-sm-8 mb-2" id="modalDate"></dd>
+
+                        <dt class="col-sm-4 mb-2">Time</dt>
+                        <dd class="col-sm-8 mb-2" id="modalTime"></dd>
+
+                        <dt class="col-sm-4 mb-2">Booker</dt>
+                        <dd class="col-sm-8 mb-2" id="modalBooker"></dd>
+
+                        <dt class="col-sm-4 mb-2">Status</dt>
+                        <dd class="col-sm-8 mb-2" id="modalStatus"></dd>
+
+                        <dt class="col-sm-4 mb-0">Purpose</dt>
+                        <dd class="col-sm-8 mb-0" id="modalPurpose"></dd>
+                    </dl>
+                </div>
+                <div class="modal-footer mt-3">
+                    <button type="button" class="btn btn-outline-secondary btn-sm"
+                        data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
 @endsection
 
 @push('styles')
@@ -253,18 +295,94 @@
                 events: '{{ route('api.rooms.availability', $room) }}',
                 eventColor: '#696cff',
                 nowIndicator: true,
-                selectable: false,
-                eventClick: function(info) {
-                    // Show booking details in tooltip
-                    if (info.event.extendedProps.reference) {
-                        alert('Booking: ' + info.event.extendedProps.reference + '\n' + info.event
-                            .title);
+                selectable: true,
+                selectMirror: true,
+
+                // Prevent selecting past dates
+                selectAllow: function(selectInfo) {
+                    const now = new Date();
+                    now.setHours(0, 0, 0, 0);
+                    return selectInfo.start >= now;
+                },
+
+                // Handle selection for quick booking
+                select: function(info) {
+                    const now = new Date();
+                    now.setHours(0, 0, 0, 0);
+
+                    if (info.start < now) {
+                        calendar.unselect();
+                        return;
                     }
+
+                    const date = info.startStr.split('T')[0];
+                    const startTime = info.startStr.includes('T') ?
+                        info.startStr.split('T')[1].substring(0, 5) :
+                        '09:00';
+                    const endTime = info.endStr.includes('T') ?
+                        info.endStr.split('T')[1].substring(0, 5) :
+                        '10:00';
+
+                    // Redirect to create booking with pre-filled values
+                    window.location.href =
+                        `{{ route('bookings.create') }}?room_id={{ $room->id }}&date=${date}&start_time=${startTime}&end_time=${endTime}`;
+                },
+                eventClick: function(info) {
+                    // Handle maintenance or background events (no reference)
+                    if (!info.event.extendedProps.reference) return;
+
+                    const props = info.event.extendedProps;
+                    const start = info.event.start;
+                    const end = info.event.end;
+
+                    document.getElementById('modalReference').textContent = props.reference;
+
+                    // Format Date
+                    const dateOptions = {
+                        weekday: 'short',
+                        year: 'numeric',
+                        month: 'short',
+                        day: 'numeric'
+                    };
+                    document.getElementById('modalDate').textContent = start.toLocaleDateString('en-US',
+                        dateOptions);
+
+                    // Format Time
+                    const timeOptions = {
+                        hour: '2-digit',
+                        minute: '2-digit',
+                        hour12: false
+                    };
+                    const startTime = start.toLocaleTimeString('en-US', timeOptions);
+                    const endTime = end.toLocaleTimeString('en-US', timeOptions);
+                    document.getElementById('modalTime').textContent = `${startTime} - ${endTime}`;
+
+                    document.getElementById('modalBooker').textContent = props.booker;
+
+                    const statusBadgeMap = {
+                        confirmed: '<span class="badge bg-success">Confirmed</span>',
+                        completed: '<span class="badge bg-secondary">Completed</span>',
+                        cancelled: '<span class="badge bg-danger">Cancelled</span>'
+                    };
+                    document.getElementById('modalStatus').innerHTML = statusBadgeMap[props.status] ||
+                        props.status;
+
+                    document.getElementById('modalPurpose').textContent = info.event.title;
+
+                    const modal = new bootstrap.Modal(document.getElementById('bookingDetailsModal'));
+                    modal.show();
                 },
                 eventDidMount: function(info) {
                     // Add tooltip
-                    if (info.event.extendedProps.booker) {
-                        info.el.title = 'Booked by: ' + info.event.extendedProps.booker;
+                    const props = info.event.extendedProps;
+                    if (props.reference) {
+                        let tooltipText = `Ref: ${props.reference} (${props.status})`;
+                        if (props.booker) {
+                            tooltipText += `\nBy: ${props.booker}`;
+                        }
+                        info.el.title = tooltipText;
+                    } else if (info.event.title) {
+                        info.el.title = info.event.title;
                     }
                 }
             });

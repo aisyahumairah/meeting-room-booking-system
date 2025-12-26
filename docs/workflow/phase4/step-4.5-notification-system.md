@@ -1,7 +1,7 @@
 # Step 4.5: Notification System
 
 **Priority:** HIGH | **Ref:** §7.4 | **Dependencies:** Step 4.4 (System Settings)  
-**Status:** TODO
+**Status:** COMPLETE
 
 ---
 
@@ -1078,6 +1078,8 @@ Route::middleware(['auth', 'check.active'])->group(function () {
 
 ## Testing Requirements
 
+> **Note:** When creating test users with the factory, use `->passwordChanged()` to set `must_change_password` to `false`. Otherwise, the `MustChangePassword` middleware will redirect users causing tests to receive 302 responses instead of 200.
+
 **File:** `tests/Feature/NotificationSystemTest.php`
 
 ```php
@@ -1112,7 +1114,7 @@ class NotificationSystemTest extends TestCase
         
         $this->seed(\Database\Seeders\SystemSettingSeeder::class);
         
-        $this->user = User::factory()->create();
+        $this->user = User::factory()->passwordChanged()->create();
         $this->room = Room::factory()->create();
         $this->booking = Booking::factory()->create([
             'user_id' => $this->user->id,
@@ -1219,21 +1221,21 @@ class NotificationSystemTest extends TestCase
 
 ## Acceptance Criteria
 
-- [ ] `notification_logs` table stores all sent notifications
-- [ ] `user_notification_preferences` table stores user preferences
-- [ ] Welcome email sent on user creation (with temp password)
-- [ ] Booking confirmation email sent on booking creation
-- [ ] Booking cancellation email sent on cancellation
-- [ ] Booking reminder email sent 24h before (via scheduler)
-- [ ] Room status change email sent to affected users
-- [ ] System-level master email toggle respected
-- [ ] System-level individual toggles respected
-- [ ] User preferences respected for optional notifications
-- [ ] Failed notifications logged with error message
-- [ ] User can view/update preferences via profile
-- [ ] Scheduler command registered for reminders
-- [ ] All emails have proper markdown templates
-- [ ] All tests pass: `php artisan test --filter=NotificationSystemTest`
+- [x] `notification_logs` table stores all sent notifications
+- [x] `user_notification_preferences` table stores user preferences
+- [x] Welcome email sent on user creation (with temp password)
+- [x] Booking confirmation email sent on booking creation
+- [x] Booking cancellation email sent on cancellation
+- [x] Booking reminder email sent 24h before (via scheduler)
+- [x] Room status change email sent to affected users
+- [x] System-level master email toggle respected
+- [x] System-level individual toggles respected
+- [x] User preferences respected for optional notifications
+- [x] Failed notifications logged with error message
+- [x] User can view/update preferences via profile
+- [x] Scheduler command registered for reminders
+- [x] All emails have proper markdown templates
+- [x] All tests pass: `php artisan test --filter=NotificationSystemTest`
 
 ---
 

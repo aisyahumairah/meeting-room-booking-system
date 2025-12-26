@@ -19,7 +19,8 @@ class BookingController extends Controller
 {
     public function __construct(
         protected BookingService $bookingService,
-        protected AuditService $auditService
+        protected AuditService $auditService,
+        protected \App\Services\BookingStatusService $statusService
     ) {}
 
     /**
@@ -106,6 +107,22 @@ class BookingController extends Controller
                 ->withInput()
                 ->withErrors(['room_id' => $e->getMessage()]);
         }
+    }
+
+    /**
+     * Display the specified booking.
+     */
+    public function show(Booking $booking)
+    {
+        // Users can only view their own bookings unless they are Admin/Director
+        $user = auth()->user();
+        if ($booking->user_id !== $user->id && !$user->canManageBookings()) {
+            abort(403, 'You are not authorized to view this booking.');
+        }
+
+        $booking->load(['room', 'user', 'series']);
+
+        return view('bookings.show', compact('booking'));
     }
 
     /**
@@ -235,6 +252,9 @@ class BookingController extends Controller
      */
     public function myBookings(Request $request)
     {
+        // Auto-complete expired bookings
+        $this->statusService->completeAllExpired();
+
         $query = Booking::with(['room', 'series'])
             ->forUser(auth()->id())
             ->orderBy('booking_date', 'desc')
@@ -288,26 +308,15 @@ class BookingController extends Controller
         return view('bookings.my', compact('bookings', 'rooms', 'stats'));
     }
 
-    /**
-     * Display a single booking
-     */
-    public function show(Booking $booking)
-    {
-        // Authorization: user can only view their own bookings
-        if ($booking->user_id !== auth()->id() && !auth()->user()->canManageBookings()) {
-            abort(403, 'You can only view your own bookings.');
-        }
-
-        $booking->load(['room', 'user', 'series.bookings', 'cancelledByUser']);
-
-        return view('bookings.show', compact('booking'));
-    }
 
     /**
      * Get user's bookings for calendar (AJAX)
      */
     public function myBookingsCalendar(Request $request)
     {
+        // Auto-complete expired bookings
+        $this->statusService->completeAllExpired();
+
         $request->validate([
             'start' => 'required|string',
             'end' => 'required|string',

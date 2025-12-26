@@ -16,16 +16,18 @@ class BookingController extends Controller
 {
     public function __construct(
         protected BookingService $bookingService,
-        protected AuditService $auditService
-    ) {
-        // $this->middleware('can:manage-bookings'); // Using route middleware instead
-    }
+        protected AuditService $auditService,
+        protected \App\Services\BookingStatusService $statusService
+    ) {}
 
     /**
      * Display all bookings
      */
     public function index(Request $request)
     {
+        // Auto-complete expired bookings on page load
+        $this->statusService->completeAllExpired();
+
         $query = Booking::with(['user', 'room', 'series', 'cancelledByUser'])
             ->orderBy('booking_date', 'desc')
             ->orderBy('start_time', 'desc');
@@ -179,7 +181,6 @@ class BookingController extends Controller
             return redirect()
                 ->route('admin.bookings.index')
                 ->with('success', $message);
-
         } catch (\Exception $e) {
             return back()
                 ->withInput()
@@ -240,7 +241,6 @@ class BookingController extends Controller
             return redirect()
                 ->route('admin.bookings.index')
                 ->with('success', $message);
-
         } catch (\Exception $e) {
             return back()->withErrors(['error' => 'Failed to cancel: ' . $e->getMessage()]);
         }

@@ -1,7 +1,7 @@
 # Step 4.2: Audit Trail Viewer
 
 **Priority:** HIGH | **Ref:** §7.3.1 | **Dependencies:** Phase 1 AuditLog model  
-**Status:** TODO
+**Status:** COMPLETE
 
 ---
 
@@ -601,6 +601,8 @@ Add Audit Log menu item (for Director/SysAdmin):
 
 ## Testing Requirements
 
+> **Note:** When creating test users with the factory, use `->passwordChanged()` to set `must_change_password` to `false`. Otherwise, the `MustChangePassword` middleware will redirect users causing tests to receive 302 responses instead of 200.
+
 **File:** `tests/Feature/AuditLogViewerTest.php`
 
 ```php
@@ -626,9 +628,9 @@ class AuditLogViewerTest extends TestCase
     {
         parent::setUp();
         
-        $this->sysAdmin = User::factory()->create(['role' => 'system_admin']);
-        $this->director = User::factory()->create(['role' => 'director']);
-        $this->regularUser = User::factory()->create(['role' => 'regular_user']);
+        $this->sysAdmin = User::factory()->passwordChanged()->create(['role' => 'system_admin']);
+        $this->director = User::factory()->passwordChanged()->create(['role' => 'director']);
+        $this->regularUser = User::factory()->passwordChanged()->create(['role' => 'regular_user']);
 
         // Create some audit logs
         AuditService::log('login_success', 'user', $this->regularUser->id);
@@ -746,21 +748,21 @@ class AuditLogViewerTest extends TestCase
 
 ## Acceptance Criteria
 
-- [ ] Audit log list displays all logs in reverse chronological order
-- [ ] Date presets work (Today, Yesterday, Last 7 Days, etc.)
-- [ ] Custom date range filter works
-- [ ] Actor filter dropdown shows all users with logs
-- [ ] Event type filter dropdown shows all event types
-- [ ] Target type filter works
-- [ ] Full-text search works (actor, details)
-- [ ] Pagination works (50 per page)
-- [ ] View Details modal shows full log information
-- [ ] Export to CSV works
-- [ ] Export to Excel works
-- [ ] Export action is logged
-- [ ] Only Director/SysAdmin can access
-- [ ] Logs cannot be edited or deleted (immutable)
-- [ ] All tests pass: `php artisan test --filter=AuditLogViewerTest`
+- [x] Audit log list displays all logs in reverse chronological order
+- [x] Date presets work (Today, Yesterday, Last 7 Days, etc.)
+- [x] Custom date range filter works
+- [x] Actor filter dropdown shows all users with logs
+- [x] Event type filter dropdown shows all event types
+- [x] Target type filter works
+- [x] Full-text search works (actor, details)
+- [x] Pagination works (50 per page)
+- [x] View Details modal shows full log information
+- [x] Export to CSV works
+- [x] Export to Excel works
+- [x] Export action is logged
+- [x] Only Director/SysAdmin can access
+- [x] Logs cannot be edited or deleted (immutable)
+- [x] All tests pass: `php artisan test --filter=AuditLogViewerTest`
 
 ---
 

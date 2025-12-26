@@ -8,11 +8,18 @@ use Illuminate\Http\Request;
 
 class RoomController extends Controller
 {
+    public function __construct(
+        protected \App\Services\BookingStatusService $statusService
+    ) {}
+
     /**
      * Display a grid view of active rooms with search and filtering.
      */
     public function index(Request $request)
     {
+        // Auto-complete expired bookings on page load
+        $this->statusService->completeAllExpired();
+
         $query = Room::with(['amenities', 'images'])
             ->active()
             ->orderBy('name');
@@ -84,6 +91,9 @@ class RoomController extends Controller
      */
     public function availability(Room $room, Request $request)
     {
+        // Auto-complete expired bookings
+        $this->statusService->completeAllExpired();
+
         $start = $request->get('start');
         $end = $request->get('end');
 
@@ -92,22 +102,34 @@ class RoomController extends Controller
         // Add bookings if Booking model exists (Phase 3)
         if (class_exists(\App\Models\Booking::class)) {
             $bookings = $room->bookings()
-                ->where('status', 'confirmed')
+                ->with('user')
+                ->whereIn('status', ['confirmed', 'completed'])
                 ->whereBetween('booking_date', [$start, $end])
                 ->get();
 
             foreach ($bookings as $booking) {
                 $isOwn = $booking->user_id === auth()->id();
 
+                // Color based on status and ownership
+                $color = '#696cff'; // Default Primary
+                if ($booking->status === 'completed') {
+                    $color = '#6c757d'; // Gray
+                } elseif ($isOwn) {
+                    $color = '#28a745'; // Green
+                }
+
                 $events->push([
                     'id' => $booking->id,
-                    'title' => $isOwn ? $booking->purpose : 'Booked',
-                    'start' => $booking->booking_date . 'T' . $booking->start_time,
-                    'end' => $booking->booking_date . 'T' . $booking->end_time,
-                    'color' => $isOwn ? '#28a745' : '#696cff',
+                    'title' => $booking->purpose,
+                    'start' => $booking->booking_date->format('Y-m-d') . 'T' . $booking->start_time,
+                    'end' => $booking->booking_date->format('Y-m-d') . 'T' . $booking->end_time,
+                    'backgroundColor' => $color,
+                    'borderColor' => $color,
                     'extendedProps' => [
                         'reference' => $booking->reference_number,
-                        'booker' => auth()->user()->canManageBookings() ? $booking->user->name : null,
+                        'booker' => $booking->user->name,
+                        'status' => $booking->status,
+                        'isOwn' => $isOwn,
                     ]
                 ]);
             }
@@ -124,7 +146,8 @@ class RoomController extends Controller
                 'title' => 'Maintenance: ' . ($m->reason ?? 'Scheduled'),
                 'start' => $m->start_datetime->toIso8601String(),
                 'end' => $m->end_datetime->toIso8601String(),
-                'color' => '#dc3545',
+                'backgroundColor' => '#dc3545',
+                'borderColor' => '#dc3545',
                 'display' => 'background',
             ]);
         }

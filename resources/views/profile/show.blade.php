@@ -13,7 +13,7 @@
                 <h5 class="card-header">Profile Details</h5>
                 <div class="card-body">
                     <div class="d-flex align-items-start align-items-sm-center gap-4 mb-4">
-                        <img src="{{ asset('assets/img/avatars/1.png') }}" alt="user-avatar" class="d-block rounded"
+                        <img src="{{ asset('assets/img/avatars/kosong.jpeg') }}" alt="user-avatar" class="d-block rounded"
                             height="100" width="100">
                         <div>
                             <h5 class="mb-1">{{ $user->name }}</h5>
@@ -78,7 +78,7 @@
                                 <label class="col-sm-4 col-form-label fw-medium">Account Created</label>
                                 <div class="col-sm-8">
                                     <input type="text" class="form-control-plaintext"
-                                        value="{{ $user->created_at->format('M d, Y') }}" readonly>
+                                        value="{{ $user->created_at->format('d M Y H:i:s') }}" readonly>
                                 </div>
                             </div>
 
@@ -86,7 +86,7 @@
                                 <label class="col-sm-4 col-form-label fw-medium">Last Login</label>
                                 <div class="col-sm-8">
                                     <input type="text" class="form-control-plaintext"
-                                        value="{{ $user->last_login_at ? $user->last_login_at->format('M d, Y H:i') : 'Never' }}"
+                                        value="{{ $user->last_login_at ? $user->last_login_at->format('d M Y H:i:s') : 'Never' }}"
                                         readonly>
                                 </div>
                             </div>

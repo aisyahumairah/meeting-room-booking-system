@@ -12,8 +12,8 @@
                         <div class="card-body">
                             <h5 class="card-title text-primary">Welcome back, {{ auth()->user()->name }}! 👋</h5>
                             <p class="mb-4">
-                                You have <span class="fw-bold">{{ $upcomingBookings->count() }} upcoming
-                                    booking{{ $upcomingBookings->count() !== 1 ? 's' : '' }}</span> this week.
+                                You have <span class="fw-bold">{{ $upcomingThisWeekCount }} upcoming
+                                    booking{{ $upcomingThisWeekCount !== 1 ? 's' : '' }}</span> this week.
                             </p>
                             <a href="{{ route('bookings.create') }}" class="btn btn-sm btn-primary">
                                 <i class="bx bx-plus me-1"></i> Book a Room
@@ -39,7 +39,7 @@
                         <div class="card-body">
                             <div class="card-title d-flex align-items-start justify-content-between">
                                 <div class="avatar flex-shrink-0">
-                                    <span class="avatar-initial rounded bg-label-info"><i class="bx bx-calendar"></i></span>
+                                    <span class="avatar-initial rounded bg-label-info"><i class="bx bx-timer"></i></span>
                                 </div>
                             </div>
                             <span class="fw-semibold d-block mb-1">Upcoming</span>
@@ -52,12 +52,12 @@
                         <div class="card-body">
                             <div class="card-title d-flex align-items-start justify-content-between">
                                 <div class="avatar flex-shrink-0">
-                                    <span class="avatar-initial rounded bg-label-warning"><i
-                                            class="bx bx-time-five"></i></span>
+                                    <span class="avatar-initial rounded bg-label-success"><i
+                                            class="bx bx-calendar-event"></i></span>
                                 </div>
                             </div>
-                            <span class="fw-semibold d-block mb-1">Pending</span>
-                            <h3 class="card-title mb-2">{{ $stats['pending'] }}</h3>
+                            <span class="fw-semibold d-block mb-1">This Month</span>
+                            <h3 class="card-title mb-2">{{ $stats['this_month'] }}</h3>
                         </div>
                     </div>
                 </div>
@@ -66,23 +66,23 @@
 
         <!-- Upcoming Bookings List -->
         <div class="col-12 col-lg-8 order-2 order-md-3 order-lg-2 mb-4">
-            <div class="card h-100">
+            <div class="card">
                 <div class="card-header d-flex align-items-center justify-content-between">
                     <h5 class="card-title m-0 me-2">My Upcoming Bookings</h5>
-                    <a href="#" class="btn btn-sm btn-outline-primary">View All</a>
+                    <a href="{{ route('my-bookings', ['status' => 'confirmed']) }}"
+                        class="btn btn-sm btn-outline-primary">View All</a>
                 </div>
-                <div class="table-responsive text-nowrap">
-                    <table class="table table-hover">
+                <div class="table-responsive">
+                    <table class="table table-hover w-100">
                         <thead>
                             <tr>
                                 <th>Room</th>
                                 <th>Date & Time</th>
                                 <th>Status</th>
-                                <th>Actions</th>
                             </tr>
                         </thead>
                         <tbody class="table-border-bottom-0">
-                            @forelse($upcomingBookings as $booking)
+                            @foreach ($upcomingBookings as $booking)
                                 <tr>
                                     <td>
                                         <i class="bx bx-building-house fa-lg text-primary me-3"></i>
@@ -93,33 +93,13 @@
                                         {{ $booking->start_time }} - {{ $booking->end_time }}
                                     </td>
                                     <td>
-                                        <span class="badge bg-label-{{ $booking->status_badge ?? 'secondary' }} me-1">
-                                            {{ ucfirst($booking->status ?? 'pending') }}
+                                        <span
+                                            class="badge bg-label-{{ $booking->status === 'confirmed' ? 'success' : ($booking->status === 'completed' ? 'info' : 'danger') }} me-1">
+                                            {{ ucfirst($booking->status) }}
                                         </span>
                                     </td>
-                                    <td>
-                                        <div class="dropdown">
-                                            <button type="button" class="btn p-0 dropdown-toggle hide-arrow"
-                                                data-bs-toggle="dropdown">
-                                                <i class="bx bx-dots-vertical-rounded"></i>
-                                            </button>
-                                            <div class="dropdown-menu">
-                                                <a class="dropdown-item" href="javascript:void(0);"><i
-                                                        class="bx bx-edit-alt me-1"></i> Edit</a>
-                                                <a class="dropdown-item" href="javascript:void(0);"><i
-                                                        class="bx bx-trash me-1"></i> Cancel</a>
-                                            </div>
-                                        </div>
-                                    </td>
                                 </tr>
-                            @empty
-                                <tr>
-                                    <td colspan="4" class="text-center text-muted py-4">
-                                        <i class="bx bx-calendar bx-lg mb-2 d-block"></i>
-                                        No upcoming bookings
-                                    </td>
-                                </tr>
-                            @endforelse
+                            @endforeach
                         </tbody>
                     </table>
                 </div>
@@ -159,8 +139,7 @@
                 <div class="card-body">
                     <div class="card-title d-flex align-items-start justify-content-between">
                         <div class="avatar flex-shrink-0">
-                            <span class="avatar-initial rounded bg-label-primary"><i
-                                    class="bx bx-calendar-check"></i></span>
+                            <span class="avatar-initial rounded bg-label-primary"><i class="bx bx-calendar"></i></span>
                         </div>
                     </div>
                     <span class="fw-semibold d-block mb-1">Total Bookings</span>
@@ -174,11 +153,11 @@
                     <div class="card-title d-flex align-items-start justify-content-between">
                         <div class="avatar flex-shrink-0">
                             <span class="avatar-initial rounded bg-label-success"><i
-                                    class="bx bx-calendar-event"></i></span>
+                                    class="bx bx-calendar-check"></i></span>
                         </div>
                     </div>
-                    <span class="fw-semibold d-block mb-1">This Month</span>
-                    <h3 class="card-title mb-2">{{ $stats['this_month'] }}</h3>
+                    <span class="fw-semibold d-block mb-1">Confirmed</span>
+                    <h3 class="card-title mb-2">{{ $stats['confirmed'] }}</h3>
                 </div>
             </div>
         </div>
@@ -187,11 +166,11 @@
                 <div class="card-body">
                     <div class="card-title d-flex align-items-start justify-content-between">
                         <div class="avatar flex-shrink-0">
-                            <span class="avatar-initial rounded bg-label-warning"><i class="bx bx-time-five"></i></span>
+                            <span class="avatar-initial rounded bg-label-info"><i class="bx bx-check-double"></i></span>
                         </div>
                     </div>
-                    <span class="fw-semibold d-block mb-1">Pending</span>
-                    <h3 class="card-title mb-2">{{ $stats['pending'] }}</h3>
+                    <span class="fw-semibold d-block mb-1">Completed</span>
+                    <h3 class="card-title mb-2">{{ $stats['completed'] }}</h3>
                 </div>
             </div>
         </div>
@@ -214,8 +193,21 @@
     <div class="row">
         <div class="col-12">
             <div class="card">
-                <div class="card-header">
+                <div class="card-header d-flex align-items-center justify-content-between">
                     <h5 class="card-title mb-0">My Booking History</h5>
+                    <div class="dropdown">
+                        <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button"
+                            id="yearFilterDropdown" data-bs-toggle="dropdown" aria-haspopup="true"
+                            aria-expanded="false">
+                            Year: {{ $year }}
+                        </button>
+                        <div class="dropdown-menu dropdown-menu-end" aria-labelledby="yearFilterDropdown">
+                            @for ($y = now()->year; $y >= now()->year - 2; $y--)
+                                <a class="dropdown-item {{ $year == $y ? 'active' : '' }}"
+                                    href="{{ route('dashboard', ['year' => $y]) }}">{{ $y }}</a>
+                            @endfor
+                        </div>
+                    </div>
                 </div>
                 <div class="card-body">
                     <div id="bookingsChart"></div>
@@ -239,7 +231,7 @@
             },
             series: [{
                 name: 'Bookings',
-                data: [4, 6, 3, 8, 5, 7]
+                data: @json($chartData)
             }],
             colors: ['#696cff'],
             plotOptions: {
@@ -252,11 +244,16 @@
                 enabled: false
             },
             xaxis: {
-                categories: ['Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+                categories: @json($months)
             },
             yaxis: {
                 title: {
                     text: 'Number of Bookings'
+                },
+                labels: {
+                    formatter: function(val) {
+                        return parseInt(val);
+                    }
                 }
             },
             grid: {
