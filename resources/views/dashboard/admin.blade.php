@@ -16,7 +16,7 @@
                                     booking{{ $stats['today_count'] !== 1 ? 's' : '' }}</span> scheduled for today.
                                 Check the calendar for more details.
                             </p>
-                            <a href="#" class="btn btn-sm btn-outline-primary">View Calendar</a>
+                            <a href="{{ route('calendar') }}" class="btn btn-sm btn-outline-primary">View Calendar</a>
                         </div>
                     </div>
                     <div class="col-sm-5 text-center text-sm-left">
@@ -44,7 +44,10 @@
                             </div>
                             <span class="fw-semibold d-block mb-1">Today</span>
                             <h3 class="card-title mb-2">{{ $stats['today_count'] }}</h3>
-                            <small class="text-success fw-semibold"><i class="bx bx-up-arrow-alt"></i> +2</small>
+                            <small class="text-{{ $stats['today_count'] > 0 ? 'success' : 'muted' }} fw-semibold">
+                                <i class="bx bx-{{ $stats['today_count'] > 0 ? 'up-arrow-alt' : 'minus' }}"></i>
+                                Active today
+                            </small>
                         </div>
                     </div>
                 </div>
@@ -59,8 +62,11 @@
                             </div>
                             <span class="fw-semibold d-block mb-1">This Week</span>
                             <h3 class="card-title mb-2">{{ $stats['week_total'] }}</h3>
-                            <small class="text-success fw-semibold"><i class="bx bx-up-arrow-alt"></i>
-                                {{ $stats['week_change'] }}</small>
+                            <small class="text-{{ $stats['week_change_value'] >= 0 ? 'success' : 'danger' }} fw-semibold">
+                                <i
+                                    class="bx bx-{{ $stats['week_change_value'] >= 0 ? 'up-arrow-alt' : 'down-arrow-alt' }}"></i>
+                                {{ $stats['week_change'] }}
+                            </small>
                         </div>
                     </div>
                 </div>
@@ -81,18 +87,19 @@
                                 <div class="dropdown">
                                     <button class="btn btn-sm btn-outline-primary dropdown-toggle" type="button"
                                         id="utilizationPeriod" data-bs-toggle="dropdown">
-                                        {{ date('Y') }}
+                                        {{ $year }}
                                     </button>
                                     <div class="dropdown-menu dropdown-menu-end">
-                                        <a class="dropdown-item" href="javascript:void(0);">{{ date('Y') }}</a>
-                                        <a class="dropdown-item" href="javascript:void(0);">{{ date('Y') - 1 }}</a>
-                                        <a class="dropdown-item" href="javascript:void(0);">{{ date('Y') - 2 }}</a>
+                                        @for ($y = date('Y'); $y >= date('Y') - 2; $y--)
+                                            <a class="dropdown-item {{ $year == $y ? 'active' : '' }}"
+                                                href="{{ route('dashboard.admin', ['year' => $y]) }}">{{ $y }}</a>
+                                        @endfor
                                     </div>
                                 </div>
                             </div>
                         </div>
                         <div id="growthChart"></div>
-                        <div class="text-center fw-semibold pt-3 mb-2">62% Average Utilization</div>
+                        <div class="text-center fw-semibold pt-3 mb-2">{{ $avgUtilization }}% Average Utilization</div>
                         <div class="d-flex px-xxl-4 px-lg-2 p-4 gap-xxl-3 gap-lg-1 gap-3 justify-content-between">
                             <div class="d-flex">
                                 <div class="me-2">
@@ -140,8 +147,9 @@
                                         {{ $booking->user->name ?? 'User' }}</small>
                                 </div>
                                 <div class="user-progress">
-                                    <span class="badge bg-label-{{ $booking->status_badge ?? 'secondary' }}">
-                                        {{ ucfirst($booking->status ?? 'pending') }}
+                                    <span
+                                        class="badge bg-label-{{ $booking->status === 'confirmed' ? 'success' : 'info' }}">
+                                        {{ ucfirst($booking->status) }}
                                     </span>
                                 </div>
                             </div>
@@ -169,19 +177,19 @@
                 <div class="card-body">
                     <div class="row g-3">
                         <div class="col-md-4 col-sm-6">
-                            <a href="#" class="btn btn-primary w-100">
+                            <a href="{{ route('admin.bookings.index') }}" class="btn btn-primary w-100">
                                 <i class="bx bx-list-ul me-2"></i> View All Bookings
                             </a>
                         </div>
                         <div class="col-md-4 col-sm-6">
-                            <a href="#" class="btn btn-outline-primary w-100">
+                            <a href="{{ route('admin.reports.index') }}" class="btn btn-outline-primary w-100">
                                 <i class="bx bx-chart me-2"></i> Generate Report
                             </a>
                         </div>
                         @can('manage-rooms')
                             <div class="col-md-4 col-sm-6">
-                                <a href="#" class="btn btn-outline-primary w-100">
-                                    <i class="bx bx-plus me-2"></i> Add New Room
+                                <a href="{{ route('admin.rooms.index') }}" class="btn btn-outline-primary w-100">
+                                    <i class="bx bx-plus me-2"></i> Manage Rooms
                                 </a>
                             </div>
                         @endcan
@@ -205,15 +213,7 @@
                     show: false
                 }
             },
-            series: [{
-                    name: 'Meeting Room A',
-                    data: [44, 55, 41, 67, 22, 43, 21]
-                },
-                {
-                    name: 'Conference Room B',
-                    data: [13, 23, 20, 8, 13, 27, 33]
-                }
-            ],
+            series: @json($chartData),
             colors: ['#696cff', '#03c3ec'],
             plotOptions: {
                 bar: {
@@ -226,7 +226,7 @@
                 enabled: false
             },
             xaxis: {
-                categories: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
+                categories: @json($days)
             },
             yaxis: {
                 title: {
@@ -250,7 +250,7 @@
                 height: 150,
                 type: 'radialBar'
             },
-            series: [62],
+            series: [{{ $avgUtilization }}],
             colors: ['#696cff'],
             plotOptions: {
                 radialBar: {
