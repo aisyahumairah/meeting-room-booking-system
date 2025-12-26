@@ -9,6 +9,10 @@ use Illuminate\Http\JsonResponse;
 
 class CalendarController extends Controller
 {
+    public function __construct(
+        protected \App\Services\BookingStatusService $statusService
+    ) {}
+
     /**
      * Display the global booking calendar
      */
@@ -25,6 +29,9 @@ class CalendarController extends Controller
      */
     public function events(Request $request): JsonResponse
     {
+        // Auto-complete expired bookings
+        $this->statusService->completeAllExpired();
+
         $request->validate([
             'start' => 'required|date',
             'end' => 'required|date',

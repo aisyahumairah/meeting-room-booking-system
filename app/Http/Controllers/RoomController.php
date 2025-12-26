@@ -8,11 +8,18 @@ use Illuminate\Http\Request;
 
 class RoomController extends Controller
 {
+    public function __construct(
+        protected \App\Services\BookingStatusService $statusService
+    ) {}
+
     /**
      * Display a grid view of active rooms with search and filtering.
      */
     public function index(Request $request)
     {
+        // Auto-complete expired bookings on page load
+        $this->statusService->completeAllExpired();
+
         $query = Room::with(['amenities', 'images'])
             ->active()
             ->orderBy('name');
@@ -84,6 +91,9 @@ class RoomController extends Controller
      */
     public function availability(Room $room, Request $request)
     {
+        // Auto-complete expired bookings
+        $this->statusService->completeAllExpired();
+
         $start = $request->get('start');
         $end = $request->get('end');
 
