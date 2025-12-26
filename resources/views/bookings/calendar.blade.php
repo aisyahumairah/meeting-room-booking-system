@@ -244,6 +244,13 @@
                         hour12: false
                     },
 
+                    // Prevent selecting past dates
+                    selectAllow: function(selectInfo) {
+                        const now = new Date();
+                        now.setHours(0, 0, 0, 0);
+                        return selectInfo.start >= now;
+                    },
+
                     // Fetch events
                     events: function(info, successCallback, failureCallback) {
                         const roomId = roomFilter.value;
@@ -372,6 +379,14 @@
 
                     // Click on empty slot - go to create booking
                     select: function(info) {
+                        const now = new Date();
+                        now.setHours(0, 0, 0, 0);
+
+                        if (info.start < now) {
+                            calendar.unselect();
+                            return;
+                        }
+
                         const roomId = roomFilter.value || '';
                         const date = info.startStr.split('T')[0];
                         const startTime = info.startStr.includes('T') ?

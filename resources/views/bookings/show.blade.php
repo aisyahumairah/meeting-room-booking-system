@@ -55,7 +55,7 @@
                             <p>{{ $booking->purpose }}</p>
                         </div>
 
-                        @if($booking->status === 'cancelled')
+                        @if ($booking->status === 'cancelled')
                             <div class="alert alert-danger">
                                 <h6 class="alert-heading mb-2">
                                     <i class="bx bx-x-circle me-1"></i> Booking Cancelled
@@ -80,12 +80,12 @@
 
                     {{-- Actions --}}
                     <div class="card-footer">
-                        @if($booking->is_editable)
+                        @if ($booking->is_editable)
                             <a href="{{ route('my-bookings.edit', $booking) }}" class="btn btn-primary me-2">
                                 <i class="bx bx-edit me-1"></i> Edit Booking
                             </a>
                         @endif
-                        @if($booking->is_cancellable)
+                        @if ($booking->is_cancellable)
                             <button type="button" class="btn btn-outline-danger"
                                 onclick="confirmCancel({{ $booking->id }}, '{{ $booking->reference_number }}')">
                                 <i class="bx bx-x me-1"></i> Cancel Booking
@@ -95,7 +95,7 @@
                 </div>
 
                 {{-- Series Occurrences (if recurring) --}}
-                @if($booking->is_recurring && $booking->series)
+                @if ($booking->is_recurring && $booking->series)
                     <div class="card mb-4">
                         <div class="card-header">
                             <h5 class="mb-0">Series Occurrences</h5>
@@ -110,7 +110,7 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    @foreach($booking->series->bookings()->orderBy('booking_date')->get() as $occurrence)
+                                    @foreach ($booking->series->bookings()->orderBy('booking_date')->get() as $occurrence)
                                         <tr class="{{ $occurrence->id === $booking->id ? 'table-primary' : '' }}">
                                             <td>{{ $occurrence->booking_date->format('D, M d, Y') }}</td>
                                             <td>{{ $occurrence->time_range }}</td>
@@ -124,51 +124,58 @@
                 @endif
 
                 {{-- Audit History (Admin only) --}}
-                @if(auth()->user()->canManageBookings())
+                @if (auth()->user()->canManageBookings())
                     <div class="card mt-4">
                         <div class="card-header">
                             <h6 class="mb-0"><i class="bx bx-history me-1"></i> Audit History</h6>
                         </div>
-                        <div class="table-responsive">
-                            <table class="table table-sm mb-0">
-                                <thead>
-                                    <tr>
-                                        <th>Date/Time</th>
-                                        <th>Action</th>
-                                        <th>User</th>
-                                        <th>Details</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @forelse($booking->auditLogs()->orderBy('created_at', 'desc')->limit(20)->get() as $log)
+                        @php
+                            $auditLogs = $booking->auditLogs()->orderBy('created_at', 'desc')->limit(20)->get();
+                        @endphp
+
+                        @if ($auditLogs->isEmpty())
+                            <div class="card-body text-center py-4">
+                                <i class="bx bx-history fs-1 text-muted mb-2"></i>
+                                <p class="text-muted mb-0">No audit history available for this booking.</p>
+                            </div>
+                        @else
+                            <div class="table-responsive">
+                                <table class="table table-sm mb-0">
+                                    <thead>
                                         <tr>
-                                            <td class="small">{{ $log->created_at->format('M d, Y H:i') }}</td>
-                                            <td>
-                                                <span
-                                                    class="badge bg-{{ $log->event_type === 'booking_cancelled' ? 'danger' : 'primary' }}">
-                                                    {{ str_replace('_', ' ', ucfirst($log->event_type)) }}
-                                                </span>
-                                            </td>
-                                            <td class="small">{{ $log->actor_name ?? 'System' }}</td>
-                                            <td class="small">
-                                                @if (is_array($log->details))
-                                                    @foreach (array_slice($log->details, 0, 3) as $key => $value)
-                                                        @if (!is_array($value))
-                                                            <span class="text-muted">{{ $key }}:</span>
-                                                            {{ $value }}<br>
-                                                        @endif
-                                                    @endforeach
-                                                @endif
-                                            </td>
+                                            <th>Date/Time</th>
+                                            <th>Action</th>
+                                            <th>User</th>
+                                            <th>Details</th>
                                         </tr>
-                                    @empty
-                                        <tr>
-                                            <td colspan="4" class="text-center text-muted py-3">No audit history available</td>
-                                        </tr>
-                                    @endforelse
-                                </tbody>
-                            </table>
-                        </div>
+                                    </thead>
+                                    <tbody>
+                                        @foreach ($auditLogs as $log)
+                                            <tr>
+                                                <td class="small">{{ $log->created_at->format('M d, Y H:i') }}</td>
+                                                <td>
+                                                    <span
+                                                        class="badge bg-{{ $log->event_type === 'booking_cancelled' ? 'danger' : 'primary' }}">
+                                                        {{ str_replace('_', ' ', ucfirst($log->event_type)) }}
+                                                    </span>
+                                                </td>
+                                                <td class="small">{{ $log->actor_name ?? 'System' }}</td>
+                                                <td class="small">
+                                                    @if (is_array($log->details))
+                                                        @foreach (array_slice($log->details, 0, 3) as $key => $value)
+                                                            @if (!is_array($value))
+                                                                <span class="text-muted">{{ $key }}:</span>
+                                                                {{ $value }}<br>
+                                                            @endif
+                                                        @endforeach
+                                                    @endif
+                                                </td>
+                                            </tr>
+                                        @endforeach
+                                    </tbody>
+                                </table>
+                            </div>
+                        @endif
                     </div>
                 @endif
             </div>
@@ -204,7 +211,7 @@
                             <span class="text-muted">Created</span>
                             <span>{{ $booking->created_at->format('M d, Y H:i') }}</span>
                         </li>
-                        @if($booking->updated_at != $booking->created_at)
+                        @if ($booking->updated_at != $booking->created_at)
                             <li class="list-group-item d-flex justify-content-between">
                                 <span class="text-muted">Last Updated</span>
                                 <span>{{ $booking->updated_at->format('M d, Y H:i') }}</span>
