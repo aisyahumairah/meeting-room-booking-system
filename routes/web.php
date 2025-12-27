@@ -71,13 +71,17 @@ Route::middleware(['auth', 'active', 'must.change.password', 'maintenance.custom
     Route::get('/ajax/calendar/events', [CalendarController::class, 'events'])
         ->name('ajax.calendar.events');
 
+    // Recurring booking
+    Route::get('/bookings/create-recurring', [BookingController::class, 'createRecurring'])
+        ->name('bookings.create-recurring');
+    Route::post('/bookings/recurring', [BookingController::class, 'storeRecurring'])
+        ->name('bookings.store-recurring');
+
     // Booking creation (all authenticated users)
     Route::get('/bookings/create', [BookingController::class, 'create'])->name('bookings.create');
     Route::post('/bookings', [BookingController::class, 'store'])->name('bookings.store');
     Route::get('/bookings/{booking}', [BookingController::class, 'show'])->name('bookings.show');
-
     // AJAX routes for booking
-    // AJAX routes for booking (Legacy)
     Route::post('/ajax/bookings/check-availability', [BookingController::class, 'checkAvailability'])
         ->name('ajax.bookings.check-availability');
     Route::post('/ajax/bookings/preview-recurrence', [BookingController::class, 'previewRecurrence'])
@@ -92,12 +96,6 @@ Route::middleware(['auth', 'active', 'must.change.password', 'maintenance.custom
         Route::get('/rooms/{room}/available-slots', [AvailabilityController::class, 'availableSlots'])
             ->name('rooms.available-slots');
     });
-
-    // Recurring booking
-    Route::get('/bookings/create-recurring', [BookingController::class, 'createRecurring'])
-        ->name('bookings.create-recurring');
-    Route::post('/bookings/recurring', [BookingController::class, 'storeRecurring'])
-        ->name('bookings.store-recurring');
 
     // My Bookings
     Route::get('/my-bookings', [BookingController::class, 'myBookings'])->name('my-bookings');

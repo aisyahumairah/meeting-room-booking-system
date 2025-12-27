@@ -20,7 +20,7 @@
                             @csrf
 
                             {{-- Race condition warning --}}
-                            @if(session('error'))
+                            @if (session('error'))
                                 <div class="alert alert-danger alert-dismissible mb-4">
                                     <i class="bx bx-error-circle me-2"></i>
                                     <strong>Booking Failed!</strong>
@@ -40,10 +40,11 @@
                                 <select class="form-select @error('room_id') is-invalid @enderror" id="room_id"
                                     name="room_id" required>
                                     <option value="">Select a room...</option>
-                                    @foreach($rooms as $room)
+                                    @foreach ($rooms as $room)
                                         <option value="{{ $room->id }}" data-capacity="{{ $room->capacity }}"
-                                            data-location="{{ $room->floor_location }}" data-image="{{ $room->primary_image }}"
-                                            {{ (old('room_id', $selectedRoom?->id) == $room->id) ? 'selected' : '' }}>
+                                            data-location="{{ $room->floor_location }}"
+                                            data-image="{{ $room->primary_image }}"
+                                            {{ old('room_id', $selectedRoom?->id) == $room->id ? 'selected' : '' }}>
                                             {{ $room->name }} ({{ $room->capacity }} seats, {{ $room->floor_location }})
                                         </option>
                                     @endforeach
@@ -71,10 +72,11 @@
                                     <select class="form-select @error('start_time') is-invalid @enderror" id="start_time"
                                         name="start_time" required>
                                         <option value="">Select start time...</option>
-                                        @for($hour = 8; $hour < 18; $hour++)
-                                            @foreach(['00', '30'] as $minute)
+                                        @for ($hour = 8; $hour < 18; $hour++)
+                                            @foreach (['00', '30'] as $minute)
                                                 @php $time = sprintf('%02d:%s', $hour, $minute); @endphp
-                                                <option value="{{ $time }}" {{ old('start_time', $prefilledStartTime ?? '') == $time ? 'selected' : '' }}>
+                                                <option value="{{ $time }}"
+                                                    {{ old('start_time', $prefilledStartTime ?? '') == $time ? 'selected' : '' }}>
                                                     {{ $time }}
                                                 </option>
                                             @endforeach
@@ -89,11 +91,14 @@
                                     <select class="form-select @error('end_time') is-invalid @enderror" id="end_time"
                                         name="end_time" required>
                                         <option value="">Select end time...</option>
-                                        @for($hour = 8; $hour <= 18; $hour++)
-                                            @foreach(['00', '30'] as $minute)
-                                                @if($hour == 8 && $minute == '00') @continue @endif
+                                        @for ($hour = 8; $hour <= 18; $hour++)
+                                            @foreach (['00', '30'] as $minute)
+                                                @if ($hour == 8 && $minute == '00')
+                                                    @continue
+                                                @endif
                                                 @php $time = sprintf('%02d:%s', $hour, $minute); @endphp
-                                                <option value="{{ $time }}" {{ old('end_time', $prefilledEndTime ?? '') == $time ? 'selected' : '' }}>
+                                                <option value="{{ $time }}"
+                                                    {{ old('end_time', $prefilledEndTime ?? '') == $time ? 'selected' : '' }}>
                                                     {{ $time }}
                                                 </option>
                                             @endforeach
@@ -121,9 +126,8 @@
                             {{-- Purpose --}}
                             <div class="mb-3">
                                 <label class="form-label" for="purpose">Purpose of Booking</label>
-                                <textarea class="form-control @error('purpose') is-invalid @enderror" id="purpose"
-                                    name="purpose" rows="3" maxlength="500" placeholder="Describe the meeting purpose..."
-                                    required>{{ old('purpose') }}</textarea>
+                                <textarea class="form-control @error('purpose') is-invalid @enderror" id="purpose" name="purpose" rows="3"
+                                    maxlength="500" placeholder="Describe the meeting purpose..." required>{{ old('purpose') }}</textarea>
                                 <div class="form-text">
                                     <span id="purposeCount">0</span>/500 characters
                                 </div>
@@ -133,13 +137,14 @@
                             </div>
 
                             {{-- Booking on Behalf (Admin/Director only) --}}
-                            @if(auth()->user()->canManageBookings())
+                            @if (auth()->user()->canManageBookings())
                                 <div class="mb-3">
                                     <label class="form-label" for="user_id">Book on Behalf of (Optional)</label>
                                     <select class="form-select" id="user_id" name="user_id">
                                         <option value="">Myself ({{ auth()->user()->name }})</option>
-                                        @foreach(\App\Models\User::active()->where('id', '!=', auth()->id())->orderBy('name')->get() as $user)
-                                            <option value="{{ $user->id }}">{{ $user->name }} ({{ $user->email }})</option>
+                                        @foreach (\App\Models\User::active()->where('id', '!=', auth()->id())->orderBy('name')->get() as $user)
+                                            <option value="{{ $user->id }}">{{ $user->name }} ({{ $user->email }})
+                                            </option>
                                         @endforeach
                                     </select>
                                     <div class="form-text">Leave empty to book for yourself</div>
@@ -151,6 +156,9 @@
                                 <button type="submit" class="btn btn-primary me-2" id="submitBtn">
                                     <i class="bx bx-check me-1"></i> Confirm Booking
                                 </button>
+                                <a href="{{ route('bookings.create-recurring') }}" class="btn btn-outline-info me-2">
+                                    <i class="bx bx-repeat me-1"></i> Recurring Booking
+                                </a>
                                 <a href="{{ url()->previous() }}" class="btn btn-outline-secondary">Cancel</a>
                             </div>
                         </form>
@@ -180,11 +188,14 @@
                     </div>
                     <div class="card-body">
                         <ul class="list-unstyled mb-0">
-                            <li class="mb-2"><i class="bx bx-time text-primary me-1"></i> Operating hours: 8:00 AM - 6:00 PM
+                            <li class="mb-2"><i class="bx bx-time text-primary me-1"></i> Operating hours: 8:00 AM -
+                                6:00 PM
                             </li>
-                            <li class="mb-2"><i class="bx bx-timer text-primary me-1"></i> Duration: 30 min to 8 hours</li>
+                            <li class="mb-2"><i class="bx bx-timer text-primary me-1"></i> Duration: 30 min to 8 hours
+                            </li>
                             <li class="mb-2"><i class="bx bx-calendar text-primary me-1"></i> Book any future date</li>
-                            <li class="mb-2"><i class="bx bx-check-circle text-success me-1"></i> Instant confirmation</li>
+                            <li class="mb-2"><i class="bx bx-check-circle text-success me-1"></i> Instant confirmation
+                            </li>
                         </ul>
                     </div>
                 </div>
@@ -194,7 +205,7 @@
 
     @push('scripts')
         <script>
-            document.addEventListener('DOMContentLoaded', function () {
+            document.addEventListener('DOMContentLoaded', function() {
                 const form = document.getElementById('bookingForm');
                 const roomSelect = document.getElementById('room_id');
                 const dateInput = document.getElementById('booking_date');
@@ -206,21 +217,21 @@
                 let availabilityCheckTimeout;
 
                 // Room selection change
-                roomSelect.addEventListener('change', function () {
+                roomSelect.addEventListener('change', function() {
                     updateRoomPreview();
                     checkAvailability();
                 });
 
                 // Time/date change triggers availability check
                 [dateInput, startTimeSelect, endTimeSelect].forEach(el => {
-                    el.addEventListener('change', function () {
+                    el.addEventListener('change', function() {
                         updateDuration();
                         checkAvailability();
                     });
                 });
 
                 // Purpose character count
-                purposeInput.addEventListener('input', function () {
+                purposeInput.addEventListener('input', function() {
                     document.getElementById('purposeCount').textContent = this.value.length;
                 });
 
@@ -237,9 +248,9 @@
                         if (minutes > 0) {
                             const hours = Math.floor(minutes / 60);
                             const mins = minutes % 60;
-                            display.textContent = hours > 0
-                                ? `${hours}h ${mins > 0 ? mins + 'm' : ''}`
-                                : `${mins}m`;
+                            display.textContent = hours > 0 ?
+                                `${hours}h ${mins > 0 ? mins + 'm' : ''}` :
+                                `${mins}m`;
                         } else {
                             display.textContent = 'Invalid';
                         }
@@ -266,24 +277,25 @@
                     const message = document.getElementById('availabilityMessage');
                     container.style.display = 'block';
                     message.className = 'alert alert-secondary';
-                    message.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span> Checking availability...';
+                    message.innerHTML =
+                        '<span class="spinner-border spinner-border-sm me-2"></span> Checking availability...';
                     submitBtn.disabled = true;
 
                     availabilityCheckTimeout = setTimeout(() => {
-                        fetch('{{ route("ajax.availability.check") }}', {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json',
-                                'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                                'Accept': 'application/json',
-                            },
-                            body: JSON.stringify({
-                                room_id: roomId,
-                                date: date,
-                                start_time: startTime,
-                                end_time: endTime,
-                            }),
-                        })
+                        fetch('{{ route('ajax.availability.check') }}', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                                    'Accept': 'application/json',
+                                },
+                                body: JSON.stringify({
+                                    room_id: roomId,
+                                    date: date,
+                                    start_time: startTime,
+                                    end_time: endTime,
+                                }),
+                            })
                             .then(response => {
                                 if (!response.ok) {
                                     throw new Error('Network error');
@@ -293,15 +305,18 @@
                             .then(data => {
                                 if (data.available) {
                                     message.className = 'alert alert-success';
-                                    message.innerHTML = '<i class="bx bx-check-circle me-1"></i> <strong>Available!</strong> This time slot is free.';
+                                    message.innerHTML =
+                                        '<i class="bx bx-check-circle me-1"></i> <strong>Available!</strong> This time slot is free.';
                                     submitBtn.disabled = false;
                                 } else {
                                     message.className = 'alert alert-danger';
-                                    let errorHtml = `<i class="bx bx-x-circle me-1"></i> <strong>Not Available</strong><br>${data.message}`;
+                                    let errorHtml =
+                                        `<i class="bx bx-x-circle me-1"></i> <strong>Not Available</strong><br>${data.message}`;
 
                                     // Show conflict details if available
                                     if (data.conflict) {
-                                        errorHtml += `<br><small class="text-muted">Existing booking: ${data.conflict.time} (${data.conflict.reference})</small>`;
+                                        errorHtml +=
+                                            `<br><small class="text-muted">Existing booking: ${data.conflict.time} (${data.conflict.reference})</small>`;
                                     }
 
                                     message.innerHTML = errorHtml;
@@ -311,7 +326,8 @@
                             .catch(error => {
                                 console.error('Availability check failed:', error);
                                 message.className = 'alert alert-warning';
-                                message.innerHTML = '<i class="bx bx-error me-1"></i> Could not verify availability. Please try again.';
+                                message.innerHTML =
+                                    '<i class="bx bx-error me-1"></i> Could not verify availability. Please try again.';
                                 submitBtn.disabled = false; // Allow submission, server will validate
                             });
                     }, 300); // Debounce 300ms
@@ -331,16 +347,18 @@
                         document.getElementById('roomName').textContent = selected.text.split(' (')[0];
                         document.getElementById('roomCapacity').textContent = selected.dataset.capacity;
                         document.getElementById('roomLocation').textContent = selected.dataset.location;
-                        document.getElementById('roomImage').src = selected.dataset.image || '{{ asset("assets/img/rooms/placeholder.png") }}';
+                        document.getElementById('roomImage').src = selected.dataset.image ||
+                            '{{ asset('assets/img/rooms/placeholder.png') }}';
                     } else {
                         preview.style.display = 'none';
                     }
                 }
 
                 // Form submission with loading state
-                form.addEventListener('submit', function () {
+                form.addEventListener('submit', function() {
                     submitBtn.disabled = true;
-                    submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span> Creating...';
+                    submitBtn.innerHTML =
+                        '<span class="spinner-border spinner-border-sm me-1"></span> Creating...';
                 });
 
                 // Initialize

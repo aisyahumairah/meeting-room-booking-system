@@ -98,6 +98,12 @@
                 <div class="text-truncate">Book a Room</div>
             </a>
         </li>
+        <li class="menu-item {{ request()->routeIs('bookings.create-recurring') ? 'active' : '' }}">
+            <a href="{{ route('bookings.create-recurring') }}" class="menu-link">
+                <i class="menu-icon tf-icons bx bx-repeat"></i>
+                <div class="text-truncate">Recurring Booking</div>
+            </a>
+        </li>
         <li class="menu-item {{ request()->routeIs('calendar') ? 'active' : '' }}">
             <a href="{{ route('calendar') }}" class="menu-link">
                 <i class="menu-icon tf-icons bx bx-calendar"></i>
