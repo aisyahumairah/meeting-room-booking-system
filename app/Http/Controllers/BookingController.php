@@ -225,6 +225,9 @@ class BookingController extends Controller
     public function previewRecurrence(Request $request)
     {
         $request->validate([
+            'room_id' => 'nullable|exists:rooms,id',
+            'start_time' => 'nullable|date_format:H:i',
+            'end_time' => 'nullable|date_format:H:i',
             'start_date' => 'required|date',
             'recurrence_type' => 'required|in:daily,weekly,monthly',
             'recurrence_interval' => 'required|integer|min:1',
@@ -236,14 +239,48 @@ class BookingController extends Controller
         ]);
 
         $dates = $this->bookingService->calculateOccurrences($request->all());
+        $results = [];
+        $totalConflicts = 0;
+
+        foreach ($dates as $date) {
+            $dateString = $date->format('Y-m-d');
+            $isAvailable = true;
+            $conflictType = null;
+
+            if ($request->room_id && $request->start_time && $request->end_time) {
+                $isAvailable = $this->bookingService->checkAvailability(
+                    $request->room_id,
+                    $dateString,
+                    $request->start_time,
+                    $request->end_time
+                );
+
+                if (!$isAvailable) {
+                    $totalConflicts++;
+                    $conflict = $this->bookingService->getConflictDetails(
+                        $request->room_id,
+                        $dateString,
+                        $request->start_time,
+                        $request->end_time
+                    );
+                    $conflictType = $conflict['type'] ?? 'unknown';
+                }
+            }
+
+            $results[] = [
+                'date' => $dateString,
+                'formatted' => $date->format('D, M d, Y'),
+                'day_name' => $date->format('l'),
+                'is_available' => $isAvailable,
+                'conflict_type' => $conflictType,
+            ];
+        }
 
         return response()->json([
-            'dates' => array_map(fn($d) => [
-                'date' => $d->format('Y-m-d'),
-                'formatted' => $d->format('D, M d, Y'),
-                'day_name' => $d->format('l'),
-            ], $dates),
+            'dates' => $results,
             'count' => count($dates),
+            'conflicts' => $totalConflicts,
+            'all_available' => $totalConflicts === 0,
         ]);
     }
 
