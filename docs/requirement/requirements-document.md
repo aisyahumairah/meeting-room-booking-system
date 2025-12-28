@@ -62,7 +62,7 @@ The system provides:
 | **Cost Optimization** | Identify underutilized rooms; optimize space allocation; reduce administrative overhead |
 | **User Experience** | Self-service booking; streamlined confirmation; mobile-friendly access |
 | **Management Insights** | Real-time utilization reports; trend analysis; resource planning data; export-ready reports |
-| **Governance & Compliance** | Complete activity logs; approval workflows; role-based access control; audit-ready records |
+| **Governance & Compliance** | Complete activity logs; automated confirmation; role-based access control; audit-ready records |
 
 ### 1.4 System Capabilities at a Glance
 
@@ -88,8 +88,8 @@ The Meeting Room Booking System (MRBS) is designed to provide OIB Group with a m
 
 The system aims to:
 
-- **Eliminate scheduling conflicts** through centralized, real-time availability tracking  
-- **Reduce administrative burden** by automating manual booking and approval processes  
+- **Eliminate scheduling conflicts** through centralized, real-time availability tracking and instant confirmation
+- **Reduce administrative burden** by automating manual booking and confirmation processes  
 - **Improve resource utilization** through data-driven insights and analytics  
 - **Enhance user experience** with intuitive self-service booking capabilities  
 - **Ensure accountability** through comprehensive audit trails and activity logging  
@@ -239,19 +239,31 @@ The Meeting Room Booking System supports **four distinct user roles**, each with
 - **View room details** including capacity, location, and amenities  
 - **Create bookings** for themselves (one-time or recurring)  
 - **View personal bookings** \- see their own booking history and upcoming reservations  
-- **Edit own bookings** \- modify date, time, room, or purpose (ONLY for Pending/draft status)  
-- **Cancel own bookings** \- cancel with a reason (for Pending or Confirmed bookings)  
-- **Receive notifications** \- email alerts for booking confirmations, cancellations, and reminders  
-- **Update profile** \- manage personal information and change password
+- **Edit own bookings** \- modify date, time, room, or purpose (ONLY before the booking starts)  
+- **Cancel own bookings** \- cancel with a reason  
+-   All staff members of OIB Group  
+-   Default role assigned upon account creation  
+-   Majority of system users
+
+**What They Can Do:**
+
+-   **Search and browse** meeting rooms by capacity, floor, and availability  
+-   **View room details** including capacity, location, and amenities  
+-   **Create bookings** for themselves (one-time or recurring)  
+-   **View personal bookings** \- see their own booking history and upcoming reservations  
+-   **Edit own bookings** \- modify date, time, room, or purpose (ONLY before the booking starts)  
+-   **Cancel own bookings** \- cancel with a reason  
+-   **Receive notifications** \- email alerts for booking confirmations, changes, and reminders  
+-   **Update profile** \- manage personal information and change password
 
 **What They CANNOT Do:**
 
-- Cannot view other users' bookings  
-- Cannot edit bookings that are Confirmed, Cancelled, or past  
-- Cannot cancel other users' bookings  
-- Cannot manage rooms, users, or system settings  
-- Cannot access reports or audit logs  
-- Cannot create bookings on behalf of others
+-   Cannot view other users' bookings  
+-   Cannot edit bookings that are Confirmed, Cancelled, or past  
+-   Cannot cancel other users' bookings without administrative privileges  
+-   Cannot manage rooms, users, or system settings  
+-   Cannot access reports or audit logs  
+-   Cannot create bookings on behalf of others
 
 **Primary Use Case:**  
 Staff members who need to book meeting rooms for their own meetings and manage their reservations.
@@ -262,9 +274,9 @@ Staff members who need to book meeting rooms for their own meetings and manage t
 
 **Who They Are:**
 
-- Administrative staff or office managers  
-- Assigned by System Administrators  
-- Primary approvers for booking requests
+-   Administrative staff or office managers  
+-   Assigned by System Administrators  
+-   Overseers of meeting room resources
 
 **What They Can Do:**
 
@@ -272,33 +284,34 @@ Staff members who need to book meeting rooms for their own meetings and manage t
 
 **Booking Management:**
 
-- **View all bookings** \- see bookings from all users across the system  
-- **Edit any booking** \- modify any user's booking details  
-- **Cancel any booking** \- cancel bookings on behalf of users or due to conflicts  
-- **Create bookings on behalf of others** \- book rooms for staff who request assistance
+-   **View all bookings** \- see bookings from all users across the system  
+-   **Edit any booking** \- modify any user's booking details  
+-   **Cancel any booking** \- cancel bookings on behalf of users or due to conflicts  
+-   **Create bookings on behalf of others** \- book rooms for staff who request assistance
+-   **Manage scheduling conflicts** \- resolve overlapping needs or high-priority requests
 
 **Room Management:**
 
-- **Add new rooms** \- create new meeting room entries  
-- **Edit room details** \- update capacity, location, amenities, status  
-- **Set room status** \- mark rooms as Active, Inactive, or Under Maintenance  
-- **Schedule maintenance periods** \- block rooms for specific date ranges  
-- **Delete/deactivate rooms** \- remove rooms from the system (with constraints)
+-   **Add new rooms** \- create new meeting room entries  
+-   **Edit room details** \- update capacity, location, amenities, status  
+-   **Set room status** \- mark rooms as Active, Inactive, or Under Maintenance  
+-   **Schedule maintenance periods** \- block rooms for specific date ranges  
+-   **Delete/deactivate rooms** \- remove rooms from the system (with constraints)
 
 **Reporting:**
 
-- **Generate daily reports** \- view bookings for specific dates  
-- **Generate monthly reports** \- analyze usage patterns over months  
-- **Generate user booking reports** \- view individual user booking history  
-- **Generate room utilization reports** \- see usage percentages and peak hours  
-- **Export reports** \- download in PDF, Excel, or CSV formats  
-- **Print reports** \- access print-friendly layouts
+-   **Generate daily reports** \- view bookings for specific dates  
+-   **Generate monthly reports** \- analyze usage patterns over months  
+-   **Generate user booking reports** \- view individual user booking history  
+-   **Generate room utilization reports** \- see usage percentages and peak hours  
+-   **Export reports** \- download in PDF, Excel, or CSV formats  
+-   **Print reports** \- access print-friendly layouts
 
 **What They CANNOT Do:**
 
-- Cannot manage users (view, create, assign roles, deactivate)  
-- Cannot view audit trail logs  
-- Cannot configure system-wide settings
+-   Cannot manage users (view, create, assign roles, deactivate)  
+-   Cannot view audit trail logs  
+-   Cannot configure system-wide settings
 
 **Primary Use Case:**  
 Manage room inventory, generate usage reports, assist users with booking issues, and oversee all bookings in the system.
@@ -309,9 +322,9 @@ Manage room inventory, generate usage reports, assist users with booking issues,
 
 **Who They Are:**
 
-- Department heads, senior management, or executives  
-- Assigned by System Administrators  
-- Oversight and governance role
+-   Department heads, senior management, or executives  
+-   Assigned by System Administrators  
+-   Oversight and governance role
 
 **What They Can Do:**
 
@@ -319,29 +332,29 @@ Manage room inventory, generate usage reports, assist users with booking issues,
 
 **User Management:**
 
-- **View all users** \- see complete list of registered users  
-- **Create new user accounts** \- register users manually if needed  
-- **Assign/modify user roles** \- promote users to Administrator, or assign Director/System Admin roles (with approval)  
-- **Deactivate/delete users** \- remove user access (with data integrity constraints)  
-- **Reset user passwords** \- assist users with account recovery  
-- **View user statistics** \- see user counts by role and activity levels
+-   **View all users** \- see complete list of registered users  
+-   **Create new user accounts** \- register users manually if needed  
+-   **Assign/modify user roles** \- promote users to Administrator, or assign Director/System Admin roles (with oversight)  
+-   **Deactivate/delete users** \- remove user access (with data integrity constraints)  
+-   **Reset user passwords** \- assist users with account recovery  
+-   **View user statistics** \- see user counts by role and activity levels
 
 **Audit & Compliance:**
 
-- **View complete audit trail** \- access immutable logs of all system activities  
-- **Filter audit logs** \- search by date, user, event type, or entity  
-- **Export audit logs** \- download for compliance or forensic analysis  
-- **View user activity history** \- detailed view of individual user actions
+-   **View complete audit trail** \- access immutable logs of all system activities  
+-   **Filter audit logs** \- search by date, user, event type, or entity  
+-   **Export audit logs** \- download for compliance or forensic analysis  
+-   **View user activity history** \- detailed view of individual user actions
 
 **Oversight Authority:**
 
-- Monitor and manage all bookings across the system  
-- Focus on oversight and governance rather than routine operations
+-   Monitor and manage all bookings across the system  
+-   Focus on oversight and governance rather than routine operations
 
 **What They CANNOT Do:**
 
-- Cannot configure system-wide settings (booking limits, operating hours, session timeouts)  
-- Limited to oversight; System Administrators handle technical configuration
+-   Cannot configure system-wide settings (booking limits, operating hours, session timeouts)  
+-   Limited to oversight; System Administrators handle technical configuration
 
 **Primary Use Case:**  
 Monitor system usage, manage user accounts and roles, review audit trails for accountability, and provide executive oversight of booking operations.
@@ -352,50 +365,50 @@ Monitor system usage, manage user accounts and roles, review audit trails for ac
 
 **Who They Are:**
 
-- IT staff or technical administrators  
-- Highest technical privilege level  
-- Responsible for system configuration and maintenance
+-   IT staff or technical administrators  
+-   Highest technical privilege level  
+-   Responsible for system configuration and maintenance
 
 **What They Can Do:**
 
 **Personal Booking (Regular User capabilities):**
 
-- Can book rooms for themselves  
-- Manage their own bookings
+-   Can book rooms for themselves  
+-   Manage their own bookings
 
 **User Management:**
 
-- **Full user management** \- create, edit, deactivate, delete users  
-- **Assign any role** \- including Administrator, Director, and System Administrator roles  
-- **Reset passwords** \- help users with account access
+-   **Full user management** \- create, edit, deactivate, delete users  
+-   **Assign any role** \- including Administrator, Director, and System Administrator roles  
+-   **Reset passwords** \- help users with account access
 
 **System Configuration:**
 
-- **Configure booking rules:**  
-  - Minimum/maximum booking duration  
-  - Booking cancellation deadline  
-  - Room operating hours  
-- **Configure session settings:**  
-  - Session timeout period  
-  - Login attempt limits  
-- **Configure notifications:**  
-  - Enable/disable email notification types  
-  - Customize email templates (if implemented)  
-- **System maintenance mode** \- enable/disable system access for maintenance
+-   **Configure booking rules:**  
+    -   Minimum/maximum booking duration  
+    -   Booking cancellation deadline  
+    -   Room operating hours  
+-   **Configure session settings:**  
+    -   Session timeout period  
+    -   Login attempt limits  
+-   **Configure notifications:**  
+    -   Enable/disable email notification types  
+    -   Customize email templates (if implemented)  
+-   **System maintenance mode** \- enable/disable system access for maintenance
 
 **Reporting & Audit:**
 
-- **View all reports** \- access all report types  
-- **View audit trail** \- complete system activity logs  
-- **Export audit logs** \- for backup or analysis  
-- **Monitor system health** \- track system performance and errors (if implemented)
+-   **View all reports** \- access all report types  
+-   **View audit trail** \- complete system activity logs  
+-   **Export audit logs** \- for backup or analysis  
+-   **Monitor system health** \- track system performance and errors (if implemented)
 
 **What They CANNOT Do:**
 
-- Cannot approve or reject booking requests (not part of booking workflow)  
-- Cannot manage rooms (add, edit, delete rooms)  
-- Cannot edit or cancel other users' bookings  
-- Focused on system administration, not operational booking management
+-   Cannot approve or reject booking requests (not part of booking workflow)  
+-   Cannot manage rooms (add, edit, delete rooms)  
+-   Cannot edit or cancel other users' bookings  
+-   Focused on system administration, not operational booking management
 
 **Primary Use Case:**  
 Configure system-wide settings, manage user accounts and roles, maintain system security, and ensure proper system operation.
@@ -412,7 +425,7 @@ The following table provides a comprehensive comparison of permissions across al
 | Search & browse rooms | ✅ Yes | ✅ Yes | ✅ Yes | ✅ Yes |
 | Create own booking | ✅ Yes | ✅ Yes | ✅ Yes | ✅ Yes |
 | View own bookings | ✅ Yes | ✅ Yes | ✅ Yes | ✅ Yes |
-| Edit own bookings (Pending only) | ✅ Yes | ✅ Yes | ✅ Yes | ✅ Yes |
+| Edit own bookings (before start) | ✅ Yes | ✅ Yes | ✅ Yes | ✅ Yes |
 | Cancel own bookings | ✅ Yes | ✅ Yes | ✅ Yes | ✅ Yes |
 | **BOOKING MANAGEMENT** |  |  |  |  |
 | View all bookings | ❌ No | ✅ Yes | ✅ Yes | ❌ No |
@@ -449,30 +462,30 @@ The following table provides a comprehensive comparison of permissions across al
 | System maintenance mode | ❌ No | ❌ No | ❌ No | ✅ Yes |
 | **NOTIFICATIONS** |  |  |  |  |
 | Receive booking notifications | ✅ Yes | ✅ Yes | ✅ Yes | ✅ Yes |
-| Receive approval notifications | ❌ No | ✅ Yes | ✅ Yes | ❌ No |
+| Receive cancellation notifications | ✅ Yes | ✅ Yes | ✅ Yes | ✅ Yes |
 
 ### 3.6 Role Assignment & Security
 
 **Role Assignment Process:**
 
-1. System Administrators create new user accounts with **Regular User** role by default  
-2. System Administrators assign elevated roles (Administrator, Director, System Admin)  
-3. Directors can also assign roles with appropriate approval  
-4. Role changes are logged in the audit trail
+1.  System Administrators create new user accounts with **Regular User** role by default  
+2.  System Administrators assign elevated roles (Administrator, Director, System Admin)  
+3.  Directors can also assign roles with appropriate oversight  
+4.  Role changes are logged in the audit trail
 
 **Security Principles:**
 
-- **Principle of Least Privilege**: Users only have access to features necessary for their role  
-- **Separation of Duties**: System Admins configure settings but don't manage bookings; Administrators manage bookings but can't configure system settings  
-- **No Self-Elevation**: Users cannot change their own roles  
-- **Audit Trail**: All role assignments and changes are logged
+-   **Principle of Least Privilege**: Users only have access to features necessary for their role  
+-   **Separation of Duties**: System Admins configure settings but don't manage bookings; Administrators manage bookings but can't configure system settings  
+-   **No Self-Elevation**: Users cannot change their own roles  
+-   **Audit Trail**: All role assignments and changes are logged
 
 **Typical Organizational Setup:**
 
-- **Regular Users**: 80-90% of staff  
-- **Administrators**: 2-5 office managers or administrative assistants  
-- **Directors**: 1-3 senior management or department heads  
-- **System Administrators**: 1-2 IT staff members
+-   **Regular Users**: 80-90% of staff  
+-   **Administrators**: 2-5 office managers or administrative assistants  
+-   **Directors**: 1-3 senior management or department heads  
+-   **System Administrators**: 1-2 IT staff members
 
 ---
 
@@ -485,7 +498,6 @@ Establish the foundational elements of the MRBS including user authentication, r
 
 **Deliverables:**
 
-- User login system  
 - Password recovery mechanism  
 - Role-specific dashboards (Regular User, Administrator, Director, System Administrator)  
 - Global layout with navigation sidebar, top navbar, and footer  
@@ -796,7 +808,8 @@ Provide regular users with a personalized view of their bookings and quick acces
      
    - Total bookings made (all time)  
    - Bookings this month  
-   - Pending approvals count  
+   - Pending booking count (Legacy - removed)
+- - Total active bookings count  
    - Cancelled bookings count
 
 **SHALL:**

@@ -462,7 +462,7 @@ composer require barryvdh/laravel-dompdf
 
 ## Phase 3: Booking Management
 
-**Goal:** Complete booking lifecycle - create, view, edit, cancel, approve  
+**Goal:** Complete booking lifecycle - create, view, edit, cancel, and oversight  
 **Req Reference:** Section 6 (Phase 3: Booking Management)  
 **Dependency:** Phase 2 must be complete (rooms exist)
 
@@ -476,11 +476,9 @@ composer require barryvdh/laravel-dompdf
   │   ├── user_id (FK), room_id (FK)
   │   ├── booking_date, start_time, end_time
   │   ├── purpose (500 chars max)
-  │   ├── status (enum: pending, confirmed, rejected, cancelled, completed)
+  │   ├── status (enum: confirmed, cancelled, completed)
   │   ├── series_id (nullable FK, for recurring)
-  │   ├── cancellation_reason, rejection_reason
-  │   ├── approved_by (FK), approved_at
-  │   ├── rejected_by (FK), rejected_at
+  │   ├── cancellation_reason
   │   ├── cancelled_by (FK), cancelled_at
   │   └── timestamps, soft_deletes
   │
@@ -493,8 +491,8 @@ composer require barryvdh/laravel-dompdf
       └── timestamps
 
 □ Create Booking model:
-  ├── Relationships: user(), room(), series(), approver(), rejector(), canceller()
-  ├── Scopes: pending(), confirmed(), forUser(), forRoom(), upcoming(), past()
+  ├── Relationships: user(), room(), series(), canceller()
+  ├── Scopes: confirmed(), forUser(), forRoom(), upcoming(), past()
   ├── Accessors: duration, status_badge, is_editable, is_cancellable
   └── Static: generateReferenceNumber()
 ```
@@ -559,7 +557,7 @@ composer require barryvdh/laravel-dompdf
 □ List View [§6.3.1]
   ├── GET /my-bookings
   ├── Table: reference, date, time, room, status badge, purpose, actions
-  ├── Filters: All, Upcoming (Pending+Confirmed), Past, By Status, By Room, Date Range
+  ├── Filters: All, Upcoming, Past, By Room, Date Range
   ├── Sort: Date (upcoming first), Room, Status
   ├── Pagination: 20 per page
   └── Export to CSV/Excel/PDF
@@ -583,8 +581,8 @@ composer require barryvdh/laravel-dompdf
 
 ```
 □ Edit permissions [§6.3.2]:
-  ├── Regular User: ONLY "Pending" status bookings
-  ├── Admin/Director: ANY status (Pending, Confirmed, etc.)
+  ├── Regular User: Upcoming bookings
+  ├── Admin/Director: Any upcoming booking
   └── Status remains unchanged after edit (Confirmed stays Confirmed)
 
 □ Edit form [§6.3.2]
@@ -607,7 +605,7 @@ composer require barryvdh/laravel-dompdf
 □ Cancel permissions [§6.3.3]:
   ├── Regular User: Pending or Confirmed (own bookings)
   ├── Admin/Director: Any Pending/Confirmed booking
-  └── Cannot cancel: Already Cancelled, Rejected, Completed
+  └── Cannot cancel: Already Cancelled, Completed
 
 □ Cancel process [§6.3.3]:
   ├── DELETE /my-bookings/{booking}
@@ -722,8 +720,6 @@ composer require barryvdh/laravel-dompdf
   ├── Booking created (user, booking_id, room, date/time)
   ├── Booking edited (user, booking_id, old → new values)
   ├── Booking cancelled (user, booking_id, reason)
-  ├── Booking approved (admin, booking_id)
-  ├── Booking rejected (admin, booking_id, reason)
   └── Series events (series_id, occurrences count)
 ```
 

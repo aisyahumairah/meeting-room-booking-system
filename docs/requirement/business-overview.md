@@ -8,7 +8,7 @@
 
 ## 1. System Introduction
 
-The Meeting Room Booking System (MRBS) is a centralized web-based platform designed for internal use by OIB Group staff. It streamlines the entire booking lifecycle—from room discovery to booking approval, usage reporting, and audit tracking.
+The Meeting Room Booking System (MRBS) is a centralized web-based platform designed for internal use by OIB Group staff. It streamlines the entire booking lifecycle—from room discovery to instant booking confirmation, usage reporting, and audit tracking.
 
 Currently, OIB Group manages meeting room bookings through manual processes using Excel spreadsheets and informal communication channels. This approach leads to:
 
@@ -21,7 +21,7 @@ Currently, OIB Group manages meeting room bookings through manual processes usin
 - **No transparency** in booking history and accountability
 - **Sabotage** of booking records
 
-The MRBS solves these problems by providing real-time room availability, approval workflows with notifications, centralized booking management accessible from anywhere, comprehensive reporting for data-driven decision making, complete audit trails for transparency and accountability, and a user-friendly interface requiring minimal training. Importantly, this is an internal resource management system with no payment or billing features—all meeting rooms are company-owned resources available to staff at no charge.
+The MRBS solves these problems by providing real-time room availability, instant booking confirmation on a first-come-first-served basis, centralized booking management accessible from anywhere, comprehensive reporting for data-driven decision making, complete audit trails for transparency and accountability, and a user-friendly interface requiring minimal training. Importantly, this is an internal resource management system with no payment or billing features—all meeting rooms are company-owned resources available to staff at no charge.
 
 ## 2. User Roles and Permissions
 
@@ -29,13 +29,13 @@ The system supports four distinct user roles, each with specific permissions des
 
 ### Regular User
 
-Regular Users are all staff members of OIB Group and represent the majority of system users. This is the default role assigned upon account creation. They can search and browse meeting rooms by capacity, floor, and availability. They are able to view room details including capacity, location, and amenities. Regular Users can create bookings for themselves (both one-time and recurring), view their own booking history and upcoming reservations, edit their own bookings when in Pending status only, and cancel their own Pending or Confirmed bookings. They receive email notifications for booking confirmations, approvals, rejections, and reminders, and can update their personal profile information and change their password.
+Regular Users are all staff members of OIB Group and represent the majority of system users. This is the default role assigned upon account creation. They can search and browse meeting rooms by capacity, floor, and availability. They are able to view room details including capacity, location, and amenities. Regular Users can create bookings for themselves (both one-time and recurring), view their own booking history and upcoming reservations, edit their own bookings before they occur, and cancel their own bookings. They receive email notifications for booking confirmations and reminders, and can update their personal profile information and change their password.
 
-However, Regular Users cannot approve or reject any bookings (including their own), view other users' bookings, edit bookings that are Confirmed, Rejected, Cancelled, or past, manage rooms, users, or system settings, access reports or audit logs, or create bookings on behalf of others.
+However, Regular Users cannot view other users' bookings, manage rooms, users, or system settings, access reports or audit logs, or create bookings on behalf of others.
 
 ### Administrator
 
-Administrators are administrative staff or office managers who serve as primary approvers for booking requests. In addition to all Regular User capabilities, Administrators can view all bookings from all users across the system, approve or reject booking requests (this is their primary responsibility), edit any user's booking details, cancel any booking on behalf of users or due to conflicts, and create bookings on behalf of other staff members.
+Administrators are administrative staff or office managers who oversee meeting room inventory and resource allocation. In addition to all Regular User capabilities, Administrators can view all bookings from all users across the system, edit any user's booking details, cancel any booking on behalf of users or due to conflicts, and create bookings on behalf of other staff members.
 
 For room management, Administrators can add new meeting room entries, edit room details (capacity, location, amenities, status), set room status to Active, Inactive, or Under Maintenance, schedule maintenance periods to block rooms for specific date ranges, and delete or deactivate rooms subject to certain constraints.
 
@@ -45,7 +45,7 @@ Administrators also have reporting capabilities: they can generate daily reports
 
 Directors are department heads, senior management, or executives who have an oversight and governance role. They have all Administrator capabilities plus additional powers. For user management, Directors can view the complete list of registered users, create new user accounts manually if needed, assign or modify user roles (promote users to Administrator, or assign Director/System Admin roles with approval), deactivate or delete users (with data integrity constraints), reset user passwords, and view user statistics including counts by role and activity levels.
 
-For audit and compliance, Directors can view the complete audit trail (an immutable log of all system activities), filter audit logs by date, user, event type, or entity, export audit logs for compliance or forensic analysis, and view detailed user activity history. Directors can approve or reject bookings but typically take a passive role—Administrators handle day-to-day approvals while Directors focus on oversight. Directors cannot configure system-wide settings such as booking limits, operating hours, or session timeouts.
+For audit and compliance, Directors can view the complete audit trail (an immutable log of all system activities), filter audit logs by date, user, event type, or entity, export audit logs for compliance or forensic analysis, and view detailed user activity history. Directors cannot configure system-wide settings such as booking limits, operating hours, or session timeouts.
 
 ### System Administrator
 
@@ -53,7 +53,7 @@ System Administrators are IT staff or technical administrators with the highest 
 
 System Administrators control system configuration including session timeout periods, login attempt limits, notification settings, and maintenance mode. They can view all reports, access the complete audit trail, and export audit logs for backup or analysis.
 
-However, System Administrators cannot approve or reject booking requests (they are not part of the booking workflow), manage rooms (add, edit, or delete rooms), or edit or cancel other users' bookings. Their role is focused on system administration, not operational booking management.
+However, System Administrators cannot manage rooms (add, edit, or delete rooms), or edit or cancel other users' bookings. Their role is focused on system administration, not operational booking management.
 
 ## 3. Meeting Rooms Module
 
@@ -63,7 +63,7 @@ Each meeting room in the system has a name/identifier, capacity (maximum number 
 
 ### Room Status Types
 
-Rooms can have one of three status types. **Active** means the room is available for booking—it appears in user search results and can be booked by users subject to approval. **Inactive** means the room is not available for booking; it is hidden from user search results and only visible to Administrators/Directors in the management view, though existing future bookings remain valid. **Under Maintenance** means the room is temporarily unavailable; it is visible in search results but cannot be booked. The system shows "Under Maintenance" badge with dates and automatically reverts to Active when the maintenance period ends.
+Rooms can have one of three status types. **Active** means the room is available for booking—it appears in user search results and can be booked by users immediately if available. **Inactive** means the room is not available for booking; it is hidden from user search results and only visible to Administrators/Directors in the management view, though existing future bookings remain valid. **Under Maintenance** means the room is temporarily unavailable; it is visible in search results but cannot be booked. The system shows "Under Maintenance" badge with dates and automatically reverts to Active when the maintenance period ends.
 
 ### Room Discovery
 
@@ -87,37 +87,35 @@ To create a booking, users select an active room, choose a booking date (any fut
 
 The system validates that the room is active and available, the date is not in the past, the duration is between 30 minutes and 8 hours, the booking is within a single day (no overnight bookings), there are no conflicts with existing Confirmed bookings, and the room is not under maintenance during the selected period.
 
-Upon successful submission, the system generates a unique booking reference (e.g., BK-2025-00001), sets the status to Pending (awaiting approval), sends an email notification to the user confirming submission, sends notifications to Administrators/Directors about the new pending booking, and logs the creation in the audit trail.
+Upon successful submission, the system generates a unique booking reference (e.g., BK-2025-00001), confirms the booking immediately, sends an email notification to the user, and logs the creation in the audit trail.
 
 ### Recurring Bookings
 
 Users can create bookings that repeat on a regular schedule. Daily patterns repeat every X days. Weekly patterns repeat on specific days of the week. Monthly patterns repeat on a specific date of the month. The recurrence can end on a specific date or after a specified number of occurrences, with a maximum of 1 year worth of occurrences from the start date.
 
-The system checks room availability for all occurrences before creation. Individual booking records are created for each occurrence, linked by a Series ID. When a recurring series is approved or rejected, all occurrences change status together. Similarly, editing or cancelling one occurrence affects the entire series—individual occurrences cannot be managed separately.
+The system checks room availability for all occurrences before creation. Individual booking records are created for each occurrence, linked by a Series ID. All occurrences are confirmed immediately upon creation if no conflicts exist. Editing or cancelling one occurrence affects the entire series—individual occurrences cannot be managed separately.
 
 ### Booking Status Lifecycle
 
-New bookings start as **Pending** and await manual approval from an Administrator or Director. When approved, the status changes to **Confirmed** and users receive approval notification with booking details. If rejected, the status becomes **Rejected** and users receive notification with the reason if provided. Users or administrators can cancel Pending or Confirmed bookings, changing the status to **Cancelled** and requiring a cancellation reason. After a booking's end time passes, it automatically becomes **Completed**.
+New bookings are automatically **Confirmed** upon submission. Users or administrators can cancel bookings, changing the status to **Cancelled** and requiring a cancellation reason. After a booking's end time passes, it automatically becomes **Completed**.
 
 ### Viewing Bookings
 
-Regular Users see only their own bookings in both list and calendar views. They can filter by status (Pending, Confirmed, Cancelled, Completed), by room, and by date range. Administrators and Directors see all bookings across all users with additional filters for user, department, and booking type (one-time vs. recurring).
+Regular Users see only their own bookings in both list and calendar views. They can filter by status (Confirmed, Cancelled, Completed), by room, and by date range. Administrators and Directors see all bookings across all users with additional filters for user, department, and booking type (one-time vs. recurring).
 
 The calendar view provides day, week, and month perspectives. Day view shows a single day divided into 30-minute time slots across all rooms. Week view (the default) shows Monday through Friday with booking blocks visible. Month view shows a full calendar with booking counts per day. Clicking an empty slot initiates booking creation with date/time pre-filled.
 
 ### Editing Bookings
 
-Regular Users can edit only their own Pending bookings—they cannot edit Confirmed, Rejected, Cancelled, or Completed bookings. Editable fields include date, time, room, and purpose. For recurring series, changes apply to all occurrences.
+Regular Users can edit their own upcoming bookings. Editable fields include date, time, room, and purpose. For recurring series, changes apply to all occurrences.
 
-Administrators and Directors can edit bookings of any status including Confirmed bookings. When they edit a Confirmed booking, the status remains Confirmed (no re-approval needed). The original booker receives notification of changes made by the administrator. All edits must still pass validation for availability, duration, and operating hours.
+Administrators and Directors can edit bookings of any status including Confirmed bookings. When they edit a Confirmed booking, the status remains Confirmed. The original booker receives notification of changes made by the administrator. All edits must still pass validation for availability, duration, and operating hours.
 
 ### Cancelling Bookings
 
-Regular Users can cancel their own Pending or Confirmed bookings at any time before the booking end time with no notice period required. A cancellation reason (max 500 characters) is required. Administrators and Directors can cancel any user's booking. For recurring series, cancelling one occurrence cancels the entire series. Cancelled bookings cannot be "uncancelled"—a new booking must be created instead. The room availability is freed immediately upon cancellation.
+Regular Users can cancel their own bookings at any time before the booking end time with no notice period required. A cancellation reason (max 500 characters) is required. Administrators and Directors can cancel any user's booking. For recurring series, cancelling one occurrence cancels the entire series. Cancelled bookings cannot be "uncancelled"—a new booking must be created instead. The room availability is freed immediately upon cancellation.
 
-### Approval Workflow
-
-All bookings require manual approval by an Administrator or Director—there is no auto-approval. The approval queue shows pending bookings sorted by submission date (oldest first) to ensure timely processing. To approve or reject, the reviewer must open the booking details to view the full information. Approval changes status to Confirmed and notifies the user. Rejection changes status to Rejected; a rejection reason is optional but recommended. For recurring series, approving or rejecting one occurrence applies to the entire series.
+All bookings are processed on a first-come-first-served basis—there is no manual approval queue. Administrators and Directors provide oversight by monitoring the booking schedule, resolving resource conflicts if they arise, and generating utilization reports. They can cancel or reschedule bookings as needed to accommodate high-priority organizational needs, with automated notifications sent to affected users.
 
 ## 5. Administrative Management Module
 
@@ -129,11 +127,11 @@ When creating a new user, the administrator provides staff number (unique), full
 
 User records can be edited to update name, department, phone number, and role. Staff number and email address cannot be changed. Role changes are logged in the audit trail.
 
-Users with system activity (bookings, approvals, room management) cannot be deleted—they can only be deactivated. Deactivated users cannot log in or manage bookings, but their existing bookings and historical data are preserved. Users with no activity can be permanently deleted after confirmation.
+Users with system activity (bookings, room management) cannot be deleted—they can only be deactivated. Deactivated users cannot log in or manage bookings, but their existing bookings and historical data are preserved. Users with no activity can be permanently deleted after confirmation.
 
 ### Audit Trail
 
-The system maintains an immutable log of all significant events including authentication (login, logout, failed attempts, password resets), booking actions (created, edited, cancelled, approved, rejected), room management (created, edited, status changed, maintenance scheduled), user management (created, edited, role changed, deactivated, deleted), and system configuration changes.
+The system maintains an immutable log of all significant events including authentication (login, logout, failed attempts, password resets), booking actions (created, edited, cancelled), room management (created, edited, status changed, maintenance scheduled), user management (created, edited, role changed, deactivated, deleted), and system configuration changes.
 
 Each log entry records a unique event ID, timestamp, actor (who performed the action), action type, target entity, detailed changes (old and new values), and IP address. Audit logs cannot be edited or deleted—not even by System Administrators.
 
@@ -149,7 +147,7 @@ System Administrators can enable Maintenance Mode, which allows only Administrat
 
 ### Notifications
 
-The system sends email notifications for account creation (welcome email with credentials), password reset links, booking created (confirmation to user and notification to approvers), booking approved/rejected/cancelled, booking reminders (24 hours before start time), and room status changes affecting upcoming bookings.
+The system sends email notifications for account creation (welcome email with credentials), password reset links, booking created (confirmation to user), booking cancelled, booking reminders (24 hours before start time), and room status changes affecting upcoming bookings.
 
 Users can opt out of non-critical notifications (reminders, digest notifications) but cannot opt out of critical notifications (password reset, booking status changes, account changes). System Administrators can configure SMTP settings and toggle notification types system-wide.
 
@@ -177,12 +175,11 @@ The **Room Utilization Report** calculates utilization rates for each room (book
 - Bookings must be single-day only (no overnight bookings)
 - Recurring bookings can span a maximum of 1 year from start date
 - Purpose/description has a maximum length of 500 characters
-- All bookings require manual approval—no auto-approval
+- All bookings are automatically confirmed if the room is available—no manual approval required
 
 ### Access Control Rules
 
-- Users can only edit their own Pending bookings
-- Users can cancel their own Pending or Confirmed bookings
+- Users can edit and cancel their own upcoming bookings
 - Administrators/Directors can edit and cancel any booking
 - Administrators/Directors can create bookings on behalf of others
 - Only Directors and System Administrators can view audit logs
@@ -205,7 +202,7 @@ The **Room Utilization Report** calculates utilization rates for each room (book
 
 ### Recurring Booking Rules
 
-- Approval/rejection applies to the entire series
+- Recurring events are linked and managed as a series
 - Editing affects all occurrences in the series
 - Cancellation cancels the entire series
 - Individual occurrences cannot be managed separately
@@ -214,11 +211,11 @@ The **Room Utilization Report** calculates utilization rates for each room (book
 
 ### Booking Flow for Regular Users
 
-The user searches for an available room by filtering on capacity, date/time, and amenities. They select a room and view its details and availability calendar. They click "Book This Room" and fill in the booking form with date, time, and purpose. After reviewing the details, they submit the booking. The system validates availability and creates the booking as Pending. The user receives email confirmation of submission. Administrators receive notification of the new pending booking. An Administrator reviews and approves or rejects the booking. The user receives email notification of the decision. If approved, the booking appears as Confirmed and the user receives a reminder 24 hours before the meeting.
+The user searches for an available room by filtering on capacity, date/time, and amenities. They select a room and view its details and availability calendar. They click "Book This Room" and fill in the booking form with date, time, and purpose. After reviewing the details, they submit the booking. The system validates availability and instantly confirms the booking if no conflicts exist. The user receives email confirmation. The booking appears as Confirmed in the user's dashboard and the user receives a reminder 24 hours before the meeting.
 
 ### Approval Flow for Administrators
 
-The Administrator logs in and views the Admin Dashboard showing pending approvals count. They navigate to the Approval Queue, which shows pending bookings (oldest first). They select a booking to review full details including user history. They make an approval decision—either approve to confirm the booking for the user, or reject with optional reason if declining. The system updates status, sends notifications, and logs the action. The Administrator moves to the next pending booking.
+The Administrator logs in and views the Admin Dashboard showing daily utilization stats and upcoming bookings. They can monitor all bookings through the "All Bookings" view or the global calendar. If a scheduling conflict or special requirement arises, the Administrator can contact users or modify/cancel bookings as necessary. All such actions are automatically notified to the impacted users and logged in the audit trail.
 
 ### Room Management Flow
 
@@ -234,7 +231,7 @@ The Administrator, Director, or System Administrator navigates to the Reports se
 
 ## 8. Key System Benefits
 
-**Operational Efficiency:** Reduces booking time from hours to minutes, eliminates double bookings, and streamlines approval processes.
+**Operational Efficiency:** Reduces booking time from hours to seconds, eliminates double bookings, and removes manual approval overhead.
 
 **Cost Optimization:** Identifies underutilized rooms, optimizes space allocation, and reduces administrative overhead.
 
@@ -242,4 +239,4 @@ The Administrator, Director, or System Administrator navigates to the Reports se
 
 **Management Insights:** Delivers real-time utilization reports, trend analysis, and resource planning data through export-ready reports.
 
-**Governance & Compliance:** Ensures complete activity logs, enforced approval workflows, role-based access control, and audit-ready records that address the sabotage concern through comprehensive tracking.
+**Governance & Compliance:** Ensures complete activity logs, instant first-come-first-served fairness, role-based access control, and audit-ready records that address the sabotage concern through comprehensive tracking.
