@@ -86,6 +86,12 @@
                     <div class="text-truncate">Manage Rooms</div>
                 </a>
             </li>
+            <li class="menu-item {{ request()->routeIs('admin.amenities.*') ? 'active' : '' }}">
+                <a href="{{ route('admin.amenities.index') }}" class="menu-link">
+                    <i class="menu-icon tf-icons bx bx-wrench"></i>
+                    <div class="text-truncate">Manage Amenities</div>
+                </a>
+            </li>
         @endcan
 
         {{-- Bookings Section --}}
