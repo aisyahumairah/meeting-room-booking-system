@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Admin\RoomController as AdminRoomController;
+use App\Http\Controllers\Admin\AmenityController as AdminAmenityController;
 use App\Http\Controllers\Admin\BookingController as AdminBookingController;
 use App\Http\Controllers\Api\AvailabilityController;
 use App\Http\Controllers\CalendarController;
@@ -128,6 +129,10 @@ Route::middleware(['auth', 'active', 'must.change.password', 'role:administrator
             'setPrimaryImage'
         ])->name('rooms.images.primary');
         Route::delete('rooms/{room}/images/{image}', [AdminRoomController::class, 'deleteImage'])->name('rooms.images.destroy');
+
+        // Amenity management
+        Route::resource('amenities', AdminAmenityController::class);
+        Route::put('amenities/{amenity}/status', [AdminAmenityController::class, 'updateStatus'])->name('amenities.update-status');
 
         // Booking management
         Route::middleware('can:manage-bookings')->group(function () {

@@ -64,7 +64,8 @@ class RoomController extends Controller
      */
     public function create()
     {
-        $amenities = Amenity::orderBy('name')->get();
+        // Only show active amenities
+        $amenities = Amenity::active()->orderBy('name')->get();
         return view('admin.rooms.create', compact('amenities'));
     }
 
@@ -112,7 +113,8 @@ class RoomController extends Controller
             $query->upcoming()->orderBy('start_datetime');
         }]);
 
-        $amenities = Amenity::orderBy('name')->get();
+        // Only show active amenities
+        $amenities = Amenity::active()->orderBy('name')->get();
 
         return view('admin.rooms.edit', compact('room', 'amenities'));
     }

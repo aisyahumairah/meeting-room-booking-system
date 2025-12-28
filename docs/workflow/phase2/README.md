@@ -45,6 +45,7 @@ Enable users to discover and view meeting rooms, and provide administrators with
 | 2.4 | [step-2.4-room-browsing.md](./step-2.4-room-browsing.md) | User room grid, detail page, calendar | HIGH | COMPLETED |
 | 2.5 | [step-2.5-room-search-filtering.md](./step-2.5-room-search-filtering.md) | Search, filters, availability check | HIGH | COMPLETED |
 | 2.6 | [step-2.6-audit-logging.md](./step-2.6-audit-logging.md) | Room event logging | MEDIUM | COMPLETED |
+| 2.7 | [step-2.7-amenity-management.md](./step-2.7-amenity-management.md) | Admin amenity CRUD (add/edit/delete) | MEDIUM | COMPLETED |
 
 ---
 
@@ -57,9 +58,11 @@ Step 2.1 (Database Schema - Rooms)
     │
     ├──► Step 2.3 (Room CRUD - Admin) ──► Step 2.6 (Audit Logging)
     │
-    └──► Step 2.4 (Room Browsing - User)
-              │
-              └──► Step 2.5 (Search & Filtering)
+    ├──► Step 2.4 (Room Browsing - User)
+    │         │
+    │         └──► Step 2.5 (Search & Filtering)
+    │
+    └──► Step 2.7 (Amenity Management)
 ```
 
 **Execution Order:**
@@ -69,6 +72,7 @@ Step 2.1 (Database Schema - Rooms)
 4. Step 2.4 - Room Browsing User (depends on 2.1, 2.3 for seeded data)
 5. Step 2.5 - Search & Filtering (depends on 2.4)
 6. Step 2.6 - Audit Logging (depends on 2.3, Phase 1 AuditService)
+7. Step 2.7 - Amenity Management (depends on 2.1)
 
 ---
 
@@ -144,6 +148,13 @@ GET    /admin/rooms/{room}/edit     → Admin\RoomController@edit
 PUT    /admin/rooms/{room}          → Admin\RoomController@update
 DELETE /admin/rooms/{room}          → Admin\RoomController@destroy
 PUT    /admin/rooms/{room}/status   → Admin\RoomController@updateStatus
+
+GET    /admin/amenities             → Admin\AmenityController@index (table view)
+GET    /admin/amenities/create      → Admin\AmenityController@create
+POST   /admin/amenities             → Admin\AmenityController@store
+GET    /admin/amenities/{amenity}/edit → Admin\AmenityController@edit
+PUT    /admin/amenities/{amenity}   → Admin\AmenityController@update
+DELETE /admin/amenities/{amenity}   → Admin\AmenityController@destroy
 ```
 
 ---

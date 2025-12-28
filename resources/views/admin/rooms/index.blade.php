@@ -98,121 +98,127 @@
             {{-- Rooms Table --}}
             <div class="card">
                 <div class="card-body">
-                    <table class="table table-hover w-100">
-                        <thead>
-                            <tr>
-                                <th>
-                                    <a href="{{ route('admin.rooms.index', array_merge(request()->query(), ['sort' => 'name', 'direction' => request('sort') === 'name' && request('direction') === 'asc' ? 'desc' : 'asc'])) }}"
-                                        class="text-body d-flex align-items-center">
-                                        Room Name
-                                        @if (request('sort') === 'name')
-                                            <i
-                                                class="bx bx-chevron-{{ request('direction') === 'asc' ? 'up' : 'down' }} ms-1"></i>
-                                        @endif
-                                    </a>
-                                </th>
-                                <th>
-                                    <a href="{{ route('admin.rooms.index', array_merge(request()->query(), ['sort' => 'capacity', 'direction' => request('sort') === 'capacity' && request('direction') === 'asc' ? 'desc' : 'asc'])) }}"
-                                        class="text-body d-flex align-items-center">
-                                        Capacity
-                                        @if (request('sort') === 'capacity')
-                                            <i
-                                                class="bx bx-chevron-{{ request('direction') === 'asc' ? 'up' : 'down' }} ms-1"></i>
-                                        @endif
-                                    </a>
-                                </th>
-                                <th>
-                                    <a href="{{ route('admin.rooms.index', array_merge(request()->query(), ['sort' => 'floor_location', 'direction' => request('sort') === 'floor_location' && request('direction') === 'asc' ? 'desc' : 'asc'])) }}"
-                                        class="text-body d-flex align-items-center">
-                                        Floor/Location
-                                        @if (request('sort') === 'floor_location')
-                                            <i
-                                                class="bx bx-chevron-{{ request('direction') === 'asc' ? 'up' : 'down' }} ms-1"></i>
-                                        @endif
-                                    </a>
-                                </th>
-                                <th>Status</th>
-                                <th>Amenities</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @forelse($rooms as $room)
+                    @if ($rooms->total() > 0)
+                        <table class="table table-hover w-100">
+                            <thead>
                                 <tr>
-                                    <td>
-                                        <div class="d-flex align-items-center">
-                                            <img src="{{ $room->primary_image }}" alt="{{ $room->name }}"
-                                                class="rounded me-3" style="width: 45px; height: 45px; object-fit: cover;">
-                                            <div>
-                                                <strong>{{ $room->name }}</strong>
-                                                @if ($room->deleted_at)
-                                                    <span class="badge bg-danger ms-1">Deleted</span>
-                                                @endif
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <i class="bx bx-user me-1 text-muted"></i>
-                                        {{ $room->capacity }} pax
-                                    </td>
-                                    <td>{{ $room->floor_location }}</td>
-                                    <td>{!! $room->status_badge !!}</td>
-                                    <td>
-                                        @if ($room->amenities->count() > 0)
-                                            <div class="d-flex gap-1 flex-wrap" style="max-width: 200px;">
-                                                @foreach ($room->amenities->take(3) as $amenity)
-                                                    <span class="badge bg-label-primary" title="{{ $amenity->name }}">
-                                                        {!! $amenity->icon_html !!}
-                                                    </span>
-                                                @endforeach
-                                                @if ($room->amenities->count() > 3)
-                                                    <span
-                                                        class="badge bg-label-secondary">+{{ $room->amenities->count() - 3 }}</span>
-                                                @endif
-                                            </div>
-                                        @else
-                                            <span class="text-muted">None</span>
-                                        @endif
-                                    </td>
-                                    <td>
-                                        <div class="dropdown">
-                                            <button type="button"
-                                                class="btn btn-sm btn-icon btn-outline-primary dropdown-toggle hide-arrow"
-                                                data-bs-toggle="dropdown">
-                                                <i class="bx bx-dots-vertical-rounded"></i>
-                                            </button>
-                                            <div class="dropdown-menu">
-                                                <a class="dropdown-item" href="{{ route('admin.rooms.edit', $room) }}">
-                                                    <i class="bx bx-edit-alt me-1"></i> Edit
-                                                </a>
-                                                <a class="dropdown-item" href="#" data-bs-toggle="modal"
-                                                    data-bs-target="#statusModal{{ $room->id }}">
-                                                    <i class="bx bx-refresh me-1"></i> Change Status
-                                                </a>
-                                                <div class="dropdown-divider"></div>
-                                                <a class="dropdown-item text-danger" href="#" data-bs-toggle="modal"
-                                                    data-bs-target="#deleteModal{{ $room->id }}">
-                                                    <i class="bx bx-trash me-1"></i> Delete
-                                                </a>
-                                            </div>
-                                        </div>
-                                    </td>
-                                </tr>
-
-
-                            @empty
-                                <tr>
-                                    <td colspan="6" class="text-center py-5">
-                                        <i class="bx bx-building bx-lg text-muted mb-2"></i>
-                                        <p class="mb-0 text-muted">No rooms found</p>
-                                        <a href="{{ route('admin.rooms.create') }}" class="btn btn-sm btn-primary mt-2">
-                                            <i class="bx bx-plus me-1"></i> Add First Room
+                                    <th>
+                                        <a href="{{ route('admin.rooms.index', array_merge(request()->query(), ['sort' => 'name', 'direction' => request('sort') === 'name' && request('direction') === 'asc' ? 'desc' : 'asc'])) }}"
+                                            class="text-body d-flex align-items-center">
+                                            Room Name
+                                            @if (request('sort') === 'name')
+                                                <i
+                                                    class="bx bx-chevron-{{ request('direction') === 'asc' ? 'up' : 'down' }} ms-1"></i>
+                                            @endif
                                         </a>
-                                    </td>
+                                    </th>
+                                    <th>
+                                        <a href="{{ route('admin.rooms.index', array_merge(request()->query(), ['sort' => 'capacity', 'direction' => request('sort') === 'capacity' && request('direction') === 'asc' ? 'desc' : 'asc'])) }}"
+                                            class="text-body d-flex align-items-center">
+                                            Capacity
+                                            @if (request('sort') === 'capacity')
+                                                <i
+                                                    class="bx bx-chevron-{{ request('direction') === 'asc' ? 'up' : 'down' }} ms-1"></i>
+                                            @endif
+                                        </a>
+                                    </th>
+                                    <th>
+                                        <a href="{{ route('admin.rooms.index', array_merge(request()->query(), ['sort' => 'floor_location', 'direction' => request('sort') === 'floor_location' && request('direction') === 'asc' ? 'desc' : 'asc'])) }}"
+                                            class="text-body d-flex align-items-center">
+                                            Floor/Location
+                                            @if (request('sort') === 'floor_location')
+                                                <i
+                                                    class="bx bx-chevron-{{ request('direction') === 'asc' ? 'up' : 'down' }} ms-1"></i>
+                                            @endif
+                                        </a>
+                                    </th>
+                                    <th>Status</th>
+                                    <th>Amenities</th>
+                                    <th>Actions</th>
                                 </tr>
-                            @endforelse
-                        </tbody>
-                    </table>
+                            </thead>
+                            <tbody>
+                                @foreach ($rooms as $room)
+                                    <tr>
+                                        <td>
+                                            <div class="d-flex align-items-center">
+                                                <img src="{{ $room->primary_image }}" alt="{{ $room->name }}"
+                                                    class="rounded me-3"
+                                                    style="width: 45px; height: 45px; object-fit: cover;">
+                                                <div>
+                                                    <strong>{{ $room->name }}</strong>
+                                                    @if ($room->deleted_at)
+                                                        <span class="badge bg-danger ms-1">Deleted</span>
+                                                    @endif
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <i class="bx bx-user me-1 text-muted"></i>
+                                            {{ $room->capacity }} pax
+                                        </td>
+                                        <td>{{ $room->floor_location }}</td>
+                                        <td>{!! $room->status_badge !!}</td>
+                                        <td>
+                                            @if ($room->amenities->count() > 0)
+                                                <div class="d-flex gap-1 flex-wrap" style="max-width: 200px;">
+                                                    @foreach ($room->amenities->take(3) as $amenity)
+                                                        <span class="badge bg-label-primary" title="{{ $amenity->name }}">
+                                                            {!! $amenity->icon_html !!}
+                                                        </span>
+                                                    @endforeach
+                                                    @if ($room->amenities->count() > 3)
+                                                        <span
+                                                            class="badge bg-label-secondary">+{{ $room->amenities->count() - 3 }}</span>
+                                                    @endif
+                                                </div>
+                                            @else
+                                                <span class="text-muted">None</span>
+                                            @endif
+                                        </td>
+                                        <td>
+                                            <div class="dropdown">
+                                                <button type="button"
+                                                    class="btn btn-sm btn-icon btn-outline-primary dropdown-toggle hide-arrow"
+                                                    data-bs-toggle="dropdown">
+                                                    <i class="bx bx-dots-vertical-rounded"></i>
+                                                </button>
+                                                <div class="dropdown-menu">
+                                                    <a class="dropdown-item" href="{{ route('admin.rooms.edit', $room) }}">
+                                                        <i class="bx bx-edit-alt me-1"></i> Edit
+                                                    </a>
+                                                    <a class="dropdown-item" href="#" data-bs-toggle="modal"
+                                                        data-bs-target="#statusModal{{ $room->id }}">
+                                                        <i class="bx bx-refresh me-1"></i> Change Status
+                                                    </a>
+                                                    <div class="dropdown-divider"></div>
+                                                    <a class="dropdown-item text-danger" href="#"
+                                                        data-bs-toggle="modal"
+                                                        data-bs-target="#deleteModal{{ $room->id }}">
+                                                        <i class="bx bx-trash me-1"></i> Delete
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    @else
+                        <div class="text-center py-5">
+                            <i class="bx bx-building bx-lg text-muted mb-2"></i>
+                            <p class="mb-0 text-muted">No rooms found matching your criteria</p>
+                            @if (request()->hasAny(['search', 'status']))
+                                <a href="{{ route('admin.rooms.index') }}" class="btn btn-sm btn-outline-secondary mt-2">
+                                    Clear Filters
+                                </a>
+                            @else
+                                <a href="{{ route('admin.rooms.create') }}" class="btn btn-sm btn-primary mt-2">
+                                    <i class="bx bx-plus me-1"></i> Add First Room
+                                </a>
+                            @endif
+                        </div>
+                    @endif
                 </div>
 
                 {{-- Pagination --}}
