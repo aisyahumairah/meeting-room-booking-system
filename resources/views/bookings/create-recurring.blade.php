@@ -43,7 +43,7 @@
                                 <label class="form-label" for="start_date">Start Date</label>
                                 <input type="date" class="form-control @error('start_date') is-invalid @enderror"
                                     id="start_date" name="start_date" min="{{ date('Y-m-d') }}"
-                                    value="{{ old('start_date') }}" required>
+                                    value="{{ old('start_date') }}" required onkeydown="return false;">
                                 @error('start_date')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
@@ -179,7 +179,8 @@
                                     </label>
                                 </div>
                                 <input type="date" class="form-control mb-3" id="end_date" name="end_date"
-                                    value="{{ old('end_date') }}" style="max-width: 200px; margin-left: 20px;">
+                                    value="{{ old('end_date') }}" style="max-width: 200px; margin-left: 20px;"
+                                    onkeydown="return false;">
 
                                 <div class="form-check mb-2">
                                     <input class="form-check-input" type="radio" name="end_type"

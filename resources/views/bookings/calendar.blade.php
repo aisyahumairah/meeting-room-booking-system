@@ -101,7 +101,7 @@
                         <div class="mb-3">
                             <label class="form-label">Jump to Date</label>
                             <input type="date" class="form-control form-control-sm" id="dateJump"
-                                value="{{ date('Y-m-d') }}">
+                                value="{{ date('Y-m-d') }}" onkeydown="return false;">
                         </div>
 
                         <button class="btn btn-outline-primary btn-sm w-100" id="todayBtn">

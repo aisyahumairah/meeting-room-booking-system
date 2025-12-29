@@ -59,7 +59,8 @@
                                 <label class="form-label" for="booking_date">Date</label>
                                 <input type="date" class="form-control @error('booking_date') is-invalid @enderror"
                                     id="booking_date" name="booking_date" min="{{ date('Y-m-d') }}"
-                                    value="{{ old('booking_date', $prefilledDate ?? '') }}" required>
+                                    value="{{ old('booking_date', $prefilledDate ?? '') }}" required
+                                    onkeydown="return false;">
                                 @error('booking_date')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
