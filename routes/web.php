@@ -26,7 +26,7 @@ use Illuminate\Support\Facades\Route;
 */
 
 // Redirect root to dashboard (will redirect to login if not authenticated)
-Route::get('/', [DashboardController::class, 'index'])->middleware('auth')->name('home');
+Route::get('/', [DashboardController::class, 'index'])->middleware('auth', 'active', 'must.change.password', 'maintenance.custom')->name('home');
 
 // Guest routes (unauthenticated users only)
 Route::middleware('guest')->group(function () {
@@ -42,7 +42,7 @@ Route::middleware('guest')->group(function () {
 
 // Authenticated routes - All logged in users
 Route::middleware(['auth', 'active', 'must.change.password', 'maintenance.custom'])->group(function () {
-    Route::post('logout', [LoginController::class, 'logout'])->name('logout');
+    Route::post('logout', [LoginController::class, 'logout'])->name('logout')->withoutMiddleware('maintenance.custom');
 
     Route::get('password/change', [ChangePasswordController::class, 'showForm'])->name('password.change');
     Route::post('password/change', [ChangePasswordController::class, 'change'])->name('change.update');

@@ -61,6 +61,24 @@
             opacity: 0.9;
             color: white;
         }
+
+        .btn-logout {
+            background: #ff0000;
+            color: white;
+            border: none;
+            padding: 12px 32px;
+            border-radius: 8px;
+            font-weight: 500;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            transition: opacity 0.2s ease;
+        }
+
+        .btn-logout:hover {
+            opacity: 0.8;
+            color: white;
+        }
     </style>
 </head>
 
@@ -77,6 +95,12 @@
         <a href="{{ url('/') }}" class="btn-retry">
             <i class='bx bx-refresh'></i> Try Again
         </a>
+        <form action="{{ route('logout') }}" method="POST" style="display: inline;">
+            @csrf
+            <button type="submit" class="btn-logout">
+                <i class='bx bx-log-out'></i> Logout
+            </button>
+        </form>
     </div>
 </body>
 
