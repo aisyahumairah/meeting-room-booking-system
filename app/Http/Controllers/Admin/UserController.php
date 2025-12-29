@@ -10,6 +10,7 @@ use App\Models\User;
 use App\Services\AuditService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Str;
 
 class UserController extends Controller
@@ -279,8 +280,11 @@ class UserController extends Controller
         }
 
         // Send reset link via email
-        // TODO: Implement in Step 4.5
-        // Password::sendResetLink(['email' => $user->email]);
+        $status = Password::sendResetLink(['email' => $user->email]);
+
+        if ($status !== Password::RESET_LINK_SENT) {
+            return back()->with('error', 'Unable to send password reset link: ' . __($status));
+        }
 
         AuditService::log(
             AuditService::EVENT_USER_PASSWORD_RESET_BY_ADMIN,
