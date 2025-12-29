@@ -16,6 +16,7 @@ class UpdateUserRequest extends FormRequest
     {
         return [
             'staff_number' => [
+                'sometimes',
                 'required',
                 'string',
                 'max:20',
@@ -23,6 +24,7 @@ class UpdateUserRequest extends FormRequest
             ],
             'name' => ['required', 'string', 'max:100'],
             'email' => [
+                'sometimes',
                 'required',
                 'email',
                 'max:255',
