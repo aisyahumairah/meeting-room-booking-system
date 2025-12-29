@@ -180,7 +180,7 @@ Route::middleware(['auth', 'active', 'must.change.password', 'role:system_admin'
     });
 
 // Reports (Director/SysAdmin only)
-Route::prefix('admin/reports')->name('admin.reports.')->middleware(['auth', 'active', 'must.change.password', 'role:director,system_admin'])->group(function () {
+Route::prefix('admin/reports')->name('admin.reports.')->middleware(['auth', 'active', 'must.change.password', 'role:director,system_admin,administrator'])->group(function () {
     Route::get('/', [AdminReportController::class, 'index'])->name('index');
 
     // View Reports
