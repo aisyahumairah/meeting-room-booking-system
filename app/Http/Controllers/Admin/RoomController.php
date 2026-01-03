@@ -110,7 +110,8 @@ class RoomController extends Controller
     public function edit(Room $room)
     {
         $room->load(['amenities', 'images', 'maintenanceSchedules' => function ($query) {
-            $query->upcoming()->orderBy('start_datetime');
+            // Show anything that hasn't finished yet (Active + Upcoming)
+            $query->where('end_datetime', '>=', now())->orderBy('start_datetime');
         }]);
 
         // Only show active amenities

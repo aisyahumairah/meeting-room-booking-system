@@ -29,7 +29,7 @@ The system supports four distinct user roles, each with specific permissions des
 
 ### Regular User
 
-Regular Users are all staff members of OIB Group and represent the majority of system users. This is the default role assigned upon account creation. They can search and browse meeting rooms by capacity, floor, and availability. They are able to view room details including capacity, location, and amenities. Regular Users can create bookings for themselves (both one-time and recurring), view their own booking history and upcoming reservations, edit their own bookings before they occur, and cancel their own bookings. They receive email notifications for booking confirmations and reminders, and can update their personal profile information and change their password.
+Regular Users are all staff members of OIB Group and represent the majority of system users. This is the default role assigned upon account creation. They can search and browse meeting rooms by capacity, floor, and availability. They are able to view room details including capacity, location, amenities, and availability. Regular Users can create bookings for themselves (both one-time and recurring), view their own booking history and upcoming reservations, edit their own bookings before they occur, and cancel their own bookings. They receive email notifications for booking confirmations and reminders, and can update their personal profile information and change their password.
 
 However, Regular Users cannot view other users' bookings, manage rooms, users, or system settings, access reports or audit logs, or create bookings on behalf of others.
 
