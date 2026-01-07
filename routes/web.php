@@ -18,12 +18,28 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\RoomController;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Mail;
 
 /*
 |--------------------------------------------------------------------------
 | Web Routes
 |--------------------------------------------------------------------------
 */
+
+// For email testing. Remove this route when not needed.
+// Replace recipient@gmail.com with the actual recipient's email address.
+// Route::get('/test-email', function () {
+//     try {
+//         Mail::raw('This is a test email from MRBS', function ($message) {
+//             $message->to('recipient@gmail.com')
+//                 ->subject('Test Email');
+//         });
+
+//         return 'Email sent successfully!';
+//     } catch (\Exception $e) {
+//         return 'Error: ' . $e->getMessage();
+//     }
+// });
 
 // Redirect root to dashboard (will redirect to login if not authenticated)
 Route::get('/', [DashboardController::class, 'index'])->middleware('auth', 'active', 'must.change.password', 'maintenance.custom')->name('home');
