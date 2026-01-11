@@ -239,11 +239,11 @@
                                                         @endif
                                                         @if ($booking->is_cancellable)
                                                             <a class="dropdown-item text-danger" href="#"
-                                                                onclick="confirmCancel(
+                                                                onclick="handleCancelClick(
                                                                                 {{ $booking->id }},
                                                                                 '{{ $booking->reference_number }}',
                                                                                 {{ $booking->is_recurring ? 'true' : 'false' }},
-                                                                                {{ $booking->is_recurring ? $booking->series->bookings()->where('status', 'confirmed')->count() : 0 }}
+                                                                                '{{ $booking->booking_date->format('M d, Y') }}'
                                                                             )">
                                                                 <i class="bx bx-x me-1"></i> Cancel
                                                             </a>
@@ -278,6 +278,7 @@
     </div>
 
     @include('bookings.partials.cancel-modal')
+    @include('bookings.partials.cancel-recurring-modal')
 
     {{-- Booking Details Modal --}}
     <div class="modal fade" id="bookingDetailsModal" tabindex="-1" aria-hidden="true">
@@ -324,6 +325,15 @@
     @push('scripts')
         <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
         <script>
+            // Wrapper function to route to correct confirmation modal
+            function handleCancelClick(bookingId, reference, isRecurring, dateString) {
+                if (isRecurring) {
+                    confirmCancelRecurring(bookingId, reference, dateString);
+                } else {
+                    confirmCancel(bookingId, reference);
+                }
+            }
+
             document.addEventListener('DOMContentLoaded', function() {
                 let calendar;
 

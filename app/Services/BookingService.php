@@ -471,6 +471,100 @@ class BookingService
     }
 
     /**
+     * Cancel all remaining (confirmed) bookings in a series
+     * Preserves completed and cancelled bookings
+     * 
+     * @return int Number of bookings cancelled
+     */
+    public function cancelSeriesRemaining(BookingSeries $series, string $reason, User $cancelledBy): int
+    {
+        return DB::transaction(function () use ($series, $reason, $cancelledBy) {
+            // Only cancel bookings that are confirmed (not completed or already cancelled)
+            $bookingsToCancel = $series->bookings()
+                ->where('status', 'confirmed')
+                ->get();
+
+            if ($bookingsToCancel->isEmpty()) {
+                // All bookings are either completed or already cancelled
+                Log::info('No bookings to cancel - all completed or cancelled', [
+                    'series_id' => $series->id,
+                    'reference' => $series->reference_number,
+                ]);
+                return 0;
+            }
+
+            // Cancel all confirmed bookings
+            $count = 0;
+            foreach ($bookingsToCancel as $booking) {
+                $booking->update([
+                    'status' => 'cancelled',
+                    'cancellation_reason' => $reason,
+                    'cancelled_by' => $cancelledBy->id,
+                    'cancelled_at' => now(),
+                ]);
+                $count++;
+            }
+
+            Log::info('Booking series remaining cancelled', [
+                'series_id' => $series->id,
+                'reference' => $series->reference_number,
+                'cancelled_by' => $cancelledBy->id,
+                'reason' => $reason,
+                'bookings_cancelled' => $count,
+                'total_in_series' => $series->bookings()->count(),
+            ]);
+
+            // TODO: Send cancellation email for remaining bookings (Phase 4)
+
+            return $count;
+        });
+    }
+
+    /**
+     * Cancel a single occurrence from a recurring booking series
+     * Leaves other bookings in the series intact
+     * 
+     * @return Booking The cancelled booking
+     * @throws \Exception if booking is not part of a series or cannot be cancelled
+     */
+    public function cancelSingleOccurrence(Booking $booking, string $reason, User $cancelledBy): Booking
+    {
+        return DB::transaction(function () use ($booking, $reason, $cancelledBy) {
+            // Verify this is part of a series
+            if (!$booking->is_recurring) {
+                throw new \Exception('This booking is not part of a recurring series.');
+            }
+
+            // Verify booking can be cancelled (confirmed status)
+            if ($booking->status !== 'confirmed') {
+                throw new \Exception('Only confirmed bookings can be cancelled.');
+            }
+
+            // Cancel only this specific occurrence
+            $booking->update([
+                'status' => 'cancelled',
+                'cancellation_reason' => $reason,
+                'cancelled_by' => $cancelledBy->id,
+                'cancelled_at' => now(),
+            ]);
+
+            Log::info('Single occurrence cancelled from series', [
+                'booking_id' => $booking->id,
+                'booking_reference' => $booking->reference_number,
+                'series_id' => $booking->series_id,
+                'series_reference' => $booking->series->reference_number,
+                'booking_date' => $booking->booking_date->format('Y-m-d'),
+                'cancelled_by' => $cancelledBy->id,
+                'reason' => $reason,
+            ]);
+
+            // TODO: Send cancellation email for single occurrence (Phase 4)
+
+            return $booking->fresh();
+        });
+    }
+
+    /**
      * Update an existing booking
      * 
      * @throws \Exception if room is not available

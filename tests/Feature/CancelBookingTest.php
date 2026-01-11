@@ -150,6 +150,51 @@ class CancelBookingTest extends TestCase
         }
     }
 
+    public function test_cancel_single_occurrence_from_recurring_booking()
+    {
+        // Create a series with multiple bookings
+        $series = BookingSeries::factory()->create([
+            'user_id' => $this->user->id,
+            'room_id' => $this->room->id,
+        ]);
+
+        $bookings = [];
+        for ($i = 0; $i < 3; $i++) {
+            $bookings[] = Booking::factory()->create([
+                'user_id' => $this->user->id,
+                'room_id' => $this->room->id,
+                'series_id' => $series->id,
+                'status' => 'confirmed',
+                'booking_date' => now()->addDays($i + 1)->format('Y-m-d'),
+            ]);
+        }
+
+        // Cancel ONLY the first booking
+        $response = $this->actingAs($this->user)
+            ->delete(route('my-bookings.destroy', $bookings[0]), [
+                'cancellation_reason' => 'Just this one',
+                'cancel_mode' => 'single'
+            ]);
+
+        $response->assertRedirect(route('my-bookings'));
+
+        // First booking should be cancelled
+        $this->assertDatabaseHas('bookings', [
+            'id' => $bookings[0]->id,
+            'status' => 'cancelled',
+        ]);
+
+        // Others should remain confirmed
+        $this->assertDatabaseHas('bookings', [
+            'id' => $bookings[1]->id,
+            'status' => 'confirmed',
+        ]);
+        $this->assertDatabaseHas('bookings', [
+            'id' => $bookings[2]->id,
+            'status' => 'confirmed',
+        ]);
+    }
+
     public function test_cancelled_at_timestamp_is_recorded()
     {
         $booking = Booking::factory()->create([

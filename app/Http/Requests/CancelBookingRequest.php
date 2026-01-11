@@ -24,6 +24,7 @@ class CancelBookingRequest extends FormRequest
     {
         return [
             'cancellation_reason' => ['required', 'string', 'max:500'],
+            'cancel_mode' => ['nullable', 'in:single,all'],
         ];
     }
 
@@ -32,6 +33,7 @@ class CancelBookingRequest extends FormRequest
         return [
             'cancellation_reason.required' => 'Please provide a reason for cancellation.',
             'cancellation_reason.max' => 'Cancellation reason cannot exceed 500 characters.',
+            'cancel_mode.in' => 'Invalid cancellation mode selected.',
         ];
     }
 }

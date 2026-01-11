@@ -87,7 +87,12 @@
                         @endif
                         @if ($booking->is_cancellable)
                             <button type="button" class="btn btn-outline-danger"
-                                onclick="confirmCancel({{ $booking->id }}, '{{ $booking->reference_number }}')">
+                                onclick="handleCancelClick(
+                                        {{ $booking->id }},
+                                        '{{ $booking->reference_number }}',
+                                        {{ $booking->is_recurring ? 'true' : 'false' }},
+                                        '{{ $booking->booking_date->format('M d, Y') }}'
+                                    )">
                                 <i class="bx bx-x me-1"></i> Cancel Booking
                             </button>
                         @endif
@@ -225,6 +230,7 @@
 
     {{-- Cancel Modal (same as in my.blade.php) --}}
     @include('bookings.partials.cancel-modal')
+    @include('bookings.partials.cancel-recurring-modal')
 
     @push('scripts')
         <script>
@@ -232,6 +238,21 @@
                 document.getElementById('cancelRef').textContent = reference;
                 document.getElementById('cancelForm').action = `/my-bookings/${bookingId}`;
                 new bootstrap.Modal(document.getElementById('cancelModal')).show();
+            }
+
+            function confirmCancelRecurring(bookingId, reference, date) {
+                document.getElementById('cancelRecurringRef').textContent = reference;
+                document.getElementById('cancelDate').textContent = date;
+                document.getElementById('cancelRecurringForm').action = `/my-bookings/${bookingId}`;
+                new bootstrap.Modal(document.getElementById('cancelRecurringModal')).show();
+            }
+
+            function handleCancelClick(bookingId, reference, isRecurring, dateString) {
+                if (isRecurring) {
+                    confirmCancelRecurring(bookingId, reference, dateString);
+                } else {
+                    confirmCancel(bookingId, reference);
+                }
             }
         </script>
     @endpush

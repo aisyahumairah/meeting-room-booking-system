@@ -499,30 +499,60 @@ class BookingController extends Controller
         $isAdminCancel = $booking->user_id !== $user->id;
 
         try {
-            // Check if this is a series - cancel entire series
+            // Check if this is a recurring booking
             if ($booking->is_recurring) {
                 $series = $booking->series;
-                $count = $this->bookingService->cancelSeries(
-                    $series,
-                    $request->cancellation_reason,
-                    $user
-                );
+                // Default to 'all' if not specified (legacy behavior)
+                $cancelMode = $request->input('cancel_mode', 'all');
 
-                $this->auditService->log(
-                    'booking_series_cancelled',
-                    'booking_series',
-                    $series->id,
-                    [
-                        'reference' => $series->reference_number,
-                        'cancelled_by' => $user->name,
-                        'reason' => $request->cancellation_reason,
-                        'bookings_cancelled' => $count,
-                        'room' => $series->room->name,
-                        'series_owner' => $series->user->name,
-                    ]
-                );
+                switch ($cancelMode) {
+                    case 'single':
+                        $this->bookingService->cancelSingleOccurrence(
+                            $booking,
+                            $request->cancellation_reason,
+                            $user
+                        );
+                        $message = 'Single booking occurrence cancelled successfully.';
 
-                $message = "Series cancelled. {$count} bookings have been cancelled.";
+                        $this->auditService->log(
+                            'booking_cancelled',
+                            'booking',
+                            $booking->id,
+                            [
+                                'reference' => $booking->reference_number,
+                                'cancelled_by' => $user->name,
+                                'reason' => $request->cancellation_reason,
+                                'mode' => 'single_occurrence',
+                                'series_id' => $series->id
+                            ]
+                        );
+                        break;
+
+                    case 'all':
+                    default:
+                        $count = $this->bookingService->cancelSeries(
+                            $series,
+                            $request->cancellation_reason,
+                            $user
+                        );
+
+                        $this->auditService->log(
+                            'booking_series_cancelled',
+                            'booking_series',
+                            $series->id,
+                            [
+                                'reference' => $series->reference_number,
+                                'cancelled_by' => $user->name,
+                                'reason' => $request->cancellation_reason,
+                                'bookings_cancelled' => $count,
+                                'room' => $series->room->name,
+                                'series_owner' => $series->user->name,
+                            ]
+                        );
+
+                        $message = "Series cancelled. {$count} bookings have been cancelled.";
+                        break;
+                }
             } else {
                 $this->bookingService->cancelBooking(
                     $booking,
