@@ -252,7 +252,8 @@
                                                                            {{ $booking->id }},
                                                                            '{{ $booking->reference_number }}',
                                                                            {{ $booking->is_recurring ? 'true' : 'false' }},
-                                                                           {{ $booking->is_recurring ? $booking->series->bookings()->where('status', 'confirmed')->count() : 0 }}
+                                                                           {{ $booking->is_recurring ? $booking->series->bookings()->where('status', 'confirmed')->count() : 0 }},
+                                                                           '{{ $booking->booking_date->format('Y-m-d') }}'
                                                                        )">
                                                     <i class="bx bx-x me-1"></i> Cancel
                                                 </a>
@@ -293,22 +294,27 @@
 
     {{-- Cancel Modal --}}
     @include('admin.bookings.partials.cancel-modal')
+    @include('admin.bookings.partials.cancel-recurring-modal')
 
     @push('scripts')
         <script>
-            function confirmCancel(bookingId, reference, isRecurring, seriesCount) {
-                document.getElementById('cancelRef').textContent = reference;
-                document.getElementById('cancelForm').action = `{{ url('admin/bookings') }}/${bookingId}`;
-
-                const seriesWarning = document.getElementById('seriesWarning');
-                if (isRecurring && seriesCount > 0) {
-                    document.getElementById('seriesCount').textContent = seriesCount;
-                    seriesWarning.style.display = 'block';
+            function confirmCancel(bookingId, reference, isRecurring, seriesCount, date) {
+                if (isRecurring) {
+                    // Call the function from cancel-recurring-modal
+                    confirmCancelRecurring(bookingId, reference, date, `{{ url('admin/bookings') }}/${bookingId}`);
                 } else {
-                    seriesWarning.style.display = 'none';
-                }
+                    // Standard cancel modal handling
+                    document.getElementById('cancelRef').textContent = reference;
+                    document.getElementById('cancelForm').action = `{{ url('admin/bookings') }}/${bookingId}`;
 
-                new bootstrap.Modal(document.getElementById('cancelModal')).show();
+                    // Hide series warning for standard single bookings (just in case)
+                    const seriesWarning = document.getElementById('seriesWarning');
+                    if (seriesWarning) {
+                        seriesWarning.style.display = 'none';
+                    }
+
+                    new bootstrap.Modal(document.getElementById('cancelModal')).show();
+                }
             }
         </script>
     @endpush

@@ -31,7 +31,7 @@
                             <div class="col-md-6">
                                 <label class="form-label text-muted">Booking Type</label>
                                 <p>
-                                    @if($booking->is_recurring)
+                                    @if ($booking->is_recurring)
                                         <span class="badge bg-info">Recurring</span>
                                         {{ $booking->series->reference_number }}
                                     @else
@@ -63,7 +63,7 @@
                             <p>{{ $booking->purpose }}</p>
                         </div>
 
-                        @if($booking->status === 'cancelled')
+                        @if ($booking->status === 'cancelled')
                             <div class="alert alert-danger">
                                 <h6 class="alert-heading mb-2">
                                     <i class="bx bx-x-circle me-1"></i> Booking Cancelled
@@ -79,17 +79,19 @@
 
                     {{-- Actions --}}
                     <div class="card-footer">
-                        @if($booking->status !== 'completed')
+                        @if ($booking->status !== 'completed')
                             <a href="{{ route('admin.bookings.edit', $booking) }}" class="btn btn-primary me-2">
                                 <i class="bx bx-edit me-1"></i> Edit Booking
                             </a>
                         @endif
-                        @if($booking->status === 'confirmed')
-                            <button type="button" class="btn btn-outline-danger" onclick="confirmCancel(
+                        @if ($booking->status === 'confirmed')
+                            <button type="button" class="btn btn-outline-danger"
+                                onclick="confirmCancel(
                                             {{ $booking->id }}, 
                                             '{{ $booking->reference_number }}',
                                             {{ $booking->is_recurring ? 'true' : 'false' }},
-                                            {{ $booking->is_recurring ? $booking->series->bookings()->where('status', 'confirmed')->count() : 0 }}
+                                            {{ $booking->is_recurring ? $booking->series->bookings()->where('status', 'confirmed')->count() : 0 }},
+                                            '{{ $booking->booking_date->format('Y-m-d') }}'
                                         )">
                                 <i class="bx bx-x me-1"></i> Cancel Booking
                             </button>
@@ -98,7 +100,7 @@
                 </div>
 
                 {{-- Series Occurrences --}}
-                @if($booking->is_recurring && $booking->series)
+                @if ($booking->is_recurring && $booking->series)
                     <div class="card">
                         <div class="card-header">
                             <h5 class="mb-0">Series Occurrences ({{ $booking->series->bookings->count() }} total)</h5>
@@ -114,7 +116,7 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    @foreach($booking->series->bookings()->orderBy('booking_date')->get() as $occurrence)
+                                    @foreach ($booking->series->bookings()->orderBy('booking_date')->get() as $occurrence)
                                         <tr class="{{ $occurrence->id === $booking->id ? 'table-primary' : '' }}">
                                             <td>{{ $occurrence->reference_number }}</td>
                                             <td>{{ $occurrence->booking_date->format('D, M d, Y') }}</td>
@@ -180,13 +182,13 @@
                             <span class="text-muted">Created</span>
                             <span>{{ $booking->created_at->format('M d, Y H:i') }}</span>
                         </li>
-                        @if($booking->updated_at != $booking->created_at && $booking->status !== 'cancelled')
+                        @if ($booking->updated_at != $booking->created_at && $booking->status !== 'cancelled')
                             <li class="list-group-item d-flex justify-content-between">
                                 <span class="text-muted">Last Updated</span>
                                 <span>{{ $booking->updated_at->format('M d, Y H:i') }}</span>
                             </li>
                         @endif
-                        @if($booking->cancelled_at)
+                        @if ($booking->cancelled_at)
                             <li class="list-group-item d-flex justify-content-between text-danger">
                                 <span>Cancelled</span>
                                 <span>{{ $booking->cancelled_at->format('M d, Y H:i') }}</span>
@@ -200,22 +202,24 @@
 
     {{-- Cancel Modal --}}
     @include('admin.bookings.partials.cancel-modal')
+    @include('admin.bookings.partials.cancel-recurring-modal')
 
     @push('scripts')
         <script>
-            function confirmCancel(bookingId, reference, isRecurring, seriesCount) {
-                document.getElementById('cancelRef').textContent = reference;
-                document.getElementById('cancelForm').action = `{{ url('admin/bookings') }}/${bookingId}`;
-
-                const seriesWarning = document.getElementById('seriesWarning');
-                if (isRecurring && seriesCount > 0) {
-                    document.getElementById('seriesCount').textContent = seriesCount;
-                    seriesWarning.style.display = 'block';
+            function confirmCancel(bookingId, reference, isRecurring, seriesCount, date) {
+                if (isRecurring) {
+                    confirmCancelRecurring(bookingId, reference, date, `{{ url('admin/bookings') }}/${bookingId}`);
                 } else {
-                    seriesWarning.style.display = 'none';
-                }
+                    document.getElementById('cancelRef').textContent = reference;
+                    document.getElementById('cancelForm').action = `{{ url('admin/bookings') }}/${bookingId}`;
 
-                new bootstrap.Modal(document.getElementById('cancelModal')).show();
+                    const seriesWarning = document.getElementById('seriesWarning');
+                    if (seriesWarning) {
+                        seriesWarning.style.display = 'none';
+                    }
+
+                    new bootstrap.Modal(document.getElementById('cancelModal')).show();
+                }
             }
         </script>
     @endpush
