@@ -234,8 +234,8 @@ class BookingController extends Controller
             'days_of_week' => 'array',
             'day_of_month' => 'integer|between:1,31',
             'end_type' => 'required|in:by_date,by_occurrences',
-            'end_date' => 'date',
-            'occurrences' => 'integer|min:2|max:52',
+            'end_date' => 'nullable|date',
+            'occurrences' => 'nullable|integer|min:2|max:52',
         ]);
 
         $dates = $this->bookingService->calculateOccurrences($request->all());

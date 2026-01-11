@@ -92,4 +92,24 @@ class RecurringBookingTest extends TestCase
         $response->assertSessionHasErrors('room_id');
         $this->assertDatabaseCount('booking_series', 0);
     }
+
+    public function test_preview_recurrence_by_occurrences_without_end_date()
+    {
+        $response = $this->actingAs($this->user)
+            ->postJson(route('ajax.bookings.preview-recurrence'), [
+                'room_id' => $this->room->id,
+                'start_date' => now()->addDays(1)->format('Y-m-d'),
+                'start_time' => '10:00',
+                'end_time' => '11:00',
+                'recurrence_type' => 'daily',
+                'recurrence_interval' => 1,
+                'end_type' => 'by_occurrences',
+                'occurrences' => 5,
+                'end_date' => null, // Explicitly sending null/empty
+            ]);
+
+        $response->assertOk();
+        $response->assertJsonStructure(['dates', 'count', 'all_available']);
+        $this->assertEquals(5, $response->json('count'));
+    }
 }
