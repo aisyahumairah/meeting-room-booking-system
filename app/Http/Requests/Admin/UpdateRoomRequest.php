@@ -34,6 +34,10 @@ class UpdateRoomRequest extends FormRequest
             'capacity' => 'required|integer|min:1|max:500',
             'floor_location' => 'required|string|max:100',
             'description' => 'nullable|string|max:500',
+            'status' => [
+                'required',
+                'in:active,inactive,under_maintenance',
+            ],
             'amenities' => 'nullable|array',
             'amenities.*' => 'exists:amenities,id',
             'images' => 'nullable|array|max:5',

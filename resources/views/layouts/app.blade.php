@@ -86,6 +86,9 @@
     <!-- Toast Notifications -->
     @include('components.toast')
 
+    <!-- Session Expired Modal -->
+    @include('components.session-expired-modal')
+
     <!-- Core JS -->
     @include('layouts.partials.scripts')
 

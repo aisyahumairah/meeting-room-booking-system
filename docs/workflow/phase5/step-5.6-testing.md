@@ -1,7 +1,7 @@
 # Step 5.6: Testing
 
 **Priority:** HIGH | **Ref:** §8.5 | **Dependencies:** Steps 5.1-5.5  
-**Status:** TODO
+**Status:** COMPLETED
 
 ---
 
@@ -768,15 +768,15 @@ After running all tests, document results:
 
 ## Acceptance Criteria
 
-- [ ] All existing tests pass
-- [ ] Amenities feature has 15+ tests (existing 12 + new)
-- [ ] Amenity unit tests created
-- [ ] Error handling tests created and pass
-- [ ] Security tests created and pass
-- [ ] Validation tests created and pass
-- [ ] No critical test failures
-- [ ] Test coverage >= 80% for critical areas
-- [ ] Manual testing checklist completed
+- [x] All existing tests pass
+- [x] Amenities feature has 15+ tests (existing 12 + new)
+- [x] Amenity unit tests created
+- [x] Error handling tests created and pass
+- [x] Security tests created and pass
+- [x] Validation tests created and pass
+- [x] No critical test failures
+- [x] Test coverage >= 80% for critical areas
+- [x] Manual testing checklist completed
 
 ---
 

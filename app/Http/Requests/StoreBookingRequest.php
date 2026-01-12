@@ -35,6 +35,7 @@ class StoreBookingRequest extends FormRequest
             $this->validateOperatingHours($validator);
             $this->validateDuration($validator);
             $this->validateRoomStatus($validator);
+            $this->validateAvailability($validator);
         });
     }
 
@@ -76,6 +77,30 @@ class StoreBookingRequest extends FormRequest
 
         if ($room && $room->status !== 'active') {
             $validator->errors()->add('room_id', 'This room is not available for booking.');
+        }
+    }
+
+    protected function validateAvailability($validator): void
+    {
+        if (!$this->room_id || !$this->booking_date || !$this->start_time || !$this->end_time) {
+            return;
+        }
+
+        $conflict = \App\Models\Booking::where('room_id', $this->room_id)
+            ->where('booking_date', $this->booking_date)
+            ->where('status', 'confirmed')
+            ->where(function ($query) {
+                $query->whereBetween('start_time', [$this->start_time, $this->end_time])
+                    ->orWhereBetween('end_time', [$this->start_time, $this->end_time])
+                    ->orWhere(function ($q) {
+                        $q->where('start_time', '<=', $this->start_time)
+                            ->where('end_time', '>=', $this->end_time);
+                    });
+            })
+            ->exists();
+
+        if ($conflict) {
+            $validator->errors()->add('room_id', 'This room is not available at the selected time.');
         }
     }
 

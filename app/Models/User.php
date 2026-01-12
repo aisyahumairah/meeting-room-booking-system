@@ -92,6 +92,20 @@ class User extends Authenticatable
         return $this->role === 'system_admin';
     }
 
+    /**
+     * Check if user has a specific role or one of multiple roles.
+     *
+     * @param string|array $roles
+     */
+    public function hasRole(string|array $roles): bool
+    {
+        if (is_array($roles)) {
+            return in_array($this->role, $roles);
+        }
+
+        return $this->role === $roles;
+    }
+
     // =========================================================================
     // PERMISSION CHECK METHODS
     // =========================================================================

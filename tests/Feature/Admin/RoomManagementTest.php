@@ -110,6 +110,7 @@ class RoomManagementTest extends TestCase
                 'capacity' => 20,
                 'floor_location' => 'Level 5',
                 'description' => 'A modern conference room',
+                'status' => 'active',
                 'amenities' => $amenities,
             ]);
 
@@ -134,6 +135,7 @@ class RoomManagementTest extends TestCase
                 'name' => 'Room With Images',
                 'capacity' => 10,
                 'floor_location' => 'Level 2',
+                'status' => 'active',
                 'images' => [
                     UploadedFile::fake()->image('room1.jpg'),
                     UploadedFile::fake()->image('room2.jpg'),
@@ -170,6 +172,7 @@ class RoomManagementTest extends TestCase
                 'name' => 'Existing Room',
                 'capacity' => 10,
                 'floor_location' => 'Level 1',
+                'status' => 'active',
             ]);
 
         $response->assertSessionHasErrors(['name']);
@@ -201,6 +204,7 @@ class RoomManagementTest extends TestCase
                 'name' => 'New Name',
                 'capacity' => 15,
                 'floor_location' => 'Level 3',
+                'status' => $room->status,
             ]);
 
         $response->assertRedirect(route('admin.rooms.edit', $room));
@@ -308,6 +312,7 @@ class RoomManagementTest extends TestCase
                 'name' => $room->name,
                 'capacity' => $room->capacity,
                 'floor_location' => $room->floor_location,
+                'status' => $room->status,
                 'images' => [
                     UploadedFile::fake()->image('new-image.jpg'),
                 ],
@@ -340,6 +345,7 @@ class RoomManagementTest extends TestCase
                 'name' => $room->name,
                 'capacity' => $room->capacity,
                 'floor_location' => $room->floor_location,
+                'status' => $room->status,
                 'images' => [
                     UploadedFile::fake()->image('extra.jpg'),
                 ],

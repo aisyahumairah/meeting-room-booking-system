@@ -204,7 +204,7 @@ class RoomBrowsingTest extends TestCase
             ]));
 
         $response->assertStatus(200);
-        $response->assertJsonFragment(['color' => '#dc3545']); // Maintenance color
+        $response->assertJsonFragment(['backgroundColor' => '#dc3545']); // Maintenance color
     }
 
     // =====================

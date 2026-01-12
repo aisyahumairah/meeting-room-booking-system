@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules\Password;
+use App\Http\Requests\UpdateProfileRequest;
 
 class ProfileController extends Controller
 {
@@ -30,13 +31,9 @@ class ProfileController extends Controller
     /**
      * Update the user's profile.
      */
-    public function update(Request $request)
+    public function update(UpdateProfileRequest $request)
     {
-        $validated = $request->validate([
-            'name' => ['required', 'string', 'max:100'],
-            'department' => ['nullable', 'string', 'max:100'],
-            'phone' => ['nullable', 'string', 'max:20'],
-        ]);
+        $validated = $request->validated();
 
         Auth::user()->update($validated);
 
