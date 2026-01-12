@@ -26,8 +26,8 @@ class AppServiceProvider extends ServiceProvider
         $this->registerViewComposers();
 
         if (app()->environment('local')) {
-        URL::forceScheme('https');
-    }
+            URL::forceScheme('https');
+        }
     }
 
     /**
