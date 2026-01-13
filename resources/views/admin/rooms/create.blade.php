@@ -106,6 +106,29 @@
 
                     {{-- Sidebar --}}
                     <div class="col-lg-4">
+                        {{-- Status --}}
+                        <div class="card mb-4">
+                            <div class="card-header">
+                                <h5 class="card-title mb-0">Status <span class="text-danger">*</span></h5>
+                            </div>
+                            <div class="card-body">
+                                <select class="form-select @error('status') is-invalid @enderror" name="status"
+                                    id="status" required>
+                                    <option value="active" {{ old('status', 'active') == 'active' ? 'selected' : '' }}>
+                                        Active</option>
+                                    <option value="inactive" {{ old('status') == 'inactive' ? 'selected' : '' }}>
+                                        Inactive</option>
+                                    <option value="under_maintenance"
+                                        {{ old('status') == 'under_maintenance' ? 'selected' : '' }}>Under Maintenance
+                                    </option>
+                                </select>
+                                @error('status')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                                <div class="form-text">Set the initial status of the room</div>
+                            </div>
+                        </div>
+
                         {{-- Amenities --}}
                         <div class="card mb-4">
                             <div class="card-header">
