@@ -42,8 +42,9 @@
                             <div class="mb-3">
                                 <label class="form-label" for="start_date">Start Date</label>
                                 <input type="date" class="form-control @error('start_date') is-invalid @enderror"
-                                    id="start_date" name="start_date" min="{{ date('Y-m-d') }}"
-                                    value="{{ old('start_date') }}" required onkeydown="return false;">
+                                    id="start_date" name="start_date" min="{{ \Carbon\Carbon::now()->format('Y-m-d') }}"
+                                    value="{{ old('start_date') }}" required onkeydown="return false;"
+                                    onchange="if(this.value < this.min) { alert('Past dates are not allowed.'); this.value=''; }">
                                 @error('start_date')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror

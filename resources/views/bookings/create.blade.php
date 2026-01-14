@@ -58,9 +58,11 @@
                             <div class="mb-3">
                                 <label class="form-label" for="booking_date">Date</label>
                                 <input type="date" class="form-control @error('booking_date') is-invalid @enderror"
-                                    id="booking_date" name="booking_date" min="{{ date('Y-m-d') }}"
+                                    id="booking_date" name="booking_date"
+                                    min="{{ \Carbon\Carbon::now()->format('Y-m-d') }}"
                                     value="{{ old('booking_date', $prefilledDate ?? '') }}" required
-                                    onkeydown="return false;">
+                                    onkeydown="return false;"
+                                    onchange="if(this.value < this.min) { alert('Past dates are not allowed.'); this.value=''; }">
                                 @error('booking_date')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
