@@ -1427,6 +1427,473 @@ Returns value of 'email_enabled' setting.
 
 ---
 
+## Controller Classes
+
+This section documents the controller classes that handle HTTP requests and coordinate between views and models.
+
+---
+
+### 12. UserController <<Controller>>
+
+**Technical Description:**  
+Handles HTTP requests for user management operations. Manages CRUD operations and user-specific actions like status toggling and password resets.
+
+**Extends:** `App\Http\Controllers\Controller`  
+**Authorization:** Directors and System Admins only
+
+#### Methods
+
+```php
++ index(Request $request): View
+```
+Display paginated list of users with filtering and search capabilities.
+
+```php
++ create(): View
+```
+Show form for creating new user account.
+
+```php
++ store(UserRequest $request): RedirectResponse
+```
+Validate and create new user. Generates temporary password and optionally sends welcome email.
+
+```php
++ show(User $user): View
+```
+Display user details including booking history and activity logs.
+
+```php
++ edit(User $user): View
+```
+Show form for editing user account.
+
+```php
++ update(UserRequest $request, User $user): RedirectResponse
+```
+Validate and update user details.
+
+```php
++ destroy(User $user): RedirectResponse
+```
+Soft delete user account.
+
+```php
++ toggleStatus(User $user): RedirectResponse
+```
+Toggle user between active and inactive status.
+
+```php
++ resetPassword(User $user): RedirectResponse
+```
+Reset user password and set `must_change_password` flag.
+
+---
+
+### 13. RoomController <<Controller>>
+
+**Technical Description:**  
+Handles HTTP requests for meeting room management including CRUD operations, availability checking, and status management.
+
+**Extends:** `App\Http\Controllers\Controller`  
+**Authorization:** Administrators and Directors
+
+#### Methods
+
+```php
++ index(Request $request): View
+```
+Display paginated list of rooms with filtering by status, capacity, and amenities.
+
+```php
++ create(): View
+```
+Show form for creating new room.
+
+```php
++ store(RoomRequest $request): RedirectResponse
+```
+Validate and create new room with amenities and images.
+
+```php
++ show(Room $room): View
+```
+Display room details including amenities, images, and booking calendar.
+
+```php
++ edit(Room $room): View
+```
+Show form for editing room.
+
+```php
++ update(RoomRequest $request, Room $room): RedirectResponse
+```
+Validate and update room details, sync amenities.
+
+```php
++ destroy(Room $room): RedirectResponse
+```
+Soft delete room (only if no future bookings exist).
+
+```php
++ toggleStatus(Room $room): RedirectResponse
+```
+Cycle room status between active, inactive, and under_maintenance.
+
+```php
++ checkAvailability(Request $request): JsonResponse
+```
+AJAX endpoint to check room availability for given date/time.
+
+---
+
+### 14. BookingController <<Controller>>
+
+**Technical Description:**  
+Handles HTTP requests for booking management. Core controller for the MRBS system managing the booking lifecycle.
+
+**Extends:** `App\Http\Controllers\Controller`  
+**Authorization:** All authenticated users (with role-based restrictions)
+
+#### Methods
+
+```php
++ index(Request $request): View
+```
+Display paginated list of all bookings (admin view) with filtering.
+
+```php
++ create(): View
+```
+Show booking form with room selection and availability calendar.
+
+```php
++ store(BookingRequest $request): RedirectResponse
+```
+Validate and create new booking. Checks conflicts and generates reference number.
+
+```php
++ show(Booking $booking): View
+```
+Display booking details.
+
+```php
++ edit(Booking $booking): View
+```
+Show form for editing booking (if editable).
+
+```php
++ update(BookingRequest $request, Booking $booking): RedirectResponse
+```
+Validate and update booking. Re-checks availability for time changes.
+
+```php
++ destroy(Booking $booking): RedirectResponse
+```
+Soft delete booking (admin only).
+
+```php
++ cancel(CancelBookingRequest $request, Booking $booking): RedirectResponse
+```
+Cancel booking with required reason. Updates status and records cancellation metadata.
+
+```php
++ myBookings(Request $request): View
+```
+Display current user's bookings with upcoming/past filters.
+
+```php
++ calendar(Request $request): View
+```
+Display calendar view of bookings with room filtering.
+
+---
+
+### 15. AmenityController <<Controller>>
+
+**Technical Description:**  
+Handles HTTP requests for amenity management. Simple CRUD controller for room amenities.
+
+**Extends:** `App\Http\Controllers\Controller`  
+**Authorization:** Administrators and Directors
+
+#### Methods
+
+```php
++ index(Request $request): View
+```
+Display paginated list of amenities.
+
+```php
++ create(): View
+```
+Show form for creating new amenity.
+
+```php
++ store(AmenityRequest $request): RedirectResponse
+```
+Validate and create new amenity.
+
+```php
++ show(Amenity $amenity): View
+```
+Display amenity details with list of rooms using it.
+
+```php
++ edit(Amenity $amenity): View
+```
+Show form for editing amenity.
+
+```php
++ update(AmenityRequest $request, Amenity $amenity): RedirectResponse
+```
+Validate and update amenity.
+
+```php
++ destroy(Amenity $amenity): RedirectResponse
+```
+Soft delete amenity.
+
+```php
++ toggleStatus(Amenity $amenity): RedirectResponse
+```
+Toggle amenity between active and inactive status.
+
+---
+
+### 16. BookingSeriesController <<Controller>>
+
+**Technical Description:**  
+Handles HTTP requests for recurring booking series management. Creates and manages series that generate multiple booking instances.
+
+**Extends:** `App\Http\Controllers\Controller`  
+**Authorization:** All authenticated users
+
+#### Methods
+
+```php
++ index(Request $request): View
+```
+Display user's recurring booking series.
+
+```php
++ create(): View
+```
+Show form for creating recurring booking series.
+
+```php
++ store(BookingSeriesRequest $request): RedirectResponse
+```
+Validate recurrence pattern and generate booking instances for the series.
+
+```php
++ show(BookingSeries $series): View
+```
+Display series details with all generated bookings.
+
+```php
++ destroy(BookingSeries $series): RedirectResponse
+```
+Soft delete series (individual bookings remain).
+
+```php
++ cancelSeries(BookingSeries $series): RedirectResponse
+```
+Cancel all future bookings in the series.
+
+---
+
+### 17. AuditLogController <<Controller>>
+
+**Technical Description:**  
+Read-only controller for viewing system audit logs. Provides compliance and security monitoring capabilities.
+
+**Extends:** `App\Http\Controllers\Controller`  
+**Authorization:** Directors and System Admins only
+
+#### Methods
+
+```php
++ index(Request $request): View
+```
+Display paginated audit logs with filtering by user, event type, date range.
+
+```php
++ show(AuditLog $auditLog): View
+```
+Display detailed audit log entry with old/new value comparison.
+
+```php
++ export(Request $request): BinaryFileResponse
+```
+Export filtered audit logs to CSV for compliance reporting.
+
+---
+
+### 18. NotificationLogController <<Controller>>
+
+**Technical Description:**  
+Read-only controller for viewing email notification logs. Helps troubleshoot delivery issues.
+
+**Extends:** `App\Http\Controllers\Controller`  
+**Authorization:** System Admins only
+
+#### Methods
+
+```php
++ index(Request $request): View
+```
+Display paginated notification logs with filtering by status and type.
+
+```php
++ show(NotificationLog $log): View
+```
+Display notification details including body content and error messages.
+
+---
+
+### 19. SystemSettingController <<Controller>>
+
+**Technical Description:**  
+Handles system configuration management. Provides interface for modifying system-wide settings.
+
+**Extends:** `App\Http\Controllers\Controller`  
+**Authorization:** System Admins only
+
+#### Methods
+
+```php
++ index(): View
+```
+Display all system settings categorized by type.
+
+```php
++ update(SystemSettingRequest $request): RedirectResponse
+```
+Validate and update system settings.
+
+```php
++ email(): View
+```
+Display email configuration settings.
+
+```php
++ updateEmail(Request $request): RedirectResponse
+```
+Update email notification settings.
+
+---
+
+### 20. RoomMaintenanceController <<Controller>>
+
+**Technical Description:**  
+Handles maintenance schedule management for rooms. Blocks room availability during maintenance periods.
+
+**Extends:** `App\Http\Controllers\Controller`  
+**Authorization:** Administrators and Directors
+
+#### Methods
+
+```php
++ index(Request $request): View
+```
+Display paginated maintenance schedules with room filtering.
+
+```php
++ create(): View
+```
+Show form for scheduling new maintenance.
+
+```php
++ store(MaintenanceRequest $request): RedirectResponse
+```
+Validate and create maintenance schedule. Checks for booking conflicts.
+
+```php
++ show(RoomMaintenanceSchedule $schedule): View
+```
+Display maintenance details.
+
+```php
++ edit(RoomMaintenanceSchedule $schedule): View
+```
+Show form for editing maintenance schedule.
+
+```php
++ update(MaintenanceRequest $request, RoomMaintenanceSchedule $schedule): RedirectResponse
+```
+Validate and update maintenance schedule.
+
+```php
++ destroy(RoomMaintenanceSchedule $schedule): RedirectResponse
+```
+Delete maintenance schedule.
+
+---
+
+### 21. AuthController <<Controller>>
+
+**Technical Description:**  
+Handles user authentication including login, logout, and mandatory password change for new users.
+
+**Extends:** `App\Http\Controllers\Controller`  
+**Authorization:** Public (login) / Authenticated (others)
+
+#### Methods
+
+```php
++ showLoginForm(): View
+```
+Display login page.
+
+```php
++ login(LoginRequest $request): RedirectResponse
+```
+Authenticate user credentials. Updates `last_login_at` timestamp. Redirects to password change if `must_change_password` is true.
+
+```php
++ logout(Request $request): RedirectResponse
+```
+Log out user and invalidate session.
+
+```php
++ showChangePasswordForm(): View
+```
+Display password change form.
+
+```php
++ changePassword(ChangePasswordRequest $request): RedirectResponse
+```
+Validate and update password. Clears `must_change_password` flag.
+
+---
+
+### 22. DashboardController <<Controller>>
+
+**Technical Description:**  
+Handles dashboard display with role-specific views and statistics aggregation.
+
+**Extends:** `App\Http\Controllers\Controller`  
+**Authorization:** All authenticated users
+
+#### Methods
+
+```php
++ index(): View
+```
+Display role-appropriate dashboard with key metrics:
+- Regular users: Personal upcoming bookings
+- Administrators: Room utilization stats
+- Directors: User activity and system overview
+- System Admin: System health and configuration status
+
+```php
++ statistics(): JsonResponse
+```
+AJAX endpoint returning dashboard statistics for charts and widgets.
+
+---
+
 ## Relationships Summary
 
 ### One-to-Many Relationships
