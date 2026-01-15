@@ -35,6 +35,9 @@ A **Class Diagram** is a UML diagram that models the **technical structure** of 
 - `-` **Private** - Accessible only within the class
 - `#` **Protected** - Accessible within class and subclasses
 
+### Stereotypes
+- `<<Controller>>` - HTTP request handler classes
+
 ### Data Types
 - **Primitive**: `string`, `int`, `bool`, `float`, `array`
 - **Laravel**: `HasMany`, `BelongsTo`, `BelongsToMany`, `Builder`
@@ -54,6 +57,15 @@ A **Class Diagram** is a UML diagram that models the **technical structure** of 
 @startuml MRBS_Class_Diagram
 
 title MRBS Class Diagram - Technical Implementation
+
+' ========== LEGEND ==========
+legend left
+  **Visibility Modifiers**
+  ----
+  - : private
+  + : public
+  # : protected
+endlegend
 
 ' ========== USER CLASS ==========
 
@@ -386,6 +398,127 @@ class SystemSetting {
     + {static} isEmailEnabled(): bool
 }
 
+' ========== CONTROLLER CLASSES ==========
+
+class UserController <<Controller>> {
+    ' Methods - CRUD Operations
+    + index(Request $request): View
+    + create(): View
+    + store(UserRequest $request): RedirectResponse
+    + show(User $user): View
+    + edit(User $user): View
+    + update(UserRequest $request, User $user): RedirectResponse
+    + destroy(User $user): RedirectResponse
+    
+    ' Methods - Additional Actions
+    + toggleStatus(User $user): RedirectResponse
+    + resetPassword(User $user): RedirectResponse
+}
+
+class RoomController <<Controller>> {
+    ' Methods - CRUD Operations
+    + index(Request $request): View
+    + create(): View
+    + store(RoomRequest $request): RedirectResponse
+    + show(Room $room): View
+    + edit(Room $room): View
+    + update(RoomRequest $request, Room $room): RedirectResponse
+    + destroy(Room $room): RedirectResponse
+    
+    ' Methods - Additional Actions
+    + toggleStatus(Room $room): RedirectResponse
+    + checkAvailability(Request $request): JsonResponse
+}
+
+class BookingController <<Controller>> {
+    ' Methods - CRUD Operations
+    + index(Request $request): View
+    + create(): View
+    + store(BookingRequest $request): RedirectResponse
+    + show(Booking $booking): View
+    + edit(Booking $booking): View
+    + update(BookingRequest $request, Booking $booking): RedirectResponse
+    + destroy(Booking $booking): RedirectResponse
+    
+    ' Methods - Additional Actions
+    + cancel(CancelBookingRequest $request, Booking $booking): RedirectResponse
+    + myBookings(Request $request): View
+    + calendar(Request $request): View
+}
+
+class AmenityController <<Controller>> {
+    ' Methods - CRUD Operations
+    + index(Request $request): View
+    + create(): View
+    + store(AmenityRequest $request): RedirectResponse
+    + show(Amenity $amenity): View
+    + edit(Amenity $amenity): View
+    + update(AmenityRequest $request, Amenity $amenity): RedirectResponse
+    + destroy(Amenity $amenity): RedirectResponse
+    
+    ' Methods - Additional Actions
+    + toggleStatus(Amenity $amenity): RedirectResponse
+}
+
+class BookingSeriesController <<Controller>> {
+    ' Methods - CRUD Operations
+    + index(Request $request): View
+    + create(): View
+    + store(BookingSeriesRequest $request): RedirectResponse
+    + show(BookingSeries $series): View
+    + destroy(BookingSeries $series): RedirectResponse
+    
+    ' Methods - Additional Actions
+    + cancelSeries(BookingSeries $series): RedirectResponse
+}
+
+class AuditLogController <<Controller>> {
+    ' Methods - Read Only
+    + index(Request $request): View
+    + show(AuditLog $auditLog): View
+    + export(Request $request): BinaryFileResponse
+}
+
+class NotificationLogController <<Controller>> {
+    ' Methods - Read Only
+    + index(Request $request): View
+    + show(NotificationLog $log): View
+}
+
+class SystemSettingController <<Controller>> {
+    ' Methods - Settings Management
+    + index(): View
+    + update(SystemSettingRequest $request): RedirectResponse
+    + email(): View
+    + updateEmail(Request $request): RedirectResponse
+}
+
+class RoomMaintenanceController <<Controller>> {
+    ' Methods - CRUD Operations
+    + index(Request $request): View
+    + create(): View
+    + store(MaintenanceRequest $request): RedirectResponse
+    + show(RoomMaintenanceSchedule $schedule): View
+    + edit(RoomMaintenanceSchedule $schedule): View
+    + update(MaintenanceRequest $request, RoomMaintenanceSchedule $schedule): RedirectResponse
+    + destroy(RoomMaintenanceSchedule $schedule): RedirectResponse
+}
+
+class AuthController <<Controller>> {
+    ' Methods - Authentication
+    + showLoginForm(): View
+    + login(LoginRequest $request): RedirectResponse
+    + logout(Request $request): RedirectResponse
+    + showChangePasswordForm(): View
+    + changePassword(ChangePasswordRequest $request): RedirectResponse
+}
+
+class DashboardController <<Controller>> {
+    ' Methods - Dashboard
+    + index(): View
+    + statistics(): JsonResponse
+}
+
 ' ========== RELATIONSHIPS ==========
 
 User "1" -- "0..*" Booking
@@ -405,6 +538,21 @@ BookingSeries "0..1" -- "1..*" Booking
 Booking "*" -- "1" User
 Booking "*" -- "1" Room
 Booking "*" -- "0..1" BookingSeries
+
+' ========== CONTROLLER DEPENDENCIES ==========
+
+UserController ..> User : manages
+RoomController ..> Room : manages
+BookingController ..> Booking : manages
+AmenityController ..> Amenity : manages
+BookingSeriesController ..> BookingSeries : manages
+AuditLogController ..> AuditLog : reads
+NotificationLogController ..> NotificationLog : reads
+SystemSettingController ..> SystemSetting : manages
+RoomMaintenanceController ..> RoomMaintenanceSchedule : manages
+AuthController ..> User : authenticates
+DashboardController ..> Booking : aggregates
+DashboardController ..> Room : aggregates
 
 @enduml
 ```
