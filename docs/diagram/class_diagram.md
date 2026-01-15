@@ -58,14 +58,28 @@ A **Class Diagram** is a UML diagram that models the **technical structure** of 
 
 title MRBS Class Diagram - Technical Implementation
 
-' ========== LEGEND ==========
-legend left
+' ========== LEGEND (Using Class to Show Actual Symbols) ==========
+
+class "LEGEND" as Legend <<Legend>> {
+    - private_attribute: type
+    + public_attribute: type
+    # protected_attribute: type
+    __
+    - privateMethod(): void
+    + publicMethod(): void
+    # protectedMethod(): void
+}
+
+note right of Legend
   **Visibility Modifiers**
-  ----
-  - : private
-  + : public
-  # : protected
-endlegend
+  🔴 (red square) = private (-)
+  🟢 (green circle) = public (+)
+  🟢 (filled green) = protected (#)
+  
+  **Stereotypes**
+  <<Controller>> = HTTP request handler
+  <<Legend>> = This legend box
+end note
 
 ' ========== USER CLASS ==========
 
