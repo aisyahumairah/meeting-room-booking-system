@@ -131,11 +131,24 @@
                 {{-- Audit History (Admin only) --}}
                 @if (auth()->user()->canManageBookings())
                     <div class="card mt-4">
-                        <div class="card-header">
-                            <h6 class="mb-0"><i class="bx bx-history me-1"></i> Audit History</h6>
+                        <div class="card-header border-bottom">
+                            <h6 class="mb-0"><i class="bx bx-history me-2"></i>Audit History</h6>
                         </div>
                         @php
-                            $auditLogs = $booking->auditLogs()->orderBy('created_at', 'desc')->limit(20)->get();
+                            $auditLogs = \App\Models\AuditLog::where(function ($q) use ($booking) {
+                                $q->where('target_type', 'booking')->where('target_id', $booking->id);
+                                if ($booking->series_id) {
+                                    $q->orWhere(function ($sq) use ($booking) {
+                                        $sq->where('target_type', 'booking_series')->where(
+                                            'target_id',
+                                            $booking->series_id,
+                                        );
+                                    });
+                                }
+                            })
+                                ->orderBy('created_at', 'desc')
+                                ->limit(20)
+                                ->get();
                         @endphp
 
                         @if ($auditLogs->isEmpty())
@@ -145,8 +158,8 @@
                             </div>
                         @else
                             <div class="table-responsive">
-                                <table class="table table-sm mb-0">
-                                    <thead>
+                                <table class="table table-sm table-hover mb-0">
+                                    <thead class="table-light">
                                         <tr>
                                             <th>Date/Time</th>
                                             <th>Action</th>
@@ -157,20 +170,35 @@
                                     <tbody>
                                         @foreach ($auditLogs as $log)
                                             <tr>
-                                                <td class="small">{{ $log->created_at->format('M d, Y H:i') }}</td>
-                                                <td>
+                                                <td class="small py-2 text-nowrap">
+                                                    {{ $log->created_at->format('M d, Y H:i') }}</td>
+                                                <td class="py-2">
+                                                    @php
+                                                        $isCancelled = \Illuminate\Support\Str::contains(
+                                                            $log->event_type,
+                                                            'cancelled',
+                                                        );
+                                                        $isCreated = \Illuminate\Support\Str::contains(
+                                                            $log->event_type,
+                                                            'created',
+                                                        );
+                                                    @endphp
                                                     <span
-                                                        class="badge bg-{{ $log->event_type === 'booking_cancelled' ? 'danger' : 'primary' }}">
+                                                        class="badge bg-{{ $isCancelled ? 'danger' : ($isCreated ? 'success' : 'primary') }}">
                                                         {{ str_replace('_', ' ', ucfirst($log->event_type)) }}
                                                     </span>
                                                 </td>
-                                                <td class="small">{{ $log->actor_name ?? 'System' }}</td>
-                                                <td class="small">
+                                                <td class="small py-2">{{ $log->actor_name ?? 'System' }}</td>
+                                                <td class="small py-2">
                                                     @if (is_array($log->details))
-                                                        @foreach (array_slice($log->details, 0, 3) as $key => $value)
+                                                        @foreach (array_slice($log->details, 0, 5) as $key => $value)
                                                             @if (!is_array($value))
-                                                                <span class="text-muted">{{ $key }}:</span>
-                                                                {{ $value }}<br>
+                                                                <div class="mb-1">
+                                                                    <span
+                                                                        class="text-muted small">{{ str_replace('_', ' ', ucfirst($key)) }}:</span>
+                                                                    <span
+                                                                        class="fw-medium">{{ is_bool($value) ? ($value ? 'Yes' : 'No') : $value }}</span>
+                                                                </div>
                                                             @endif
                                                         @endforeach
                                                     @endif

@@ -136,7 +136,20 @@
                         <h6 class="mb-0"><i class="bx bx-history me-2"></i>Audit History</h6>
                     </div>
                     @php
-                        $auditLogs = $booking->auditLogs()->orderBy('created_at', 'desc')->limit(20)->get();
+                        $auditLogs = \App\Models\AuditLog::where(function ($q) use ($booking) {
+                            $q->where('target_type', 'booking')->where('target_id', $booking->id);
+                            if ($booking->series_id) {
+                                $q->orWhere(function ($sq) use ($booking) {
+                                    $sq->where('target_type', 'booking_series')->where(
+                                        'target_id',
+                                        $booking->series_id,
+                                    );
+                                });
+                            }
+                        })
+                            ->orderBy('created_at', 'desc')
+                            ->limit(20)
+                            ->get();
                     @endphp
 
                     @if ($auditLogs->isEmpty())
@@ -158,15 +171,26 @@
                                 <tbody>
                                     @foreach ($auditLogs as $log)
                                         <tr>
-                                            <td class="small py-2">{{ $log->created_at->format('M d, Y H:i') }}</td>
+                                            <td class="small py-2 text-nowrap">{{ $log->created_at->format('M d, Y H:i') }}
+                                            </td>
                                             <td class="py-2">
+                                                @php
+                                                    $isCancelled = \Illuminate\Support\Str::contains(
+                                                        $log->event_type,
+                                                        'cancelled',
+                                                    );
+                                                    $isCreated = \Illuminate\Support\Str::contains(
+                                                        $log->event_type,
+                                                        'created',
+                                                    );
+                                                @endphp
                                                 <span
-                                                    class="badge bg-{{ str_contains($log->event_type, 'cancelled') ? 'danger' : (str_contains($log->event_type, 'created') ? 'success' : 'primary') }}">
+                                                    class="badge bg-{{ $isCancelled ? 'danger' : ($isCreated ? 'success' : 'primary') }}">
                                                     {{ str_replace('_', ' ', ucfirst($log->event_type)) }}
                                                 </span>
                                             </td>
                                             <td class="small py-2">
-                                                <i class="bx bx-user-circle me-1"></i>{{ $log->actor_name ?? 'System' }}
+                                                {{ $log->actor_name ?? 'System' }}
                                             </td>
                                             <td class="small py-2">
                                                 @if (is_array($log->details))
@@ -174,8 +198,9 @@
                                                         @if (!is_array($value))
                                                             <div class="mb-1">
                                                                 <span
-                                                                    class="text-muted fw-medium small">{{ str_replace('_', ' ', ucfirst($key)) }}:</span>
-                                                                {{ is_bool($value) ? ($value ? 'Yes' : 'No') : $value }}
+                                                                    class="text-muted small">{{ str_replace('_', ' ', ucfirst($key)) }}:</span>
+                                                                <span
+                                                                    class="fw-medium">{{ is_bool($value) ? ($value ? 'Yes' : 'No') : $value }}</span>
                                                             </div>
                                                         @endif
                                                     @endforeach
