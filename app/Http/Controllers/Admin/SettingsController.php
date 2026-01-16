@@ -61,6 +61,15 @@ class SettingsController extends Controller
 
             // Maintenance
             'maintenance_mode' => 'boolean',
+
+            // Email Server Settings
+            'mail_mailer' => 'nullable|string',
+            'mail_host' => 'nullable|string',
+            'mail_port' => 'nullable|integer',
+            'mail_username' => 'nullable|string',
+            'mail_password' => 'nullable|string',
+            'mail_encryption' => 'nullable|string',
+            'mail_from_address' => 'nullable|email',
         ]);
 
         $changes = [];
@@ -94,8 +103,43 @@ class SettingsController extends Controller
 
             if ($oldValue !== $newValue) {
                 $changes[$key] = ['from' => $oldValue, 'to' => $newValue];
+                // For email_enabled, we default to 'true' if not present in DB, so be careful?
+                // Actually SystemSetting::get defaults to null, but in controller we might want default true
+                // We'll stick to string 'true'/'false' storage as established.
                 SystemSetting::set($key, $newValue ? 'true' : 'false', 'bool');
             }
+        }
+
+        // Process Email Server Settings
+        $emailSettings = [
+            'mail_mailer',
+            'mail_host',
+            'mail_port',
+            'mail_username',
+            'mail_encryption',
+            'mail_from_address'
+        ];
+
+        foreach ($emailSettings as $key) {
+            if ($request->has($key)) {
+                $oldValue = SystemSetting::get($key);
+                $newValue = $request->input($key);
+
+                // Allow saving empty values to clear them, or maybe we want to keep them? 
+                // Using input() returns null if not present, but we checked has().
+                // If the user clears the input, we expect it to be null or empty string.
+
+                if ($oldValue !== $newValue) {
+                    $changes[$key] = ['from' => $oldValue, 'to' => $newValue];
+                    SystemSetting::set($key, $newValue, 'string');
+                }
+            }
+        }
+
+        // Password defaults to empty in form if unchanged, so only update if filled
+        if ($request->filled('mail_password')) {
+            SystemSetting::set('mail_password', $request->input('mail_password'), 'string');
+            $changes['mail_password'] = ['from' => '*****', 'to' => '*****'];
         }
 
         // Log changes

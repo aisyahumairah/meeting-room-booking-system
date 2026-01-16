@@ -26,6 +26,8 @@ class User extends Authenticatable
         'password',
         'must_change_password',
         'last_login_at',
+        'failed_login_attempts',
+        'locked_until',
         'department',
         'phone',
         'role',
@@ -53,6 +55,7 @@ class User extends Authenticatable
             'password' => 'hashed',
             'must_change_password' => 'boolean',
             'last_login_at' => 'datetime',
+            'locked_until' => 'datetime',
         ];
     }
 
@@ -165,6 +168,73 @@ class User extends Authenticatable
     }
 
     // =========================================================================
+    // LOGIN TRACKING & LOCKOUT METHODS
+    // =========================================================================
+
+    /**
+     * Check if the account is currently locked.
+     * Account is locked if locked_until is set and hasn't expired yet.
+     */
+    public function isLocked(): bool
+    {
+        if (!$this->locked_until) {
+            return false;
+        }
+
+        // Check if lockout has expired
+        if (now()->greaterThan($this->locked_until)) {
+            // Auto-unlock: reset the lockout
+            $this->resetLoginAttempts();
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * Increment the failed login attempt counter.
+     */
+    public function incrementLoginAttempts(): void
+    {
+        $this->increment('failed_login_attempts');
+    }
+
+    /**
+     * Reset login attempts and unlock the account.
+     */
+    public function resetLoginAttempts(): void
+    {
+        $this->update([
+            'failed_login_attempts' => 0,
+            'locked_until' => null,
+        ]);
+    }
+
+    /**
+     * Lock the account for the configured lockout duration.
+     */
+    public function lockAccount(): void
+    {
+        $lockoutDuration = SystemSetting::get('lockout_duration', 15);
+        $this->update([
+            'locked_until' => now()->addMinutes($lockoutDuration),
+        ]);
+    }
+
+    /**
+     * Get remaining lockout time in minutes.
+     */
+    public function getRemainingLockoutMinutes(): int
+    {
+        if (!$this->locked_until) {
+            return 0;
+        }
+
+        $remaining = now()->diffInMinutes($this->locked_until, false);
+        return max(0, $remaining);
+    }
+
+    // =========================================================================
     // RELATIONSHIPS
     // =========================================================================
 
@@ -182,6 +252,20 @@ class User extends Authenticatable
     public function notificationPreferences(): HasOne
     {
         return $this->hasOne(UserNotificationPreference::class);
+    }
+
+    /**
+     * Send the password reset notification.
+     *
+     * @param  string  $token
+     * @return void
+     */
+    public function sendPasswordResetNotification($token)
+    {
+        // Check system settings specifically for password reset
+        if (\App\Models\SystemSetting::shouldSendNotification('notify_password_reset')) {
+            $this->notify(new \Illuminate\Auth\Notifications\ResetPassword($token));
+        }
     }
 
     /**

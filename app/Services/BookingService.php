@@ -9,6 +9,7 @@ use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use App\Services\NotificationService;
 
 class BookingService
 {
@@ -77,8 +78,8 @@ class BookingService
                 'time' => $data['start_time'] . '-' . $data['end_time'],
             ]);
 
-            // TODO: Queue email notification (Phase 4)
-            // Note: Don't send email inside transaction
+            // Queue email notification
+            NotificationService::sendBookingConfirmedEmail($booking);
 
             return $booking;
         }, 5); // 5 retries on deadlock
@@ -286,7 +287,8 @@ class BookingService
                 'occurrences' => count($occurrenceDates),
             ]);
 
-            // TODO: Send single confirmation email for series (Phase 4)
+            // Send single confirmation email for series
+            NotificationService::sendBookingConfirmedEmail($series->bookings->first());
 
             return $series;
         });
@@ -434,8 +436,8 @@ class BookingService
                 'reason' => $reason,
             ]);
 
-            // TODO: Send cancellation email (Phase 4)
-            // If admin cancelled someone else's booking, notify the owner
+            // Send cancellation email
+            NotificationService::sendBookingCancelledEmail($booking, $reason);
 
             return $booking->fresh();
         });
@@ -464,7 +466,11 @@ class BookingService
                 'bookings_cancelled' => $count,
             ]);
 
-            // TODO: Send single cancellation email for series (Phase 4)
+            // Send single cancellation email for series
+            $firstBooking = $series->bookings()->withTrashed()->first();
+            if ($firstBooking) {
+                NotificationService::sendBookingCancelledEmail($firstBooking, $reason);
+            }
 
             return $count;
         });
@@ -514,7 +520,11 @@ class BookingService
                 'total_in_series' => $series->bookings()->count(),
             ]);
 
-            // TODO: Send cancellation email for remaining bookings (Phase 4)
+            // Send cancellation email for remaining bookings
+            $firstBooking = $series->bookings()->withTrashed()->first();
+            if ($firstBooking) {
+                NotificationService::sendBookingCancelledEmail($firstBooking, $reason);
+            }
 
             return $count;
         });
@@ -558,7 +568,8 @@ class BookingService
                 'reason' => $reason,
             ]);
 
-            // TODO: Send cancellation email for single occurrence (Phase 4)
+            // Send cancellation email for single occurrence
+            NotificationService::sendBookingCancelledEmail($booking, $reason);
 
             return $booking->fresh();
         });

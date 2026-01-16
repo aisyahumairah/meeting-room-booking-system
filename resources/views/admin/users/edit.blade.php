@@ -101,7 +101,7 @@
 
                             <!-- Account info (read-only) -->
                             <div class="row mb-3">
-                                <div class="col-md-4">
+                                <div class="col-md-3">
                                     <label class="form-label">Status</label>
                                     <div>
                                         @if ($user->status === 'active')
@@ -111,12 +111,39 @@
                                         @endif
                                     </div>
                                 </div>
-                                <div class="col-md-4">
+                                <div class="col-md-3">
+                                    <label class="form-label">Account Lockout</label>
+                                    <div>
+                                        @if ($user->isLocked())
+                                            <span class="badge bg-danger">Locked</span>
+                                            <small class="d-block text-muted mt-1">
+                                                Until {{ $user->locked_until->format('M d, Y H:i') }}
+                                            </small>
+                                            <form action="{{ route('admin.users.unlock', $user) }}" method="POST"
+                                                class="mt-2">
+                                                @csrf
+                                                @method('PUT')
+                                                <button type="submit" class="btn btn-warning btn-sm"
+                                                    onclick="return confirm('Unlock this account?')">
+                                                    <i class='bx bx-lock-open-alt'></i> Unlock Account
+                                                </button>
+                                            </form>
+                                        @else
+                                            <span class="badge bg-success">Not Locked</span>
+                                            @if ($user->failed_login_attempts > 0)
+                                                <small class="d-block text-muted mt-1">
+                                                    {{ $user->failed_login_attempts }} failed attempt(s)
+                                                </small>
+                                            @endif
+                                        @endif
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
                                     <label class="form-label">Last Login</label>
                                     <div class="text-muted">{{ $user->last_login_at?->format('M d, Y H:i') ?? 'Never' }}
                                     </div>
                                 </div>
-                                <div class="col-md-4">
+                                <div class="col-md-3">
                                     <label class="form-label">Account Created</label>
                                     <div class="text-muted">{{ $user->created_at->format('M d, Y') }}</div>
                                 </div>

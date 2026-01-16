@@ -11,6 +11,7 @@ use App\Models\RoomMaintenanceSchedule;
 use App\Services\AuditService;
 use App\Services\RoomImageService;
 use Illuminate\Http\Request;
+use App\Models\Booking;
 
 class RoomController extends Controller
 {
@@ -261,6 +262,40 @@ class RoomController extends Controller
                 $room->id,
                 $details
             );
+        }
+
+        // Notify affected users
+        $affectedBookings = [];
+        $today = now()->format('Y-m-d');
+
+        if ($newStatus === 'inactive') {
+            // All future confirmed bookings
+            $affectedBookings = Booking::where('room_id', $room->id)
+                ->where('booking_date', '>=', $today)
+                ->where('status', 'confirmed')
+                ->get()
+                ->toArray();
+        } elseif ($newStatus === 'under_maintenance' && isset($validated['maintenance_start'], $validated['maintenance_end'])) {
+            $start = $validated['maintenance_start'];
+            $end = $validated['maintenance_end'];
+
+            // Find overlapping bookings
+            $affectedBookings = Booking::where('room_id', $room->id)
+                ->where('booking_date', '>=', substr($start, 0, 10))
+                ->where('status', 'confirmed')
+                ->get()
+                ->filter(function ($booking) use ($start, $end) {
+                    $bookingStart = $booking->booking_date->format('Y-m-d') . ' ' . $booking->start_time;
+                    $bookingEnd = $booking->booking_date->format('Y-m-d') . ' ' . $booking->end_time;
+
+                    return $bookingStart < $end && $bookingEnd > $start;
+                })
+                ->values()
+                ->toArray();
+        }
+
+        if (!empty($affectedBookings)) {
+            \App\Services\NotificationService::sendRoomStatusChangedEmail($room, $oldStatus, $newStatus, $affectedBookings);
         }
 
         return back()->with('success', 'Room status updated successfully.');

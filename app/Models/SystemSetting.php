@@ -84,6 +84,18 @@ class SystemSetting extends Model
     }
 
     /**
+     * Check if a specific notification is enabled.
+     */
+    public static function shouldSendNotification(string $key): bool
+    {
+        if (!self::isEmailEnabled()) {
+            return false;
+        }
+
+        return self::get($key, true);
+    }
+
+    /**
      * Get session timeout in minutes.
      */
     public static function getSessionTimeout(): int

@@ -108,8 +108,8 @@ class UserController extends Controller
             ]
         );
 
-        // TODO: Send welcome email with credentials (Step 4.5)
-        // Mail::to($user->email)->queue(new WelcomeEmail($user, $tempPassword));
+        // Send welcome email
+        \App\Services\NotificationService::sendWelcomeEmail($user, $tempPassword);
 
         return redirect()
             ->route('admin.users.index')
@@ -209,6 +209,31 @@ class UserController extends Controller
     }
 
     /**
+     * Unlock a locked user account.
+     */
+    public function unlock(User $user)
+    {
+        // Check if user is actually locked
+        if (!$user->locked_until) {
+            return back()->with('info', "User {$user->name} is not locked.");
+        }
+
+        $user->resetLoginAttempts();
+
+        AuditService::log(
+            'user.account_unlocked',
+            'user',
+            $user->id,
+            [
+                'user_name' => $user->name,
+                'was_locked_until' => $user->getOriginal('locked_until'),
+            ]
+        );
+
+        return back()->with('success', "User {$user->name} has been unlocked.");
+    }
+
+    /**
      * Delete user (only if no bookings/activity).
      */
     public function destroy(User $user)
@@ -265,6 +290,9 @@ class UserController extends Controller
                 'password' => Hash::make($tempPassword),
                 'must_change_password' => true,
             ]);
+
+            // Reset login attempts and lockout
+            $user->resetLoginAttempts();
 
             AuditService::log(
                 AuditService::EVENT_USER_PASSWORD_RESET_BY_ADMIN,

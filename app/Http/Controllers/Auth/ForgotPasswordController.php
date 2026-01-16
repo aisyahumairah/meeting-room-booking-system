@@ -60,6 +60,11 @@ class ForgotPasswordController extends Controller
         // Build reset URL
         $resetUrl = route('password.reset', ['token' => $token, 'email' => $request->email]);
 
+        // Check if email notifications are enabled
+        if (!\App\Models\SystemSetting::isEmailEnabled() || !\App\Models\SystemSetting::get('notify_password_reset', true)) {
+            return back()->with('status', 'If your email exists in our system, you will receive a password reset link shortly.');
+        }
+
         // Send email
         try {
             Mail::send('emails.password-reset', ['resetUrl' => $resetUrl, 'user' => $user], function ($message) use ($user) {

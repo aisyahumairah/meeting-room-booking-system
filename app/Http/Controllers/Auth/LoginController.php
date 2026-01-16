@@ -30,9 +30,21 @@ class LoginController extends Controller
             'password' => ['required'],
         ]);
 
-        // Check if user exists and is active
+        // Check if user exists
         $user = User::where('email', $credentials['email'])->first();
 
+        // Check if account is locked
+        if ($user && $user->isLocked()) {
+            AuditService::logLogin(false, $credentials['email']);
+            $remainingMinutes = $user->getRemainingLockoutMinutes();
+            return back()
+                ->withInput($request->only('email'))
+                ->withErrors([
+                    'email' => "Your account has been locked due to too many failed login attempts. Please try again in {$remainingMinutes} minutes or contact an administrator.",
+                ]);
+        }
+
+        // Check if user is inactive
         if ($user && $user->status === 'inactive') {
             AuditService::logLogin(false, $credentials['email']);
             return back()
@@ -44,6 +56,9 @@ class LoginController extends Controller
 
         if (Auth::attempt($credentials, $request->boolean('remember'))) {
             $request->session()->regenerate();
+
+            // Reset failed login attempts on successful login
+            $user->resetLoginAttempts();
 
             // Update last login timestamp
             Auth::user()->update([
@@ -64,6 +79,31 @@ class LoginController extends Controller
 
         // Log failed login attempt
         AuditService::logLogin(false, $credentials['email']);
+
+        // Track failed login attempts if user exists
+        if ($user) {
+            $user->incrementLoginAttempts();
+
+            // Check if we need to lock the account
+            $limit = \App\Models\SystemSetting::get('login_attempt_limit', 5);
+            if ($user->failed_login_attempts >= $limit) {
+                $user->lockAccount();
+                $lockoutDuration = \App\Models\SystemSetting::get('lockout_duration', 15);
+
+                return back()
+                    ->withInput($request->only('email'))
+                    ->withErrors([
+                        'email' => "Your account has been locked due to too many failed login attempts. Please try again in {$lockoutDuration} minutes or contact an administrator.",
+                    ]);
+            }
+
+            $remainingAttempts = $limit - $user->failed_login_attempts;
+            return back()
+                ->withInput($request->only('email'))
+                ->withErrors([
+                    'email' => "Invalid email or password. You have {$remainingAttempts} attempt(s) remaining.",
+                ]);
+        }
 
         return back()
             ->withInput($request->only('email'))

@@ -176,6 +176,7 @@ Route::middleware(['auth', 'active', 'must.change.password', 'role:director,syst
         Route::put('users/{user}/deactivate', [AdminUserController::class, 'deactivate'])->name('users.deactivate');
         Route::put('users/{user}/activate', [AdminUserController::class, 'activate'])->name('users.activate');
         Route::post('users/{user}/reset-password', [AdminUserController::class, 'resetPassword'])->name('users.reset-password');
+        Route::put('users/{user}/unlock', [AdminUserController::class, 'unlock'])->name('users.unlock');
         Route::get('users/{user}/activity', [AdminUserController::class, 'activity'])->name('users.activity');
         Route::get('users/{user}/activity/export', [AdminUserController::class, 'exportActivity'])->name('users.activity.export');
 

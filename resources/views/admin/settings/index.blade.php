@@ -236,6 +236,80 @@
                         </div>
                     </div>
 
+                    <!-- Email Server Configuration -->
+                    <div class="card mb-4" id="emailServerSettings">
+                        <div class="card-header">
+                            <h6 class="mb-0">
+                                <i class='bx bx-server me-2'></i>Email Server Configuration
+                            </h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="mb-3">
+                                <label class="form-label">Mailer</label>
+                                <select name="mail_mailer" class="form-select email-server-setting">
+                                    <option value="smtp"
+                                        {{ ($settings['mail_mailer']->value ?? env('MAIL_MAILER')) === 'smtp' ? 'selected' : '' }}>
+                                        SMTP</option>
+                                    <option value="log"
+                                        {{ ($settings['mail_mailer']->value ?? env('MAIL_MAILER')) === 'log' ? 'selected' : '' }}>
+                                        Log (Debug)</option>
+                                    <option value="mailgun"
+                                        {{ ($settings['mail_mailer']->value ?? env('MAIL_MAILER')) === 'mailgun' ? 'selected' : '' }}>
+                                        Mailgun</option>
+                                </select>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-8 mb-3">
+                                    <label class="form-label">Mail Host</label>
+                                    <input type="text" name="mail_host" class="form-control email-server-setting"
+                                        value="{{ old('mail_host', $settings['mail_host']->value ?? env('MAIL_HOST')) }}">
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <label class="form-label">Port</label>
+                                    <input type="number" name="mail_port" class="form-control email-server-setting"
+                                        value="{{ old('mail_port', $settings['mail_port']->value ?? env('MAIL_PORT')) }}">
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Username</label>
+                                <input type="text" name="mail_username" class="form-control email-server-setting"
+                                    value="{{ old('mail_username', $settings['mail_username']->value ?? env('MAIL_USERNAME')) }}">
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Password</label>
+                                <div class="input-group">
+                                    <input type="password" name="mail_password" id="mail_password"
+                                        class="form-control email-server-setting"
+                                        placeholder="{{ !empty($settings['mail_password']->value) || !empty(env('MAIL_PASSWORD')) ? 'Active (Leave blank to keep)' : '' }}">
+                                    <span class="input-group-text" onclick="togglePasswordVisibility('mail_password')"
+                                        style="cursor: pointer;">
+                                        <i class="bx bx-hide" id="mail_password_icon"></i>
+                                    </span>
+                                </div>
+                                <div class="form-text">Leave blank to keep existing password</div>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Encryption</label>
+                                <select name="mail_encryption" class="form-select email-server-setting">
+                                    <option value="tls"
+                                        {{ ($settings['mail_encryption']->value ?? env('MAIL_ENCRYPTION')) === 'tls' ? 'selected' : '' }}>
+                                        TLS</option>
+                                    <option value="ssl"
+                                        {{ ($settings['mail_encryption']->value ?? env('MAIL_ENCRYPTION')) === 'ssl' ? 'selected' : '' }}>
+                                        SSL</option>
+                                    <option value=""
+                                        {{ ($settings['mail_encryption']->value ?? env('MAIL_ENCRYPTION')) === null ? 'selected' : '' }}>
+                                        None</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">From Address</label>
+                                <input type="email" name="mail_from_address" class="form-control email-server-setting"
+                                    value="{{ old('mail_from_address', $settings['mail_from_address']->value ?? env('MAIL_FROM_ADDRESS')) }}">
+                            </div>
+                        </div>
+                    </div>
+
                     <!-- Maintenance Mode -->
                     <div class="card mb-4">
                         <div class="card-header">
@@ -314,6 +388,37 @@
                         toggle.parentElement.classList.remove('text-muted');
                     }
                 });
+
+                const serverSettings = document.querySelectorAll('.email-server-setting');
+                serverSettings.forEach(field => {
+                    field.disabled = !enabled;
+                });
+
+                const serverCard = document.getElementById('emailServerSettings');
+                if (serverCard) {
+                    if (!enabled) {
+                        serverCard.style.opacity = '0.7';
+                        serverCard.style.pointerEvents = 'none';
+                    } else {
+                        serverCard.style.opacity = '1';
+                        serverCard.style.pointerEvents = 'auto';
+                    }
+                }
+            }
+
+            function togglePasswordVisibility(inputId) {
+                const input = document.getElementById(inputId);
+                const icon = document.getElementById(inputId + '_icon');
+
+                if (input.type === 'password') {
+                    input.type = 'text';
+                    icon.classList.remove('bx-hide');
+                    icon.classList.add('bx-show');
+                } else {
+                    input.type = 'password';
+                    icon.classList.remove('bx-show');
+                    icon.classList.add('bx-hide');
+                }
             }
 
             function confirmMaintenanceToggle(checkbox) {

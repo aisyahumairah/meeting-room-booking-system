@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Models\SystemSetting;
 use App\Models\User;
 use App\Services\AuditService;
 use Illuminate\Http\RedirectResponse;
@@ -30,8 +31,9 @@ class ResetPasswordController extends Controller
                 ->withErrors(['email' => 'Invalid password reset link.']);
         }
 
-        // Check if token is expired (30 minutes)
-        if (now()->diffInMinutes($record->created_at) > 30) {
+        // Check if token is expired based on system setting
+        $expiry = SystemSetting::get('password_reset_expiry', 30);
+        if (now()->diffInMinutes($record->created_at) > $expiry) {
             DB::table('password_reset_tokens')->where('email', $email)->delete();
             return redirect()->route('password.request')
                 ->withErrors(['email' => 'This password reset link has expired. Please request a new one.']);
@@ -78,8 +80,9 @@ class ResetPasswordController extends Controller
             return back()->withErrors(['email' => 'Invalid password reset request.']);
         }
 
-        // Check if token is expired (30 minutes)
-        if (now()->diffInMinutes($record->created_at) > 30) {
+        // Check if token is expired based on system setting
+        $expiry = SystemSetting::get('password_reset_expiry', 30);
+        if (now()->diffInMinutes($record->created_at) > $expiry) {
             DB::table('password_reset_tokens')->where('email', $request->email)->delete();
             return redirect()->route('password.request')
                 ->withErrors(['email' => 'This password reset link has expired. Please request a new one.']);
