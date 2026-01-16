@@ -25,6 +25,23 @@
                 @csrf
                 @method('PUT')
 
+                @if ($errors->any())
+                    <div class="alert alert-danger alert-dismissible mb-4" role="alert">
+                        <div class="d-flex">
+                            <i class="bx bx-error-circle me-2 icon-xs"></i>
+                            <div>
+                                <h6 class="alert-heading mb-1">Please correct the following errors:</h6>
+                                <ul class="mb-0">
+                                    @foreach ($errors->all() as $error)
+                                        <li>{{ $error }}</li>
+                                    @endforeach
+                                </ul>
+                            </div>
+                        </div>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                @endif
+
                 <div class="row">
                     {{-- Main Form --}}
                     <div class="col-lg-8">
@@ -107,29 +124,19 @@
                                                         class="position-absolute bottom-0 start-0 end-0 p-2 bg-dark bg-opacity-50">
                                                         <div class="d-flex justify-content-between">
                                                             @if (!$image->is_primary)
-                                                                <form
-                                                                    action="{{ route('admin.rooms.images.primary', [$room, $image->id]) }}"
-                                                                    method="POST" class="d-inline">
-                                                                    @csrf
-                                                                    <button type="submit" class="btn btn-sm btn-light"
-                                                                        title="Set as primary">
-                                                                        <i class="bx bx-star"></i>
-                                                                    </button>
-                                                                </form>
+                                                                <button type="button" class="btn btn-sm btn-light"
+                                                                    title="Set as primary"
+                                                                    onclick="submitImageAction('{{ route('admin.rooms.images.primary', [$room, $image->id]) }}', 'POST')">
+                                                                    <i class="bx bx-star"></i>
+                                                                </button>
                                                             @else
                                                                 <span></span>
                                                             @endif
-                                                            <form
-                                                                action="{{ route('admin.rooms.images.destroy', [$room, $image->id]) }}"
-                                                                method="POST" class="d-inline"
-                                                                onsubmit="return confirm('Delete this image?')">
-                                                                @csrf
-                                                                @method('DELETE')
-                                                                <button type="submit" class="btn btn-sm btn-danger"
-                                                                    title="Delete image">
-                                                                    <i class="bx bx-trash"></i>
-                                                                </button>
-                                                            </form>
+                                                            <button type="button" class="btn btn-sm btn-danger"
+                                                                title="Delete image"
+                                                                onclick="if(confirm('Delete this image?')) submitImageAction('{{ route('admin.rooms.images.destroy', [$room, $image->id]) }}', 'DELETE')">
+                                                                <i class="bx bx-trash"></i>
+                                                            </button>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -392,6 +399,12 @@
             </div>
         </div>
     </div>
+
+    {{-- Hidden form for image actions (To avoid nested forms) --}}
+    <form id="imageActionForm" method="POST" style="display: none;">
+        @csrf
+        <input type="hidden" name="_method" id="imageActionMethod" value="POST">
+    </form>
 @endsection
 
 @push('scripts')
@@ -405,6 +418,15 @@
             } else {
                 fields.classList.add('d-none');
             }
+        }
+
+        function submitImageAction(url, method) {
+            const form = document.getElementById('imageActionForm');
+            const methodInput = document.getElementById('imageActionMethod');
+
+            form.action = url;
+            methodInput.value = method;
+            form.submit();
         }
     </script>
 @endpush
