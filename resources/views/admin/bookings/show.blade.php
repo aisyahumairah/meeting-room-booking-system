@@ -129,6 +129,65 @@
                         </div>
                     </div>
                 @endif
+
+                {{-- Audit History --}}
+                <div class="card mt-4">
+                    <div class="card-header border-bottom">
+                        <h6 class="mb-0"><i class="bx bx-history me-2"></i>Audit History</h6>
+                    </div>
+                    @php
+                        $auditLogs = $booking->auditLogs()->orderBy('created_at', 'desc')->limit(20)->get();
+                    @endphp
+
+                    @if ($auditLogs->isEmpty())
+                        <div class="card-body text-center py-4">
+                            <i class="bx bx-history fs-1 text-muted mb-2"></i>
+                            <p class="text-muted mb-0">No audit history available for this booking.</p>
+                        </div>
+                    @else
+                        <div class="table-responsive">
+                            <table class="table table-sm table-hover mb-0">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Date/Time</th>
+                                        <th>Action</th>
+                                        <th>User</th>
+                                        <th>Details</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach ($auditLogs as $log)
+                                        <tr>
+                                            <td class="small py-2">{{ $log->created_at->format('M d, Y H:i') }}</td>
+                                            <td class="py-2">
+                                                <span
+                                                    class="badge bg-{{ str_contains($log->event_type, 'cancelled') ? 'danger' : (str_contains($log->event_type, 'created') ? 'success' : 'primary') }}">
+                                                    {{ str_replace('_', ' ', ucfirst($log->event_type)) }}
+                                                </span>
+                                            </td>
+                                            <td class="small py-2">
+                                                <i class="bx bx-user-circle me-1"></i>{{ $log->actor_name ?? 'System' }}
+                                            </td>
+                                            <td class="small py-2">
+                                                @if (is_array($log->details))
+                                                    @foreach (array_slice($log->details, 0, 5) as $key => $value)
+                                                        @if (!is_array($value))
+                                                            <div class="mb-1">
+                                                                <span
+                                                                    class="text-muted fw-medium small">{{ str_replace('_', ' ', ucfirst($key)) }}:</span>
+                                                                {{ is_bool($value) ? ($value ? 'Yes' : 'No') : $value }}
+                                                            </div>
+                                                        @endif
+                                                    @endforeach
+                                                @endif
+                                            </td>
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
+                    @endif
+                </div>
             </div>
 
             {{-- Sidebar --}}
