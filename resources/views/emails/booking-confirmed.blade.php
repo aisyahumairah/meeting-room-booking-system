@@ -1,26 +1,52 @@
-<x-mail::message>
-    # Booking Confirmed
+<!DOCTYPE html>
+<html>
 
-    Your meeting room booking has been confirmed.
+<head>
+    <meta charset="utf-8">
+    <title>Booking Confirmed - MRBS</title>
+</head>
 
-    **Booking Details:**
-    - **Reference:** {{ $booking->reference_number }}
-    - **Room:** {{ $booking->room->name }}
-    - **Date:** {{ $booking->booking_date->format('l, F j, Y') }}
-    - **Time:** {{ \Carbon\Carbon::parse($booking->start_time)->format('g:i A') }} -
-    {{ \Carbon\Carbon::parse($booking->end_time)->format('g:i A') }}
-    - **Purpose:** {{ $booking->purpose }}
+<body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
+    <div style="max-width: 600px; margin: 0 auto; padding: 20px;">
+        <h2 style="color: #696cff;">Booking Confirmed</h2>
 
-    @if ($booking->attendees)
-        **Attendees:** {{ $booking->attendees }}
-    @endif
+        <p>Your meeting room booking has been confirmed.</p>
 
-    <x-mail::button :url="$viewUrl">
-        View Booking Details
-    </x-mail::button>
+        <div style="background-color: #f8f9fa; padding: 15px; border-radius: 5px; margin: 20px 0;">
+            <p style="margin-bottom: 10px;"><strong>Booking Details:</strong></p>
+            <ul style="list-style-type: none; padding-left: 0; margin: 0;">
+                <li style="margin-bottom: 5px;"><strong>Reference:</strong> {{ $booking->reference_number }}</li>
+                <li style="margin-bottom: 5px;"><strong>Room:</strong> {{ $booking->room->name }}</li>
+                <li style="margin-bottom: 5px;"><strong>Date:</strong> {{ $booking->booking_date->format('l, F j, Y') }}
+                </li>
+                <li style="margin-bottom: 5px;"><strong>Time:</strong>
+                    {{ \Carbon\Carbon::parse($booking->start_time)->format('g:i A') }} -
+                    {{ \Carbon\Carbon::parse($booking->end_time)->format('g:i A') }}</li>
+                <li style="margin-bottom: 5px;"><strong>Purpose:</strong> {{ $booking->purpose }}</li>
+                @if ($booking->attendees)
+                    <li style="margin-bottom: 5px;"><strong>Attendees:</strong> {{ $booking->attendees }}</li>
+                @endif
+            </ul>
+        </div>
 
-    If you need to cancel this booking, please do so at least 24 hours in advance.
+        <p style="text-align: center; margin: 30px 0;">
+            <a href="{{ $viewUrl }}"
+                style="background-color: #696cff; color: white; padding: 12px 30px;
+                      text-decoration: none; border-radius: 5px; display: inline-block;">
+                View Booking Details
+            </a>
+        </p>
 
-    Thanks,<br>
-    {{ config('app.name') }}
-</x-mail::message>
+        <p style="color: #666; font-size: 14px;">
+            If you need to cancel this booking, please do so at least 24 hours in advance.
+        </p>
+
+        <hr style="border: none; border-top: 1px solid #eee; margin: 30px 0;">
+
+        <p style="color: #666; font-size: 12px;">
+            This is an automated message from the Meeting Room Booking System ({{ config('app.name') }}).
+        </p>
+    </div>
+</body>
+
+</html>
