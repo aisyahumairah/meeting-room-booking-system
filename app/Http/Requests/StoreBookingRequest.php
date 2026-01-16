@@ -10,7 +10,7 @@ class StoreBookingRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        return auth()->check();
+        return \Illuminate\Support\Facades\Auth::check();
     }
 
     public function rules(): array
@@ -90,12 +90,11 @@ class StoreBookingRequest extends FormRequest
             ->where('booking_date', $this->booking_date)
             ->where('status', 'confirmed')
             ->where(function ($query) {
-                $query->whereBetween('start_time', [$this->start_time, $this->end_time])
-                    ->orWhereBetween('end_time', [$this->start_time, $this->end_time])
-                    ->orWhere(function ($q) {
-                        $q->where('start_time', '<=', $this->start_time)
-                            ->where('end_time', '>=', $this->end_time);
-                    });
+                $start = $this->start_time;
+                $end = $this->end_time;
+
+                $query->where('start_time', '<', $end)
+                    ->where('end_time', '>', $start);
             })
             ->exists();
 

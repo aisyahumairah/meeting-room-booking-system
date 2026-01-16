@@ -19,6 +19,16 @@
                         <form id="bookingForm" action="{{ route('bookings.store') }}" method="POST">
                             @csrf
 
+                            @if ($errors->any())
+                                <div class="alert alert-danger">
+                                    <ul>
+                                        @foreach ($errors->all() as $error)
+                                            <li>{{ $error }}</li>
+                                        @endforeach
+                                    </ul>
+                                </div>
+                            @endif
+
                             {{-- Race condition warning --}}
                             @if (session('error'))
                                 <div class="alert alert-danger alert-dismissible mb-4">
@@ -282,9 +292,9 @@
                     message.className = 'alert alert-secondary';
                     message.innerHTML =
                         '<span class="spinner-border spinner-border-sm me-2"></span> Checking availability...';
-                    submitBtn.disabled = true;
-
                     availabilityCheckTimeout = setTimeout(() => {
+                        submitBtn.disabled = true; // Disable during actual check
+
                         fetch('{{ route('ajax.availability.check') }}', {
                                 method: 'POST',
                                 headers: {
@@ -359,9 +369,9 @@
 
                 // Form submission with loading state
                 form.addEventListener('submit', function() {
-                    submitBtn.disabled = true;
-                    submitBtn.innerHTML =
-                        '<span class="spinner-border spinner-border-sm me-1"></span> Creating...';
+                    // submitBtn.disabled = true;
+                    // submitBtn.innerHTML =
+                    //    '<span class="spinner-border spinner-border-sm me-1"></span> Creating...';
                 });
 
                 // Initialize

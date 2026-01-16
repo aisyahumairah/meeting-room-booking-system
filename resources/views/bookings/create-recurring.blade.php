@@ -20,6 +20,16 @@
                         <form id="recurringForm" action="{{ route('bookings.store-recurring') }}" method="POST">
                             @csrf
 
+                            @if ($errors->any())
+                                <div class="alert alert-danger">
+                                    <ul>
+                                        @foreach ($errors->all() as $error)
+                                            <li>{{ $error }}</li>
+                                        @endforeach
+                                    </ul>
+                                </div>
+                            @endif
+
                             {{-- Room Selection --}}
                             <div class="mb-3">
                                 <label class="form-label" for="room_id">Meeting Room</label>
@@ -327,6 +337,10 @@
                     });
                 });
 
+                const endTypeRadios = document.querySelectorAll('input[name="end_type"]');
+                const endDateInput = document.getElementById('end_date');
+                const occurrencesInput = document.getElementById('occurrences');
+
                 function updateRecurrenceUI() {
                     const type = document.querySelector('input[name="recurrence_type"]:checked')?.value;
 
@@ -337,8 +351,27 @@
                         type === 'weekly' ? 'week(s)' : 'month(s)';
                 }
 
+                function updateEndTypeUI() {
+                    const endType = document.querySelector('input[name="end_type"]:checked')?.value;
+                    if (endType === 'by_date') {
+                        endDateInput.disabled = false;
+                        occurrencesInput.disabled = true;
+                    } else {
+                        endDateInput.disabled = true;
+                        occurrencesInput.disabled = false;
+                    }
+                }
+
                 // Initialize UI
                 updateRecurrenceUI();
+                updateEndTypeUI();
+
+                endTypeRadios.forEach(radio => {
+                    radio.addEventListener('change', () => {
+                        updateEndTypeUI();
+                        updatePreview();
+                    });
+                });
 
                 // Live preview
                 const inputs = form.querySelectorAll('input, select');
@@ -393,7 +426,7 @@
                                         `<span class="badge bg-label-danger">${data.conflicts} Conflict(s)</span>`;
                                     availSummary.innerHTML =
                                         `<div class="text-danger"><i class="bx bx-error me-1"></i> Room is not available on ${data.conflicts} of the ${data.count} selected dates. Please adjust your selection.</div>`;
-                                    submitBtn.disabled = true;
+                                    // submitBtn.disabled = true; // Disabled for debugging
                                 }
 
                                 data.dates.forEach(date => {

@@ -10,7 +10,7 @@ class StoreRecurringBookingRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        return auth()->check();
+        return \Illuminate\Support\Facades\Auth::check();
     }
 
     public function rules(): array
@@ -35,8 +35,8 @@ class StoreRecurringBookingRequest extends FormRequest
 
             // End condition
             'end_type' => ['required', 'in:by_date,by_occurrences'],
-            'end_date' => ['required_if:end_type,by_date', 'date', 'after:start_date'],
-            'occurrences' => ['required_if:end_type,by_occurrences', 'integer', 'min:2', 'max:52'],
+            'end_date' => ['exclude_unless:end_type,by_date', 'required', 'date', 'after:start_date'],
+            'occurrences' => ['exclude_unless:end_type,by_occurrences', 'required', 'integer', 'min:2', 'max:52'],
 
             // Optional
             'user_id' => ['nullable', 'exists:users,id'],
