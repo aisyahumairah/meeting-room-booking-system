@@ -1,6 +1,6 @@
 # Meeting Room Booking System (MRBS)
 
-Meeting Room Booking System (MRBS) for Oriental Interest Group. A comprehensive solution for managing meeting room reservations, user roles, and resource availability.
+A comprehensive solution for managing meeting room reservations, user roles, and resource availability.
 
 ## Project Overview
 
